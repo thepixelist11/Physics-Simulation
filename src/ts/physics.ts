@@ -1,9 +1,8 @@
-import * as Eclipse from './eclipse.ts'
-import { Point } from './primitives.ts'
+require('./eclipse')
+require('./primitives')
+const gravity = 9.81
 
-export const gravity = 9.81
-
-export function updatePoints(deltaTime: number, points: Array<Point>) {
+function updatePoints(deltaTime: number, points: Array<Point>) {
   for (let i = 0; i < points.length; i++) {
     const p = points[i]
     const currentPosition = p.position.copy()
@@ -14,4 +13,9 @@ export function updatePoints(deltaTime: number, points: Array<Point>) {
     p.lastPosition = currentPosition.copy()
     p.position = newPosition.copy()
   }
+}
+
+module.exports = {
+  gravity: gravity,
+  updatePoints: updatePoints
 }

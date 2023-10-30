@@ -1,5 +1,5 @@
-import * as Eclipse from './eclipse.ts'
-export class Point {
+require('./eclipse')
+class Point {
   #_position = Eclipse.Vector2.ZERO
   #_radius = 5
   #_color = Eclipse.Color.BLACK
@@ -19,6 +19,7 @@ export class Point {
     this.#_initialMass = this.#_mass
     this.#_initialPosition = this.#_position
     this.#_initialRadius = this.#_radius
+
   }
   get position() {
     return this.#_position
@@ -92,7 +93,7 @@ export class Point {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    Eclipse.drawPoint(ctx, this.position, this.color, this.radius)
+    Eclipse.drawPoint(ctx, this.position, this.radius, this.color)
   }
 
   reset() {
@@ -102,4 +103,8 @@ export class Point {
     this.color = this.#_initialColor
     this.radius = this.#_initialRadius
   }
+}
+
+module.exports = {
+  Point: Point,
 }

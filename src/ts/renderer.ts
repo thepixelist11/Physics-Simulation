@@ -1,6 +1,6 @@
-import * as Eclipse from './eclipse.ts'
-import { Point } from './primitives.ts'
-import { gravity, updatePoints } from './physics.ts'
+require('./eclipse')
+require('./primitives')
+require('./physics')
 
 const { ipcRenderer } = require('electron')
 
