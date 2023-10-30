@@ -56,7 +56,7 @@ function startPhysics() {
         drawPoints(points);
     }, 16.67);
 }
-window.startPhysics = startPhysics
+window.startPhysics = startPhysics;
 function stopPhysics() {
     loopPhysics = false;
     lastTime = null;

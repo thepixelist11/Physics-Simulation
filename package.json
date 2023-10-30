@@ -7,7 +7,6 @@
     "doc": "docs"
   },
   "scripts": {
-    "compile": "tsc -p tsconfig.json",
     "start": "electron \"C:\\Users\\Benan\\Desktop\\Physics Simulation\\src\\main.js\""
   },
   "author": "thepixelist",

@@ -77,3 +77,9 @@ function stopPhysics() {
 }
 
 drawPoints(points)
+
+function setupDevConsoleWindowProps() {
+  window.startPhysics = startPhysics
+}
+
+setupDevConsoleWindowProps()
