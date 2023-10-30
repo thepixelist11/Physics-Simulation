@@ -1,0 +1,23 @@
+{
+  "name": "physics-simulation",
+  "version": "1.0.0",
+  "description": "A kinematics simulation using the basic Störmer-Verlet method of verlet integration.",
+  "main": ".\\src\\main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "compile": "tsc -p tsconfig.json",
+    "start": "electron \"C:\\Users\\Benan\\Desktop\\Physics Simulation\\src\\main.js\""
+  },
+  "author": "thepixelist",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "electron": "^26.3.0"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "typescript": "^2.0.4"
+  }
+}
