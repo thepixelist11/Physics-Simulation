@@ -1,9 +1,13 @@
 require('./eclipse')
 class Point {
+  // Standard properties
   #_position = Eclipse.Vector2.ZERO
   #_radius = 5
   #_color = Eclipse.Color.BLACK
   #_mass = 1
+
+  // Initial properties
+  // Standard properties will be set to these on reset
   #_lastPosition = Eclipse.Vector2.ZERO
   #_initialPosition
   #_initialMass
@@ -15,11 +19,11 @@ class Point {
     this.radius = radius
     this.color = color
     this.lastPosition = this.position
+
     this.#_initialColor = this.#_color
     this.#_initialMass = this.#_mass
     this.#_initialPosition = this.#_position
     this.#_initialRadius = this.#_radius
-
   }
   get position() {
     return this.#_position
@@ -96,6 +100,7 @@ class Point {
     Eclipse.drawPoint(ctx, this.position, this.radius, this.color)
   }
 
+  // Sets the standard properties to the initial properties
   reset() {
     this.position = this.#_initialPosition
     this.lastPosition = this.#_position

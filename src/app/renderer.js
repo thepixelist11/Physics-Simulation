@@ -32,36 +32,35 @@ function drawPoints(points) {
     }
     ctx.restore();
 }
-let currentTime, deltaTime, lastTime, start = null;
+let time = 0;
+const timeStep = 16.67;
 function startPhysics() {
+    time = 0;
     loopPhysics = true;
-    setInterval(() => {
+    const loop = setInterval(() => {
+        if (!loopPhysics) {
+            clearInterval(loop);
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (loopPhysics) {
-            if (lastTime === null || lastTime === undefined) {
-                lastTime = new Date().getTime();
-            }
-            if (start === null || start === undefined) {
-                start = new Date().getTime();
-            }
-            currentTime = new Date().getTime();
-            deltaTime = currentTime - lastTime;
-            updatePoints(1, points);
-            if (points[0].y > 10000) {
-                window.alert((new Date().getTime() - start) / 1000);
-                stopPhysics();
-            }
-            lastTime = currentTime;
+        updatePoints(1, points);
+        if (points[0].y > 20000) {
+            window.alert(time / 1000);
+            stopPhysics();
         }
         drawPoints(points);
-    }, 16.67);
+        time += timeStep;
+    }, timeStep);
 }
-window.startPhysics = startPhysics;
 function stopPhysics() {
     loopPhysics = false;
-    lastTime = null;
-    start = null;
-    currentTime = null;
     resetPoints();
 }
 drawPoints(points);
+function setupDebugProperties() {
+    // @ts-ignore
+    window.startPhysics = startPhysics;
+    function getPoints() { return points; }
+    // @ts-ignore
+    window.getPoints = getPoints;
+}
+setupDebugProperties();

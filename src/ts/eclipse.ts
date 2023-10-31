@@ -15,7 +15,7 @@ namespace Eclipse {
    * @param {CanvasRenderingContext2D} ctx The context to draw the point on
    * @param {number} x The x position of the point - The top-left corner is 0, 0
    * @param {number} y The y position of the point - The top-left corner is 0, 0
-   * @param {numer} radius The radius of the point. Defaults to 1
+   * @param {number} radius The radius of the point. Defaults to 1
    * @param {Color} color The color of the point. Defaults to black
    */
   export function drawPoint(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, color: Color): void // Overload 0
