@@ -1,5 +1,3 @@
-// Compiled Successfully!
-
 namespace Eclipse {
   // ----- MATH FUNCTIONS AND CLASSES
   export const PI = Math.PI

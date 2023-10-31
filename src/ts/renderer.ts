@@ -21,11 +21,11 @@ ipcRenderer.on('newSize', (evt: Event, val: any) => {
 // TODO: Allow user to add points. Initialize as empty array
 let points = initializePoints()
 
-let zoom = 0.1
+let zoom = 1
 
 // Creates new points
 function initializePoints() {
-  return [new Point(new Eclipse.Vector2(500, 0), 1, 50, Eclipse.Color.RED)]
+  return [new Point(new Eclipse.Vector2(100, 0), 1, 10, Eclipse.Color.RED)]
 }
 
 function resetPoints() {
@@ -58,10 +58,10 @@ function startPhysics() {
       clearInterval(loop)
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    updatePoints(1, points)
+    updatePoints(timeStep / 1000, points)
 
-    // Find how long it takes for point 0 to fall 20,000 units
-    if (points[0].y > 20000) {
+    // Find how long it takes for point 0 to fall a certain number of units
+    if (points[0].y > 100) {
       window.alert(time / 1000)
       stopPhysics()
     }
@@ -80,7 +80,7 @@ function stopPhysics() {
 drawPoints(points)
 
 // Semicolon is needed to prevent drawPoints from calling with the function as param
-;(function setupDebugProperties() {
+function setupDebugProperties() {
   // @ts-ignore
   window.startPhysics = startPhysics
   function getPoints() {
@@ -88,4 +88,5 @@ drawPoints(points)
   }
   // @ts-ignore
   window.getPoints = getPoints
-})
+}
+setupDebugProperties()

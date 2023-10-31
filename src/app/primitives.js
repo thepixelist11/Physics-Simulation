@@ -14,10 +14,16 @@ var _Point__position, _Point__radius, _Point__color, _Point__mass, _Point__lastP
 require('./eclipse');
 class Point {
     constructor(position, mass, radius = 5, color = Eclipse.Color.BLACK) {
+        // Standard properties
         _Point__position.set(this, Eclipse.Vector2.ZERO);
         _Point__radius.set(this, 5);
         _Point__color.set(this, Eclipse.Color.BLACK);
-        _Point__mass.set(this, 1);
+        _Point__mass.set(this, 1
+        // Initial properties
+        // Standard properties will be set to these on reset
+        );
+        // Initial properties
+        // Standard properties will be set to these on reset
         _Point__lastPosition.set(this, Eclipse.Vector2.ZERO);
         _Point__initialPosition.set(this, void 0);
         _Point__initialMass.set(this, void 0);
@@ -113,6 +119,7 @@ class Point {
     draw(ctx) {
         Eclipse.drawPoint(ctx, this.position, this.radius, this.color);
     }
+    // Sets the standard properties to the initial properties
     reset() {
         this.position = __classPrivateFieldGet(this, _Point__initialPosition, "f");
         this.lastPosition = __classPrivateFieldGet(this, _Point__position, "f");
