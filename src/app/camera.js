@@ -12,6 +12,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
 };
 var _Camera__pos, _Camera__zoom;
 require('./eclipse');
+require('./drawing');
 class Camera {
     constructor(pos, zoom) {
         _Camera__pos.set(this, Eclipse.Vector2.ZERO);
@@ -43,6 +44,14 @@ class Camera {
     }
     set zoom(newZoom) {
         __classPrivateFieldSet(this, _Camera__zoom, Eclipse.clamp(newZoom, 0.01, Eclipse.INF), "f");
+    }
+    translate(x, y) {
+        if (x instanceof Eclipse.Vector2) {
+            __classPrivateFieldGet(this, _Camera__pos, "f").add(x);
+        }
+        else if (y) {
+            __classPrivateFieldGet(this, _Camera__pos, "f").add(new Eclipse.Vector2(x, y));
+        }
     }
 }
 _Camera__pos = new WeakMap(), _Camera__zoom = new WeakMap();

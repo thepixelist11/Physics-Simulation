@@ -1,4 +1,5 @@
 require('./eclipse')
+require('./drawing')
 
 class Camera {
   #_pos = Eclipse.Vector2.ZERO
@@ -35,6 +36,16 @@ class Camera {
   }
   set zoom(newZoom: number) {
     this.#_zoom = Eclipse.clamp(newZoom, 0.01, Eclipse.INF)
+  }
+
+  translate(x: Eclipse.Vector2): void
+  translate(x: number, y: number): void
+  translate(x: number | Eclipse.Vector2, y?: number) {
+    if(x instanceof Eclipse.Vector2) {
+      this.#_pos.add(x)
+    } else if(y) {
+      this.#_pos.add(new Eclipse.Vector2(x, y))
+    }
   }
 }
 

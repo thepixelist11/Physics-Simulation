@@ -23,9 +23,9 @@ ipcRenderer.on('newSize', (evt: Event, val: any) => {
 let points = initializePoints()
 
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
+ let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
 
-// Creates new points
+ // Creates new points
 function initializePoints() {
   return [new Point(new Eclipse.Vector2(100, 0), 1, 10, Eclipse.Color.RED)]
 }
@@ -42,26 +42,31 @@ let loopPhysics = false
 let time = 0
 // Time in ms to pass per frame. 16.67 is 60 fps
 const timeStep = 16.67
+// The desired fps to run at. Does not affect the update timestep
+const FPS = 1 / 60
 function startPhysics() {
   time = 0
   loopPhysics = true
   // Main loop
   const loop = setInterval(() => {
-    if (!loopPhysics) {
-      clearInterval(loop)
+    for(let i = 0; i < Math.ceil(FPS / (timeStep / 1000)); i++){
+      if (!loopPhysics) {
+        clearInterval(loop)
+        break
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      updatePoints(timeStep / 1000, points)
+      
+      // Find how long it takes for point 0 to fall a certain number of units
+      if (points[0].y > 100000) {
+        window.alert(time / 1000)
+        stopPhysics()
+      }
+      
+      // Increment time
+      time += timeStep
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    updatePoints(timeStep / 1000, points)
-
-    // Find how long it takes for point 0 to fall a certain number of units
-    if (points[0].y > 1000) {
-      window.alert(time / 1000)
-      stopPhysics()
-    }
-
     drawScene(points, ctx, mainCam)
-    // Increment time
-    time += timeStep
   }, timeStep)
 }
 
