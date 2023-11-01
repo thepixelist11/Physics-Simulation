@@ -3,6 +3,7 @@ require('./primitives')
 require('./physics')
 require('./drawing')
 require('./camera')
+require('./grid')
 
 const { ipcRenderer } = require('electron')
 
