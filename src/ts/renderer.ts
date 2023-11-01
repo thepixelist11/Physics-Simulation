@@ -1,6 +1,8 @@
 require('./eclipse')
 require('./primitives')
 require('./physics')
+require('./drawing')
+require('./camera')
 
 const { ipcRenderer } = require('electron')
 
@@ -10,18 +12,18 @@ canvas.width = 800
 canvas.height = 600
 
 // Resizes and redraws the canvas when the window is resized. Called from main.js
-// TODO: Implement draw function that draws everything rather than just points
 ipcRenderer.on('newSize', (evt: Event, val: any) => {
   canvas.width = val[0]
   canvas.height = val[1]
-  drawPoints(points)
+  drawScene(points, ctx, mainCam)
 })
 
 // Initializes points
 // TODO: Allow user to add points. Initialize as empty array
 let points = initializePoints()
 
-let zoom = 1
+// Initialize main camera
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
 
 // Creates new points
 function initializePoints() {
@@ -32,15 +34,6 @@ function resetPoints() {
   for (let i = 0; i < points.length; i++) {
     points[i].reset()
   }
-}
-
-function drawPoints(points: Array<Point>) {
-  ctx.save()
-  ctx.scale(zoom, zoom)
-  for (let i = 0; i < points.length; i++) {
-    points[i].draw(ctx)
-  }
-  ctx.restore()
 }
 
 // When false will call cancelInterval in main loop
@@ -61,12 +54,12 @@ function startPhysics() {
     updatePoints(timeStep / 1000, points)
 
     // Find how long it takes for point 0 to fall a certain number of units
-    if (points[0].y > 100) {
+    if (points[0].y > 1000) {
       window.alert(time / 1000)
       stopPhysics()
     }
 
-    drawPoints(points)
+    drawScene(points, ctx, mainCam)
     // Increment time
     time += timeStep
   }, timeStep)
@@ -77,7 +70,7 @@ function stopPhysics() {
   resetPoints()
 }
 
-drawPoints(points)
+drawScene(points, ctx, mainCam)
 
 // Semicolon is needed to prevent drawPoints from calling with the function as param
 function setupDebugProperties() {
@@ -88,5 +81,10 @@ function setupDebugProperties() {
   }
   // @ts-ignore
   window.getPoints = getPoints
+  function getMainCam() {
+    return mainCam
+  }
+  // @ts-ignore
+  window.getMainCam = getMainCam
 }
 setupDebugProperties()
