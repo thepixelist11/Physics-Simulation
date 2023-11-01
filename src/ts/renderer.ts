@@ -41,7 +41,7 @@ let loopPhysics = false
 // Time since simulation started in ms
 let time = 0
 // Time in ms to pass per frame. 16.67 is 60 fps
-const timeStep = 16.67
+const timeStep = 0.01667
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 1 / 60
 function startPhysics() {
