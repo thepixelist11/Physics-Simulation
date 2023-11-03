@@ -6,6 +6,7 @@ namespace Eclipse {
   export const QUARTERPI = PI / 4
   export const INF = Number.POSITIVE_INFINITY
   export const NEGINF = Number.NEGATIVE_INFINITY
+  export const EPSILON = Number.EPSILON
 
   // ----- DRAWING FUNCTIONS AND CLASSES
   /**
@@ -233,15 +234,15 @@ namespace Eclipse {
 
     /**
      * Creates a 2D vector with x and y coordinates
-     * @param arr An array containing 2 numbers. The first number is the X coordinate, the second value is the Y coordinate
-     */
-    constructor(arr: number[]) // Overload 1
-    /**
-     * Creates a 2D vector with x and y coordinates
      * @param {number} x The X position of the vector
      * @param {number} y The Y position of the vector
      */
     constructor(x: number, y: number)
+    /**
+     * Creates a 2D vector with x and y coordinates
+     * @param arr An array containing 2 numbers. The first number is the X coordinate, the second value is the Y coordinate
+     */
+    constructor(arr: number[]) // Overload 1
     constructor(x: number | number[] = 0, y: number = 0) {
       if (Array.isArray(x)) {
         this.x = x[0]

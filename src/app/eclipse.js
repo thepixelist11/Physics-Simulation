@@ -14,6 +14,7 @@ var Eclipse;
     Eclipse.QUARTERPI = Eclipse.PI / 4;
     Eclipse.INF = Number.POSITIVE_INFINITY;
     Eclipse.NEGINF = Number.NEGATIVE_INFINITY;
+    Eclipse.EPSILON = Number.EPSILON;
     function drawPoint(ctx, x, y, radius = 1, color = Color.BLACK) {
         if (typeof x === 'number' && typeof y === 'number' && !(radius instanceof Color)) {
             // Overload 0

@@ -116,6 +116,14 @@ class Point {
             throw new Error(`newLastPosition (${newLastPosition}) is not an instance of Vector2`);
         }
     }
+    get rect() {
+        return {
+            left: this.x - this.radius,
+            right: this.x + this.radius,
+            top: this.y - this.radius,
+            bottom: this.y + this.radius,
+        };
+    }
     draw(ctx) {
         Eclipse.drawPoint(ctx, this.position, this.radius, this.color);
     }

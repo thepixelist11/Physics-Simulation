@@ -36,7 +36,7 @@ let loopPhysics = false;
 // Time since simulation started in ms
 let time = 0;
 // Time in ms to pass per frame. 16.67 is 60 fps
-const timeStep = 0.01667;
+const timeStep = 16.67;
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 1 / 60;
 function startPhysics() {
@@ -83,3 +83,6 @@ function setupDebugProperties() {
     window.getMainCam = getMainCam;
 }
 setupDebugProperties();
+const spacialPartitioningGrid = new Grid([], 2);
+spacialPartitioningGrid.addPoint(new Point(new Eclipse.Vector2(4, 4), 1, 3));
+console.log(spacialPartitioningGrid.possibleCellIndicies(0));
