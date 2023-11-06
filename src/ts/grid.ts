@@ -1,7 +1,7 @@
 require('./eclipse')
 require('./primitives')
 
-type cellIndicies = {
+type cellPositions = {
   left: number,
   right: number,
   top: number,
@@ -9,12 +9,14 @@ type cellIndicies = {
 }
 
 class Grid {
-  #cells = new Map<String, Array<Number>>()
+  #cells = new Map<String, Array<Point>>()
   #points = Array<Point>()
   #cellSize
-  constructor(points: Array<Point>, cellSize = 100) {
+  constructor(points: Array<Point>, cellSize: number) {
     this.#cellSize = cellSize
     this.#points = points
+
+    this.updateCells()
   }
 
   get points() {
@@ -35,29 +37,35 @@ class Grid {
   }
   
   updateCells() {
-    let cells = []
     for(let i = 0; i < this.#points.length; i++) {
       const p = this.#points[i]
-      const posCellI = this.#possibleCellIndicies(p)
-      for(let j = posCellI.left; j <= posCellI.right; j++) {
-        for(let k = posCellI.top; k <= posCellI.bottom; k++) {
+      const posCellIndicies = this.#possibleCellIndicies(p)
+      for(let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
+        for(let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
           const gridPosition = new Eclipse.Vector2(
               j * this.#cellSize + (this.cellSize / 2),
               k * this.#cellSize + (this.cellSize / 2)
             )
-          // Checks if the distance between the centre of the grid cell and the point
-          // is less than or equal to the radius + half the cell size.
+            const cellPos = new Eclipse.Vector2(j, k)
+          // Checks if any part of the point is inside the grid cell
           if(gridPosition.dist(p.position) <= p.radius + ((this.#cellSize) / 2)) {
-            cells.push(new Eclipse.Vector2(j, k))
+            if(this.#cells.has(cellPos.toString())) {
+              let existingPoints = this.#cells.get(cellPos.toString())
+              existingPoints?.push(p)
+              if(existingPoints) {
+                this.#cells.set(cellPos.toString(), existingPoints)
+              }
+            } else {
+              this.#cells.set(cellPos.toString(), [p])
+            }
           }
         }
       }
     }
-    return cells
   }
 
-  #possibleCellIndicies(p: Point): cellIndicies
-  #possibleCellIndicies(id: number): cellIndicies
+  #possibleCellIndicies(p: Point): cellPositions
+  #possibleCellIndicies(id: number): cellPositions
   #possibleCellIndicies(point: number | Point) {
     let p: Point
     if(typeof point === 'number') {

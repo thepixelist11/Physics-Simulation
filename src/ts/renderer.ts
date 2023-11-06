@@ -94,3 +94,11 @@ function setupDebugProperties() {
   window.getMainCam = getMainCam
 }
 setupDebugProperties()
+
+const testGrid = new Grid([
+  new Point(new Eclipse.Vector2(3, 3), 1, 1),
+  new Point(new Eclipse.Vector2(4, 6), 1, 2),
+  new Point(new Eclipse.Vector2(8, 4), 1, 4),
+], 4)
+
+console.log(testGrid.cells)
