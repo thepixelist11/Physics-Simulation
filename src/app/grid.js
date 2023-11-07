@@ -37,6 +37,8 @@ class Grid {
         this.updateCells();
     }
     updateCells() {
+        // Clear cells to prevent adding points multiple times
+        this.clearCells();
         for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
             const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
             const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
@@ -60,6 +62,9 @@ class Grid {
                 }
             }
         }
+    }
+    clearCells() {
+        __classPrivateFieldSet(this, _Grid_cells, new Map(), "f");
     }
 }
 _Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new WeakMap(), _Grid_instances = new WeakSet(), _Grid_possibleCellIndicies = function _Grid_possibleCellIndicies(point) {

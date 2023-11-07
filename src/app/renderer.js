@@ -81,9 +81,15 @@ function setupDebugProperties() {
     }
     // @ts-ignore
     window.getMainCam = getMainCam;
+    // FIXME: Replace testgrid with actual main grid
+    function getGrid() {
+        return testGrid;
+    }
+    // @ts-ignore
+    window.getGrid = getGrid;
 }
 setupDebugProperties();
-const testGrid = new Grid([
+let testGrid = new Grid([
     new Point(new Eclipse.Vector2(3, 3), 1, 1),
     new Point(new Eclipse.Vector2(4, 6), 1, 2),
     new Point(new Eclipse.Vector2(8, 4), 1, 4),

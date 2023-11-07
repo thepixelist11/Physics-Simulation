@@ -35,8 +35,10 @@ class Grid {
     this.#points.push(p)
     this.updateCells()
   }
-  
+
   updateCells() {
+    // Clear cells to prevent adding points multiple times
+    this.clearCells()
     for(let i = 0; i < this.#points.length; i++) {
       const p = this.#points[i]
       const posCellIndicies = this.#possibleCellIndicies(p)
@@ -62,6 +64,10 @@ class Grid {
         }
       }
     }
+  }
+
+  clearCells() {
+    this.#cells = new Map<String, Array<Point>>()
   }
 
   #possibleCellIndicies(p: Point): cellPositions
