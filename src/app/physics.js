@@ -1,9 +1,10 @@
 "use strict";
 require('./eclipse');
 require('./primitives');
+require('./grid');
 const gravity = 9.81;
-const pxPerM = 100;
-function updatePoints(deltaTime, points) {
+function updatePoints(deltaTime, grid, pxPerM) {
+    const points = grid.points;
     for (let i = 0; i < points.length; i++) {
         const p = points[i];
         const currentPosition = p.position.copy();

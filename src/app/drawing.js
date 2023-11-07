@@ -7,11 +7,11 @@ function drawPoints(points, ctx) {
         points[i].draw(ctx);
     }
 }
-function drawScene(points, ctx, camera) {
+function drawScene(grid, ctx, camera) {
     ctx.save();
     ctx.translate(camera.x, camera.y);
     ctx.scale(camera.zoom, camera.zoom);
-    drawPoints(points, ctx);
+    drawPoints(grid.points, ctx);
     ctx.restore();
 }
 module.exports = {

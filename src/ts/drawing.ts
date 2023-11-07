@@ -8,11 +8,11 @@ function drawPoints(points: Array<Point>, ctx: CanvasRenderingContext2D) {
   }
 }
 
-function drawScene(points: Array<Point>, ctx: CanvasRenderingContext2D, camera: Camera) {
+function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera) {
   ctx.save()
   ctx.translate(camera.x, camera.y)
   ctx.scale(camera.zoom, camera.zoom)
-  drawPoints(points, ctx)
+  drawPoints(grid.points, ctx)
   ctx.restore()
 }
 
