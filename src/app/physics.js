@@ -18,6 +18,7 @@ function updatePoints(deltaTime, grid, pxPerM) {
         p.lastPosition = currentPosition.copy();
         p.position = newPosition.copy();
     }
+    grid.updateCells();
 }
 module.exports = {
     gravity: gravity,
