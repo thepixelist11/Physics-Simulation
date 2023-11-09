@@ -43,8 +43,9 @@ class Camera {
   translate(x: number | Eclipse.Vector2, y?: number) {
     if(x instanceof Eclipse.Vector2) {
       this.#pos.add(x)
-    } else if(y) {
-      this.#pos.add(new Eclipse.Vector2(x, y))
+    } else {
+      this.x += x
+      this.y += y ?? 0
     }
   }
 }

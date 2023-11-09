@@ -49,8 +49,9 @@ class Camera {
         if (x instanceof Eclipse.Vector2) {
             __classPrivateFieldGet(this, _Camera_pos, "f").add(x);
         }
-        else if (y) {
-            __classPrivateFieldGet(this, _Camera_pos, "f").add(new Eclipse.Vector2(x, y));
+        else {
+            this.x += x;
+            this.y += y !== null && y !== void 0 ? y : 0;
         }
     }
 }

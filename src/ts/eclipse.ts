@@ -1560,6 +1560,22 @@ namespace Eclipse {
       'NumLock',
     ]
 
+    constructor() {
+      document.onkeydown = evt => {
+        Object.defineProperty(this, evt.code, {
+          value: true,
+        })
+      }
+      document.onkeyup = evt => {
+        Object.defineProperty(this, evt.code, {
+          value: false,
+        })
+      }
+      document.onblur = () => {
+        this.clearKeys()
+      }
+    }
+
     /**
      * Clears all the key inputs
      */
@@ -1608,23 +1624,7 @@ namespace Eclipse {
       return new Element()
     }
   }
-
-  export const keyBoard = new KeyBoard()
-
-  document.onkeydown = evt => {
-    Object.defineProperty(keyBoard, evt.code, {
-      value: true,
-    })
-  }
-  document.onkeyup = evt => {
-    Object.defineProperty(keyBoard, evt.code, {
-      value: false,
-    })
-  }
-  document.onblur = () => {
-    keyBoard.clearKeys()
-  }
-
+  
   // ------ FILES FUNCTIONS AND CLASSES
   /**
    * Downloads a file from a path

@@ -1456,11 +1456,20 @@ var Eclipse;
                 'NumpadDivide',
                 'NumpadEnter',
                 'NumLock',
-            ]
-            /**
-             * Clears all the key inputs
-             */
-            );
+            ]);
+            document.onkeydown = evt => {
+                Object.defineProperty(this, evt.code, {
+                    value: true,
+                });
+            };
+            document.onkeyup = evt => {
+                Object.defineProperty(this, evt.code, {
+                    value: false,
+                });
+            };
+            document.onblur = () => {
+                this.clearKeys();
+            };
         }
         /**
          * Clears all the key inputs
@@ -1508,20 +1517,6 @@ var Eclipse;
     }
     _KeyBoard_keyboardCodes = new WeakMap();
     Eclipse.KeyBoard = KeyBoard;
-    Eclipse.keyBoard = new KeyBoard();
-    document.onkeydown = evt => {
-        Object.defineProperty(Eclipse.keyBoard, evt.code, {
-            value: true,
-        });
-    };
-    document.onkeyup = evt => {
-        Object.defineProperty(Eclipse.keyBoard, evt.code, {
-            value: false,
-        });
-    };
-    document.onblur = () => {
-        Eclipse.keyBoard.clearKeys();
-    };
     // ------ FILES FUNCTIONS AND CLASSES
     /**
      * Downloads a file from a path

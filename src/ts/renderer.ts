@@ -4,6 +4,7 @@ require('./physics')
 require('./drawing')
 require('./camera')
 require('./grid')
+require('./controller')
 
 const { ipcRenderer } = require('electron')
 
@@ -11,6 +12,7 @@ const canvas = document.querySelector('canvas') ?? document.createElement('canva
 const ctx = canvas.getContext('2d') ?? new CanvasRenderingContext2D()
 canvas.width = 800
 canvas.height = 600
+
 
 // Resizes and redraws the canvas when the window is resized. Called from main.js
 ipcRenderer.on('newSize', (evt: Event, val: any) => {
@@ -27,6 +29,8 @@ const pxPerM = 100
 
 // Initialize main camera
 let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.3)
+
+const controller = new Controller(mainGrid, ctx, mainCam)
 
 // Creates new points
 function initializePoints() {
@@ -45,7 +49,7 @@ let loopPhysics = false
 let time = 0
 // Time in ms to pass per frame. Lower number reduces performance, but increases accuracy. 
 // Do not go below 0.01667 or results will be inaccurate due to numerical instability of floats
-const timeStep = 0.01667
+const timeStep = 16.67
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 16.67
 function startPhysics() {
@@ -95,5 +99,14 @@ function setupDebugProperties() {
   }
   // @ts-ignore
   window.getGrid = getGrid
+
+  function generateRandomPoints(minX: number, maxX: number, minY: number, maxY: number, count: number) {
+    for(let i = 0; i < count; i++) {
+      mainGrid.addPoint(new Point(Eclipse.Vector2.random(minX, maxX, minY, maxY), 1, Eclipse.random(5, 100)))
+    }
+    drawScene(mainGrid, ctx, mainCam)
+  }
+  // @ts-ignore
+  window.generateRandomPoints = generateRandomPoints
 }
 setupDebugProperties()
