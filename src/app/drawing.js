@@ -7,7 +7,8 @@ function drawPoints(points, ctx) {
         points[i].draw(ctx);
     }
 }
-function drawScene(grid, ctx, camera) {
+function drawScene(grid, ctx, camera, bgColor = Eclipse.Color.WHITE) {
+    drawBackground(ctx, bgColor);
     ctx.save();
     ctx.translate(camera.x, camera.y);
     ctx.scale(camera.zoom, camera.zoom);
@@ -18,15 +19,23 @@ function drawScene(grid, ctx, camera) {
 }
 function drawGrid(grid, ctx, camera) {
     const canvas = ctx.canvas;
-    const { left, right, top, bottom } = canvas.getBoundingClientRect();
+    let { left, right, top, bottom } = canvas.getBoundingClientRect();
+    right *= 1 / camera.zoom;
+    left *= 1 / camera.zoom;
+    top *= 1 / camera.zoom;
+    bottom *= 1 / camera.zoom;
     // Vertical Grid Lines
     for (let i = 0; i <= Math.floor(right / grid.cellSize); i++) {
-        Eclipse.drawLine(ctx, new Eclipse.Vector2(i * grid.cellSize, top), new Eclipse.Vector2(i * grid.cellSize, bottom), 5, Eclipse.Color.LIGHTGREY);
+        Eclipse.drawLine(ctx, new Eclipse.Vector2(i * grid.cellSize, top), new Eclipse.Vector2(i * grid.cellSize, bottom), 5 * camera.zoom, Eclipse.Color.LIGHTGREY);
     }
     // Horizontal Grid Lines
     for (let i = 0; i <= Math.floor(bottom / grid.cellSize); i++) {
-        Eclipse.drawLine(ctx, new Eclipse.Vector2(left, i * grid.cellSize), new Eclipse.Vector2(right, i * grid.cellSize), 5, Eclipse.Color.LIGHTGREY);
+        Eclipse.drawLine(ctx, new Eclipse.Vector2(left, i * grid.cellSize), new Eclipse.Vector2(right, i * grid.cellSize), 5 * camera.zoom, Eclipse.Color.LIGHTGREY);
     }
+}
+function drawBackground(ctx, color) {
+    ctx.fillStyle = color.toString();
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 module.exports = {
     drawScene: drawScene,

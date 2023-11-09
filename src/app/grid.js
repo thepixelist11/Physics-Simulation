@@ -38,12 +38,10 @@ class Grid {
     }
     updateCells() {
         // Clear cells to prevent adding points multiple times
-        // this.clearCells()
+        this.clearCells();
         for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
             const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
-            console.log('Point: ', p);
             const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
-            console.log('posCellIndicies', posCellIndicies);
             for (let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
                 for (let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
                     const gridPosition = new Eclipse.Vector2(j * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize / 2), k * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize / 2));

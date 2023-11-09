@@ -26,7 +26,7 @@ let mainGrid = new Grid([], 100)
 const pxPerM = 100
 
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.3)
 
 // Creates new points
 function initializePoints() {

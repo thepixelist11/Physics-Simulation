@@ -38,12 +38,10 @@ class Grid {
 
   updateCells() {
     // Clear cells to prevent adding points multiple times
-    // this.clearCells()
+    this.clearCells()
     for(let i = 0; i < this.#points.length; i++) {
       const p = this.#points[i]
-      console.log('Point: ', p)
       const posCellIndicies = this.#possibleCellIndicies(p)
-      console.log('posCellIndicies', posCellIndicies)
       for(let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
         for(let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
           const gridPosition = new Eclipse.Vector2(

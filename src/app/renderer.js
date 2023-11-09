@@ -22,7 +22,7 @@ let mainGrid = new Grid([], 100);
 // Number of pixels per metre
 const pxPerM = 100;
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 1);
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.3);
 // Creates new points
 function initializePoints() {
     return [new Point(new Eclipse.Vector2(100, 0), 1, 10, Eclipse.Color.RED)];
