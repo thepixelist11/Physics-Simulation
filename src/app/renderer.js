@@ -36,7 +36,8 @@ function resetPoints() {
 let loopPhysics = false;
 // Time since simulation started in ms
 let time = 0;
-// Time in ms to pass per frame. 16.67 is 60 fps
+// Time in ms to pass per frame. Lower number reduces performance, but increases accuracy. 
+// Do not go below 0.01667 or results will be inaccurate due to numerical instability of floats
 const timeStep = 0.01667;
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 16.67;

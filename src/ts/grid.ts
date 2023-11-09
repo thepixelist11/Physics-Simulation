@@ -38,10 +38,12 @@ class Grid {
 
   updateCells() {
     // Clear cells to prevent adding points multiple times
-    this.clearCells()
+    // this.clearCells()
     for(let i = 0; i < this.#points.length; i++) {
       const p = this.#points[i]
+      console.log('Point: ', p)
       const posCellIndicies = this.#possibleCellIndicies(p)
+      console.log('posCellIndicies', posCellIndicies)
       for(let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
         for(let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
           const gridPosition = new Eclipse.Vector2(
@@ -50,7 +52,7 @@ class Grid {
             )
             const cellPos = new Eclipse.Vector2(j, k)
           // Checks if any part of the point is inside the grid cell
-          if(gridPosition.dist(p.position) <= p.radius + ((this.#cellSize) / 2)) {
+          if(gridPosition.dist(p.position) <= p.radius + (this.#cellSize / Math.sqrt(2))) {
             if(this.#cells.has(cellPos.toString())) {
               let existingPoints = this.#cells.get(cellPos.toString())
               existingPoints?.push(p)
@@ -85,10 +87,10 @@ class Grid {
       left: Math.floor(p.rect.left / this.#cellSize),
       top: Math.floor(p.rect.top / this.#cellSize),
       right: p.rect.right % this.#cellSize === 0 ? 
-             Math.floor(p.rect.right / this.#cellSize) - 1 : 
+             Math.floor(p.rect.right / this.#cellSize) - 0 : 
              Math.floor(p.rect.right / this.#cellSize),
       bottom: p.rect.bottom % this.#cellSize === 0 ? 
-              Math.floor(p.rect.bottom / this.#cellSize) - 1 : 
+              Math.floor(p.rect.bottom / this.#cellSize) - 0 : 
               Math.floor(p.rect.bottom / this.#cellSize),
     }
   }

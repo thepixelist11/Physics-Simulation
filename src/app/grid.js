@@ -38,16 +38,18 @@ class Grid {
     }
     updateCells() {
         // Clear cells to prevent adding points multiple times
-        this.clearCells();
+        // this.clearCells()
         for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
             const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
+            console.log('Point: ', p);
             const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
+            console.log('posCellIndicies', posCellIndicies);
             for (let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
                 for (let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
                     const gridPosition = new Eclipse.Vector2(j * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize / 2), k * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize / 2));
                     const cellPos = new Eclipse.Vector2(j, k);
                     // Checks if any part of the point is inside the grid cell
-                    if (gridPosition.dist(p.position) <= p.radius + ((__classPrivateFieldGet(this, _Grid_cellSize, "f")) / 2)) {
+                    if (gridPosition.dist(p.position) <= p.radius + (__classPrivateFieldGet(this, _Grid_cellSize, "f") / Math.sqrt(2))) {
                         if (__classPrivateFieldGet(this, _Grid_cells, "f").has(cellPos.toString())) {
                             let existingPoints = __classPrivateFieldGet(this, _Grid_cells, "f").get(cellPos.toString());
                             existingPoints === null || existingPoints === void 0 ? void 0 : existingPoints.push(p);
@@ -81,10 +83,10 @@ _Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new 
         left: Math.floor(p.rect.left / __classPrivateFieldGet(this, _Grid_cellSize, "f")),
         top: Math.floor(p.rect.top / __classPrivateFieldGet(this, _Grid_cellSize, "f")),
         right: p.rect.right % __classPrivateFieldGet(this, _Grid_cellSize, "f") === 0 ?
-            Math.floor(p.rect.right / __classPrivateFieldGet(this, _Grid_cellSize, "f")) - 1 :
+            Math.floor(p.rect.right / __classPrivateFieldGet(this, _Grid_cellSize, "f")) - 0 :
             Math.floor(p.rect.right / __classPrivateFieldGet(this, _Grid_cellSize, "f")),
         bottom: p.rect.bottom % __classPrivateFieldGet(this, _Grid_cellSize, "f") === 0 ?
-            Math.floor(p.rect.bottom / __classPrivateFieldGet(this, _Grid_cellSize, "f")) - 1 :
+            Math.floor(p.rect.bottom / __classPrivateFieldGet(this, _Grid_cellSize, "f")) - 0 :
             Math.floor(p.rect.bottom / __classPrivateFieldGet(this, _Grid_cellSize, "f")),
     };
 };
