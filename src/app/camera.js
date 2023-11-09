@@ -10,51 +10,51 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _Camera__pos, _Camera__zoom;
+var _Camera_pos, _Camera_zoom;
 require('./eclipse');
 require('./drawing');
 class Camera {
     constructor(pos, zoom) {
-        _Camera__pos.set(this, Eclipse.Vector2.ZERO);
-        _Camera__zoom.set(this, 1);
+        _Camera_pos.set(this, Eclipse.Vector2.ZERO);
+        _Camera_zoom.set(this, 1);
         this.pos = pos;
         this.zoom = zoom;
     }
     get pos() {
-        return __classPrivateFieldGet(this, _Camera__pos, "f");
+        return __classPrivateFieldGet(this, _Camera_pos, "f");
     }
     set pos(newPos) {
-        __classPrivateFieldSet(this, _Camera__pos, newPos, "f");
+        __classPrivateFieldSet(this, _Camera_pos, newPos, "f");
     }
     get x() {
-        return __classPrivateFieldGet(this, _Camera__pos, "f").x;
+        return __classPrivateFieldGet(this, _Camera_pos, "f").x;
     }
     set x(newX) {
-        __classPrivateFieldGet(this, _Camera__pos, "f").x = newX;
+        __classPrivateFieldGet(this, _Camera_pos, "f").x = newX;
     }
     get y() {
-        return __classPrivateFieldGet(this, _Camera__pos, "f").y;
+        return __classPrivateFieldGet(this, _Camera_pos, "f").y;
     }
     set y(newY) {
-        __classPrivateFieldGet(this, _Camera__pos, "f").y = newY;
+        __classPrivateFieldGet(this, _Camera_pos, "f").y = newY;
     }
     get zoom() {
-        __classPrivateFieldSet(this, _Camera__zoom, Eclipse.clamp(__classPrivateFieldGet(this, _Camera__zoom, "f"), 0.01, Eclipse.INF), "f");
-        return __classPrivateFieldGet(this, _Camera__zoom, "f");
+        __classPrivateFieldSet(this, _Camera_zoom, Eclipse.clamp(__classPrivateFieldGet(this, _Camera_zoom, "f"), 0.01, Eclipse.INF), "f");
+        return __classPrivateFieldGet(this, _Camera_zoom, "f");
     }
     set zoom(newZoom) {
-        __classPrivateFieldSet(this, _Camera__zoom, Eclipse.clamp(newZoom, 0.01, Eclipse.INF), "f");
+        __classPrivateFieldSet(this, _Camera_zoom, Eclipse.clamp(newZoom, 0.01, Eclipse.INF), "f");
     }
     translate(x, y) {
         if (x instanceof Eclipse.Vector2) {
-            __classPrivateFieldGet(this, _Camera__pos, "f").add(x);
+            __classPrivateFieldGet(this, _Camera_pos, "f").add(x);
         }
         else if (y) {
-            __classPrivateFieldGet(this, _Camera__pos, "f").add(new Eclipse.Vector2(x, y));
+            __classPrivateFieldGet(this, _Camera_pos, "f").add(new Eclipse.Vector2(x, y));
         }
     }
 }
-_Camera__pos = new WeakMap(), _Camera__zoom = new WeakMap();
+_Camera_pos = new WeakMap(), _Camera_zoom = new WeakMap();
 module.exports = {
     Camera: Camera,
 };

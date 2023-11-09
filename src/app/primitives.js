@@ -10,125 +10,133 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _Point__position, _Point__radius, _Point__color, _Point__mass, _Point__lastPosition, _Point__initialPosition, _Point__initialMass, _Point__initialRadius, _Point__initialColor;
+var _Point_position, _Point_radius, _Point_color, _Point_mass, _Point_lastPosition, _Point_initialPosition, _Point_initialMass, _Point_initialRadius, _Point_initialColor;
 require('./eclipse');
 class Point {
     constructor(position, mass, radius = 5, color = Eclipse.Color.BLACK) {
         // Standard properties
-        _Point__position.set(this, Eclipse.Vector2.ZERO);
-        _Point__radius.set(this, 5);
-        _Point__color.set(this, Eclipse.Color.BLACK);
-        _Point__mass.set(this, 1
+        _Point_position.set(this, Eclipse.Vector2.ZERO);
+        _Point_radius.set(this, 5);
+        _Point_color.set(this, Eclipse.Color.BLACK);
+        _Point_mass.set(this, 1
         // Initial properties
         // Standard properties will be set to these on reset
         );
         // Initial properties
         // Standard properties will be set to these on reset
-        _Point__lastPosition.set(this, Eclipse.Vector2.ZERO);
-        _Point__initialPosition.set(this, void 0);
-        _Point__initialMass.set(this, void 0);
-        _Point__initialRadius.set(this, void 0);
-        _Point__initialColor.set(this, void 0);
+        _Point_lastPosition.set(this, Eclipse.Vector2.ZERO);
+        _Point_initialPosition.set(this, void 0);
+        _Point_initialMass.set(this, void 0);
+        _Point_initialRadius.set(this, void 0);
+        _Point_initialColor.set(this, void 0);
         this.position = position;
         this.mass = mass;
         this.radius = radius;
         this.color = color;
         this.lastPosition = this.position;
-        __classPrivateFieldSet(this, _Point__initialColor, __classPrivateFieldGet(this, _Point__color, "f"), "f");
-        __classPrivateFieldSet(this, _Point__initialMass, __classPrivateFieldGet(this, _Point__mass, "f"), "f");
-        __classPrivateFieldSet(this, _Point__initialPosition, __classPrivateFieldGet(this, _Point__position, "f"), "f");
-        __classPrivateFieldSet(this, _Point__initialRadius, __classPrivateFieldGet(this, _Point__radius, "f"), "f");
+        __classPrivateFieldSet(this, _Point_initialColor, __classPrivateFieldGet(this, _Point_color, "f"), "f");
+        __classPrivateFieldSet(this, _Point_initialMass, __classPrivateFieldGet(this, _Point_mass, "f"), "f");
+        __classPrivateFieldSet(this, _Point_initialPosition, __classPrivateFieldGet(this, _Point_position, "f"), "f");
+        __classPrivateFieldSet(this, _Point_initialRadius, __classPrivateFieldGet(this, _Point_radius, "f"), "f");
     }
     get position() {
-        return __classPrivateFieldGet(this, _Point__position, "f");
+        return __classPrivateFieldGet(this, _Point_position, "f");
     }
     set position(pos) {
         if (pos instanceof Eclipse.Vector2) {
-            __classPrivateFieldSet(this, _Point__position, pos, "f");
+            __classPrivateFieldSet(this, _Point_position, pos, "f");
         }
         else {
             throw new Error(`pos (${pos}) is not of type Vector2`);
         }
     }
     get x() {
-        return __classPrivateFieldGet(this, _Point__position, "f").x;
+        return __classPrivateFieldGet(this, _Point_position, "f").x;
     }
     set x(x) {
         if (typeof x === 'number') {
-            __classPrivateFieldSet(this, _Point__position, new Eclipse.Vector2(x, __classPrivateFieldGet(this, _Point__position, "f").x), "f");
+            __classPrivateFieldSet(this, _Point_position, new Eclipse.Vector2(x, __classPrivateFieldGet(this, _Point_position, "f").x), "f");
         }
         else {
             throw new Error(`x (${x}) is not of type number`);
         }
     }
     get y() {
-        return __classPrivateFieldGet(this, _Point__position, "f").y;
+        return __classPrivateFieldGet(this, _Point_position, "f").y;
     }
     set y(y) {
         if (typeof y === 'number') {
-            __classPrivateFieldSet(this, _Point__position, new Eclipse.Vector2(__classPrivateFieldGet(this, _Point__position, "f").y, y), "f");
+            __classPrivateFieldSet(this, _Point_position, new Eclipse.Vector2(__classPrivateFieldGet(this, _Point_position, "f").y, y), "f");
         }
         else {
             throw new Error(`y (${y}) is not of type number`);
         }
     }
     get radius() {
-        return __classPrivateFieldGet(this, _Point__radius, "f");
+        return __classPrivateFieldGet(this, _Point_radius, "f");
     }
     set radius(rad) {
         if (typeof rad === 'number') {
-            __classPrivateFieldSet(this, _Point__radius, Eclipse.clamp(rad, 0, Eclipse.INF), "f");
+            __classPrivateFieldSet(this, _Point_radius, Eclipse.clamp(rad, 0, Eclipse.INF), "f");
         }
         else {
             throw new Error(`rad (${rad}) is not of type number`);
         }
     }
     get color() {
-        return __classPrivateFieldGet(this, _Point__color, "f");
+        return __classPrivateFieldGet(this, _Point_color, "f");
     }
     set color(col) {
         if (col instanceof Eclipse.Color) {
-            __classPrivateFieldSet(this, _Point__color, col, "f");
+            __classPrivateFieldSet(this, _Point_color, col, "f");
         }
         else {
             throw new Error(`col (${col}) is not of type Color`);
         }
     }
     get mass() {
-        return __classPrivateFieldGet(this, _Point__mass, "f");
+        return __classPrivateFieldGet(this, _Point_mass, "f");
     }
     set mass(mass) {
         if (typeof mass === 'number') {
-            __classPrivateFieldSet(this, _Point__mass, Eclipse.clamp(mass, 0, Eclipse.INF), "f");
+            __classPrivateFieldSet(this, _Point_mass, Eclipse.clamp(mass, 0, Eclipse.INF), "f");
         }
         else {
             throw new Error(`Mass (${mass}) is not of type number`);
         }
     }
     get lastPosition() {
-        return __classPrivateFieldGet(this, _Point__lastPosition, "f");
+        return __classPrivateFieldGet(this, _Point_lastPosition, "f");
     }
     set lastPosition(newLastPosition) {
         if (newLastPosition instanceof Eclipse.Vector2) {
-            __classPrivateFieldSet(this, _Point__lastPosition, newLastPosition, "f");
+            __classPrivateFieldSet(this, _Point_lastPosition, newLastPosition, "f");
         }
         else {
             throw new Error(`newLastPosition (${newLastPosition}) is not an instance of Vector2`);
         }
     }
+    get rect() {
+        return {
+            left: this.x - this.radius,
+            right: this.x + this.radius,
+            top: this.y - this.radius,
+            bottom: this.y + this.radius,
+        };
+    }
     draw(ctx) {
         Eclipse.drawPoint(ctx, this.position, this.radius, this.color);
     }
-    // Sets the standard properties to the initial properties
+    // Sets the standard properties to the initial properties, resetting the point
     reset() {
-        this.position = __classPrivateFieldGet(this, _Point__initialPosition, "f");
-        this.lastPosition = __classPrivateFieldGet(this, _Point__position, "f");
-        this.mass = __classPrivateFieldGet(this, _Point__initialMass, "f");
-        this.color = __classPrivateFieldGet(this, _Point__initialColor, "f");
-        this.radius = __classPrivateFieldGet(this, _Point__initialRadius, "f");
+        this.position = __classPrivateFieldGet(this, _Point_initialPosition, "f");
+        this.lastPosition = __classPrivateFieldGet(this, _Point_position, "f");
+        this.mass = __classPrivateFieldGet(this, _Point_initialMass, "f");
+        this.color = __classPrivateFieldGet(this, _Point_initialColor, "f");
+        this.radius = __classPrivateFieldGet(this, _Point_initialRadius, "f");
     }
 }
-_Point__position = new WeakMap(), _Point__radius = new WeakMap(), _Point__color = new WeakMap(), _Point__mass = new WeakMap(), _Point__lastPosition = new WeakMap(), _Point__initialPosition = new WeakMap(), _Point__initialMass = new WeakMap(), _Point__initialRadius = new WeakMap(), _Point__initialColor = new WeakMap();
+_Point_position = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap();
 module.exports = {
     Point: Point,
 };

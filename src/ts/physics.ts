@@ -1,9 +1,11 @@
 require('./eclipse')
 require('./primitives')
-const gravity = 9.81
-const pxPerM = 100
+require('./grid')
 
-function updatePoints(deltaTime: number, points: Array<Point>) {
+const gravity = 9.81
+
+function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
+  const points = grid.points
   for (let i = 0; i < points.length; i++) {
     const p = points[i]
     const currentPosition = p.position.copy()
@@ -17,6 +19,7 @@ function updatePoints(deltaTime: number, points: Array<Point>) {
     p.lastPosition = currentPosition.copy()
     p.position = newPosition.copy()
   }
+  grid.updateCells()
 }
 
 module.exports = {
