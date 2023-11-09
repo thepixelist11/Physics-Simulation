@@ -16,6 +16,16 @@ function drawScene(grid, ctx, camera, bgColor = Eclipse.Color.WHITE) {
     drawGrid(grid, ctx, camera);
     drawPoints(grid.points, ctx);
     ctx.restore();
+    // Draw UI overlay
+    // TODO: Add overlay config file
+    drawOverlay(ctx, {
+        cameraPos: {
+            enabled: true,
+            position: new Eclipse.Vector2(5, 15),
+            color: Eclipse.Color.BLACK,
+            cam: camera,
+        }
+    });
 }
 function drawGrid(grid, ctx, camera) {
     const canvas = ctx.canvas;
@@ -41,6 +51,14 @@ function drawGrid(grid, ctx, camera) {
 function drawBackground(ctx, color) {
     ctx.fillStyle = color.toString();
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+function drawOverlay(ctx, options) {
+    var _a;
+    if (options.cameraPos && options.cameraPos.enabled) {
+        ctx.font = (_a = options.cameraPos.fontStyle) !== null && _a !== void 0 ? _a : 'courier 100px';
+        ctx.fillStyle = options.cameraPos.color.toString();
+        ctx.fillText(`CamX: ${options.cameraPos.cam.x}, CamY: ${options.cameraPos.cam.y}`, options.cameraPos.position.x, options.cameraPos.position.y);
+    }
 }
 module.exports = {
     drawScene: drawScene,

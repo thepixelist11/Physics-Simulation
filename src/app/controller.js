@@ -3,7 +3,7 @@ require('./eclipse');
 require('./camera');
 require('./drawing');
 require('./grid');
-// FIXME: Redo input handling. This is temporary
+// FIXME: Redo input handling
 class Controller {
     constructor(grid, ctx, camera) {
         const keyboard = new Eclipse.KeyBoard();
