@@ -10,13 +10,13 @@ require('./controller');
 const { ipcRenderer } = require('electron');
 const canvas = (_a = document.querySelector('canvas')) !== null && _a !== void 0 ? _a : document.createElement('canvas');
 const ctx = (_b = canvas.getContext('2d')) !== null && _b !== void 0 ? _b : new CanvasRenderingContext2D();
-canvas.width = 800;
-canvas.height = 600;
+canvas.width = document.body.clientWidth;
+canvas.height = document.body.clientHeight;
 // Resizes and redraws the canvas when the window is resized. Called from main.js
 ipcRenderer.on('newSize', (evt, val) => {
     canvas.width = val[0];
     canvas.height = val[1];
-    drawScene(mainGrid, ctx, mainCam);
+    drawScene(mainGrid, ctx, mainCam, Config.uiConfig);
 });
 // Initializes main grid
 let mainGrid = new Grid([], 100);
@@ -24,11 +24,36 @@ let mainGrid = new Grid([], 100);
 const pxPerM = 100;
 // Initialize main camera
 let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.3);
-const controller = new Controller(mainGrid, ctx, mainCam);
-// Creates new points
-function initializePoints() {
-    return [new Point(new Eclipse.Vector2(100, 0), 1, 10, Eclipse.Color.RED)];
-}
+const controller = new Controller(mainGrid, ctx, mainCam, document);
+controller.mouse.onmove = () => {
+    drawScene(mainGrid, ctx, mainCam, Config.uiConfig);
+};
+// Configuration for simulation
+const Config = {
+    uiConfig: {
+        cameraPos: {
+            enabled: true,
+            position: new Eclipse.Vector2(5, 15),
+            color: Eclipse.Color.BLACK,
+            cam: mainCam,
+            camX: true,
+            camY: true,
+            camZoom: true,
+        },
+        globalMousePos: {
+            enabled: true,
+            position: new Eclipse.Vector2(5, 30),
+            color: Eclipse.Color.BLACK,
+            mouse: controller.mouse
+        },
+        relativeMousePos: {
+            enabled: true,
+            position: new Eclipse.Vector2(5, 45),
+            color: Eclipse.Color.BLACK,
+            mouse: controller.mouse
+        },
+    }
+};
 function resetPoints() {
     for (let i = 0; i < mainGrid.points.length; i++) {
         mainGrid.points[i].reset();
@@ -63,35 +88,11 @@ function startPhysics() {
             // Increment time
             time += timeStep;
         }
-        drawScene(mainGrid, ctx, mainCam);
+        drawScene(mainGrid, ctx, mainCam, Config.uiConfig);
     }, FPS);
 }
 function stopPhysics() {
     loopPhysics = false;
     resetPoints();
 }
-drawScene(mainGrid, ctx, mainCam);
-// Semicolon is needed to prevent drawPoints from calling with the function as param
-function setupDebugProperties() {
-    // @ts-ignore
-    window.startPhysics = startPhysics;
-    function getMainCam() {
-        return mainCam;
-    }
-    // @ts-ignore
-    window.getMainCam = getMainCam;
-    function getGrid() {
-        return mainGrid;
-    }
-    // @ts-ignore
-    window.getGrid = getGrid;
-    function generateRandomPoints(minX, maxX, minY, maxY, count) {
-        for (let i = 0; i < count; i++) {
-            mainGrid.addPoint(new Point(Eclipse.Vector2.random(minX, maxX, minY, maxY), 1, Eclipse.random(5, 100)));
-        }
-        drawScene(mainGrid, ctx, mainCam);
-    }
-    // @ts-ignore
-    window.generateRandomPoints = generateRandomPoints;
-}
-setupDebugProperties();
+drawScene(mainGrid, ctx, mainCam, Config.uiConfig);

@@ -1,7 +1,7 @@
 require('./eclipse')
 require('./primitives')
 require('./camera')
-
+require('./controller')
 
 function drawPoints(points: Array<Point>, ctx: CanvasRenderingContext2D) {
   for (let i = 0; i < points.length; i++) {
@@ -9,7 +9,7 @@ function drawPoints(points: Array<Point>, ctx: CanvasRenderingContext2D) {
   }
 }
 
-function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, bgColor = Eclipse.Color.WHITE) {
+function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, overlayOptions: Overlay, bgColor = Eclipse.Color.WHITE) {
   drawBackground(ctx, bgColor)
   ctx.save()
   ctx.translate(-camera.x, -camera.y)
@@ -19,16 +19,7 @@ function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, bg
   drawPoints(grid.points, ctx)
   ctx.restore()
 
-  // Draw UI overlay
-  // TODO: Add overlay config file
-  drawOverlay(ctx, {
-    cameraPos: {
-      enabled: true,
-      position: new Eclipse.Vector2(5, 15),
-      color: Eclipse.Color.BLACK,
-      cam: camera,
-    }
-  })
+  drawOverlay(ctx, overlayOptions)
 }
 
 function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera) {
@@ -60,8 +51,10 @@ function drawBackground(ctx: CanvasRenderingContext2D, color: Eclipse.Color) {
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 }
 
-type overlay = {
-  cameraPos?: cameraPosOptions
+type Overlay = {
+  cameraPos?: cameraPosOptions,
+  globalMousePos?: mousePos,
+  relativeMousePos?: mousePos,
 }
 type overlayOptions = {
   position: Eclipse.Vector2,
@@ -70,21 +63,63 @@ type overlayOptions = {
 }
 type cameraPosOptions = overlayOptions & {
   fontStyle?: string,
-  cam: Camera
+  cam: Camera,
+  camX?: boolean,
+  camY?: boolean,
+  camZoom?: boolean,
+}
+type mousePos = overlayOptions & {
+  mouse: Eclipse.Mouse | null,
+  fontStyle?: string,
+  x?: boolean,
+  y?: boolean,
 }
 
-function drawOverlay(ctx: CanvasRenderingContext2D, options: overlay) {
+function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
   if(options.cameraPos && options.cameraPos.enabled) {
     ctx.font = options.cameraPos.fontStyle ?? 'courier 100px'
     ctx.fillStyle = options.cameraPos.color.toString()
-    ctx.fillText(
-      `CamX: ${options.cameraPos.cam.x}, CamY: ${options.cameraPos.cam.y}`, 
-      options.cameraPos.position.x, 
-      options.cameraPos.position.y
-    )
+    let text = ''
+    if(options.cameraPos.camX ?? true) text = text.concat(`CamX: ${options.cameraPos.cam.x} `)
+    if(options.cameraPos.camY ?? true) text = text.concat(`CamY: ${options.cameraPos.cam.y} `)
+    if(options.cameraPos.camZoom ?? true) text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom} `)
+    ctx.fillText(text, options.cameraPos.position.x, options.cameraPos.position.y)
+  }
+  if(options.globalMousePos && options.globalMousePos.enabled) {
+    ctx.font = options.globalMousePos.fontStyle ?? 'courier 100px'
+    ctx.fillStyle = options.globalMousePos.color.toString()
+    if(options.globalMousePos.mouse !== null) {
+      let text = ''
+      if(options.globalMousePos.x ?? true) text = text.concat(`globalMouseX: ${options.globalMousePos.mouse.x + mainCam.x} `)
+      if(options.globalMousePos.y ?? true) text = text.concat(`globalMouseY: ${options.globalMousePos.mouse.y + mainCam.y} `)
+      ctx.fillText(text, options.globalMousePos.position.x, options.globalMousePos.position.y)
+    } else {
+      ctx.fillText(
+        `Failed to get mouse`, 
+        options.globalMousePos.position.x, 
+        options.globalMousePos.position.y
+      )
+    }
+  }
+  if(options.relativeMousePos && options.relativeMousePos.enabled) {
+    ctx.font = options.relativeMousePos.fontStyle ?? 'courier 100px'
+    ctx.fillStyle = options.relativeMousePos.color.toString()
+    if(options.relativeMousePos.mouse !== null) {
+      let text = ''
+      if(options.relativeMousePos.x ?? true) text = text.concat(`mouseX: ${options.relativeMousePos.mouse.x + mainCam.x} `)
+      if(options.relativeMousePos.y ?? true) text = text.concat(`mouseY: ${options.relativeMousePos.mouse.y + mainCam.y} `)
+      ctx.fillText(text, options.relativeMousePos.position.x, options.relativeMousePos.position.y)
+    } else {
+      ctx.fillText(
+        `Failed to get mouse`, 
+        options.relativeMousePos.position.x, 
+        options.relativeMousePos.position.y
+      )
+    }
   }
 }
 
 module.exports = {
   drawScene: drawScene,
+  drawOverlay: drawOverlay,
 }

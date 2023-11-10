@@ -4,26 +4,39 @@ require('./drawing')
 require('./grid')
 
 // FIXME: Redo input handling
-
 class Controller {
-  constructor(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera) {
-    const keyboard = new Eclipse.KeyBoard()
+  keyboard
+  mouse
+  constructor(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, doc: Document) {
+    this.keyboard = new Eclipse.KeyBoard()
+    this.mouse = new Eclipse.Mouse(doc)
     setInterval(() => {
-      if(keyboard.KeyD) {
+      // Movement of the camera
+      if(this.keyboard.KeyD) {
         camera.translate(5, 0)
-        drawScene(grid, ctx, camera)
+        drawScene(grid, ctx, camera, Config.uiConfig)
       }
-      if(keyboard.KeyA) {
+      if(this.keyboard.KeyA) {
         camera.translate(-5, 0)
-        drawScene(grid, ctx, camera)
+        drawScene(grid, ctx, camera, Config.uiConfig)
       }
-      if(keyboard.KeyW) {
+      if(this.keyboard.KeyW) {
         camera.translate(0, -5)
-        drawScene(grid, ctx, camera)
+        drawScene(grid, ctx, camera, Config.uiConfig)
       }
-      if(keyboard.KeyS) {
+      if(this.keyboard.KeyS) {
         camera.translate(0, 5)
-        drawScene(grid, ctx, camera)
+        drawScene(grid, ctx, camera, Config.uiConfig)
+      }
+
+      // Zoom of the camera
+      if(this.keyboard.NumpadAdd) {
+        camera.zoom += 0.003
+        drawScene(grid, ctx, camera, Config.uiConfig)
+      }
+      if(this.keyboard.NumpadSubtract) {
+        camera.zoom -= 0.003
+        drawScene(grid, ctx, camera, Config.uiConfig)
       }
     }, 16.67)
   }

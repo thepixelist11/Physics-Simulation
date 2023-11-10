@@ -1115,13 +1115,64 @@ var Eclipse;
     Eclipse.isUndefined = isUndefined;
     // ------ INPUT FUNCTIONS AND CLASSES
     class Mouse {
-        constructor() {
+        constructor(doc) {
             this.x = -1;
             this.y = -1;
             this.pos = new Vector2(this.x, this.y);
             this.lmb = false;
             this.mmb = false;
             this.rmb = false;
+            this.onmove = () => { };
+            doc.onmousemove = evt => {
+                Object.defineProperty(this, 'x', {
+                    value: evt.clientX,
+                });
+                Object.defineProperty(this, 'y', {
+                    value: evt.clientY,
+                });
+                Object.defineProperty(this, 'pos', {
+                    value: new Vector2(this.x, this.y),
+                });
+                this.onmove();
+            };
+            doc.onmousedown = evt => {
+                switch (evt.button) {
+                    case 0:
+                        Object.defineProperty(this, 'lmb', {
+                            value: true,
+                        });
+                        break;
+                    case 1:
+                        Object.defineProperty(this, 'mmb', {
+                            value: true,
+                        });
+                        break;
+                    case 2:
+                        Object.defineProperty(this, 'rmb', {
+                            value: true,
+                        });
+                        break;
+                }
+            };
+            doc.onmouseup = evt => {
+                switch (evt.button) {
+                    case 0:
+                        Object.defineProperty(this, 'lmb', {
+                            value: false,
+                        });
+                        break;
+                    case 1:
+                        Object.defineProperty(this, 'mmb', {
+                            value: false,
+                        });
+                        break;
+                    case 2:
+                        Object.defineProperty(this, 'rmb', {
+                            value: false,
+                        });
+                        break;
+                }
+            };
         }
         /**
          * Returns a vector2 with the position of the mouse relative to an element. The top-left corner of the element is (0, 0). Returns the position of the mouse if the element does not exist
@@ -1135,7 +1186,6 @@ var Eclipse;
             }
             else {
                 throw new Error(`Element ${element} does not exist`);
-                return this.pos;
             }
         }
         /**
@@ -1195,56 +1245,6 @@ var Eclipse;
         }
     }
     Eclipse.Mouse = Mouse;
-    Eclipse.mouse = new Mouse();
-    document.onmousemove = evt => {
-        Object.defineProperty(Eclipse.mouse, 'x', {
-            value: evt.clientX,
-        });
-        Object.defineProperty(Eclipse.mouse, 'y', {
-            value: evt.clientY,
-        });
-        Object.defineProperty(Eclipse.mouse, 'pos', {
-            value: new Vector2(Eclipse.mouse.x, Eclipse.mouse.y),
-        });
-    };
-    document.onmousedown = evt => {
-        switch (evt.button) {
-            case 0:
-                Object.defineProperty(Eclipse.mouse, 'lmb', {
-                    value: true,
-                });
-                break;
-            case 1:
-                Object.defineProperty(Eclipse.mouse, 'mmb', {
-                    value: true,
-                });
-                break;
-            case 2:
-                Object.defineProperty(Eclipse.mouse, 'rmb', {
-                    value: true,
-                });
-                break;
-        }
-    };
-    document.onmouseup = evt => {
-        switch (evt.button) {
-            case 0:
-                Object.defineProperty(Eclipse.mouse, 'lmb', {
-                    value: false,
-                });
-                break;
-            case 1:
-                Object.defineProperty(Eclipse.mouse, 'mmb', {
-                    value: false,
-                });
-                break;
-            case 2:
-                Object.defineProperty(Eclipse.mouse, 'rmb', {
-                    value: false,
-                });
-                break;
-        }
-    };
     class KeyBoard {
         constructor() {
             this.KeyA = false;

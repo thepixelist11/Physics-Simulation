@@ -2,12 +2,13 @@
 require('./eclipse');
 require('./primitives');
 require('./camera');
+require('./controller');
 function drawPoints(points, ctx) {
     for (let i = 0; i < points.length; i++) {
         points[i].draw(ctx);
     }
 }
-function drawScene(grid, ctx, camera, bgColor = Eclipse.Color.WHITE) {
+function drawScene(grid, ctx, camera, overlayOptions, bgColor = Eclipse.Color.WHITE) {
     drawBackground(ctx, bgColor);
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
@@ -16,16 +17,7 @@ function drawScene(grid, ctx, camera, bgColor = Eclipse.Color.WHITE) {
     drawGrid(grid, ctx, camera);
     drawPoints(grid.points, ctx);
     ctx.restore();
-    // Draw UI overlay
-    // TODO: Add overlay config file
-    drawOverlay(ctx, {
-        cameraPos: {
-            enabled: true,
-            position: new Eclipse.Vector2(5, 15),
-            color: Eclipse.Color.BLACK,
-            cam: camera,
-        }
-    });
+    drawOverlay(ctx, overlayOptions);
 }
 function drawGrid(grid, ctx, camera) {
     const canvas = ctx.canvas;
@@ -53,13 +45,51 @@ function drawBackground(ctx, color) {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 function drawOverlay(ctx, options) {
-    var _a;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     if (options.cameraPos && options.cameraPos.enabled) {
         ctx.font = (_a = options.cameraPos.fontStyle) !== null && _a !== void 0 ? _a : 'courier 100px';
         ctx.fillStyle = options.cameraPos.color.toString();
-        ctx.fillText(`CamX: ${options.cameraPos.cam.x}, CamY: ${options.cameraPos.cam.y}`, options.cameraPos.position.x, options.cameraPos.position.y);
+        let text = '';
+        if ((_b = options.cameraPos.camX) !== null && _b !== void 0 ? _b : true)
+            text = text.concat(`CamX: ${options.cameraPos.cam.x} `);
+        if ((_c = options.cameraPos.camY) !== null && _c !== void 0 ? _c : true)
+            text = text.concat(`CamY: ${options.cameraPos.cam.y} `);
+        if ((_d = options.cameraPos.camZoom) !== null && _d !== void 0 ? _d : true)
+            text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom} `);
+        ctx.fillText(text, options.cameraPos.position.x, options.cameraPos.position.y);
+    }
+    if (options.globalMousePos && options.globalMousePos.enabled) {
+        ctx.font = (_e = options.globalMousePos.fontStyle) !== null && _e !== void 0 ? _e : 'courier 100px';
+        ctx.fillStyle = options.globalMousePos.color.toString();
+        if (options.globalMousePos.mouse !== null) {
+            let text = '';
+            if ((_f = options.globalMousePos.x) !== null && _f !== void 0 ? _f : true)
+                text = text.concat(`globalMouseX: ${options.globalMousePos.mouse.x + mainCam.x} `);
+            if ((_g = options.globalMousePos.y) !== null && _g !== void 0 ? _g : true)
+                text = text.concat(`globalMouseY: ${options.globalMousePos.mouse.y + mainCam.y} `);
+            ctx.fillText(text, options.globalMousePos.position.x, options.globalMousePos.position.y);
+        }
+        else {
+            ctx.fillText(`Failed to get mouse`, options.globalMousePos.position.x, options.globalMousePos.position.y);
+        }
+    }
+    if (options.relativeMousePos && options.relativeMousePos.enabled) {
+        ctx.font = (_h = options.relativeMousePos.fontStyle) !== null && _h !== void 0 ? _h : 'courier 100px';
+        ctx.fillStyle = options.relativeMousePos.color.toString();
+        if (options.relativeMousePos.mouse !== null) {
+            let text = '';
+            if ((_j = options.relativeMousePos.x) !== null && _j !== void 0 ? _j : true)
+                text = text.concat(`mouseX: ${options.relativeMousePos.mouse.x + mainCam.x} `);
+            if ((_k = options.relativeMousePos.y) !== null && _k !== void 0 ? _k : true)
+                text = text.concat(`mouseY: ${options.relativeMousePos.mouse.y + mainCam.y} `);
+            ctx.fillText(text, options.relativeMousePos.position.x, options.relativeMousePos.position.y);
+        }
+        else {
+            ctx.fillText(`Failed to get mouse`, options.relativeMousePos.position.x, options.relativeMousePos.position.y);
+        }
     }
 }
 module.exports = {
     drawScene: drawScene,
+    drawOverlay: drawOverlay,
 };

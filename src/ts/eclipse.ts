@@ -1223,6 +1223,61 @@ namespace Eclipse {
     readonly mmb: boolean = false
     readonly rmb: boolean = false
 
+    onmove: Function = () => {}
+
+    constructor(doc: Document) {
+      doc.onmousemove = evt => {
+        Object.defineProperty(this, 'x', {
+          value: evt.clientX,
+        })
+        Object.defineProperty(this, 'y', {
+          value: evt.clientY,
+        })
+        Object.defineProperty(this, 'pos', {
+          value: new Vector2(this.x, this.y),
+        })
+        this.onmove()
+      }
+      doc.onmousedown = evt => {
+        switch (evt.button) {
+          case 0:
+            Object.defineProperty(this, 'lmb', {
+              value: true,
+            })
+            break
+          case 1:
+            Object.defineProperty(this, 'mmb', {
+              value: true,
+            })
+            break
+          case 2:
+            Object.defineProperty(this, 'rmb', {
+              value: true,
+            })
+            break
+        }
+      }
+      doc.onmouseup = evt => {
+        switch (evt.button) {
+          case 0:
+            Object.defineProperty(this, 'lmb', {
+              value: false,
+            })
+            break
+          case 1:
+            Object.defineProperty(this, 'mmb', {
+              value: false,
+            })
+            break
+          case 2:
+            Object.defineProperty(this, 'rmb', {
+              value: false,
+            })
+            break
+        }
+      }
+    }
+
     /**
      * Returns a vector2 with the position of the mouse relative to an element. The top-left corner of the element is (0, 0). Returns the position of the mouse if the element does not exist
      * @param element The element
@@ -1234,7 +1289,6 @@ namespace Eclipse {
         return new Vector2(this.x - rect.left, this.y - rect.top)
       } else {
         throw new Error(`Element ${element} does not exist`)
-        return this.pos
       }
     }
 
@@ -1294,57 +1348,6 @@ namespace Eclipse {
      */
     unlock() {
       document.exitPointerLock()
-    }
-  }
-  export const mouse = new Mouse()
-
-  document.onmousemove = evt => {
-    Object.defineProperty(mouse, 'x', {
-      value: evt.clientX,
-    })
-    Object.defineProperty(mouse, 'y', {
-      value: evt.clientY,
-    })
-    Object.defineProperty(mouse, 'pos', {
-      value: new Vector2(mouse.x, mouse.y),
-    })
-  }
-  document.onmousedown = evt => {
-    switch (evt.button) {
-      case 0:
-        Object.defineProperty(mouse, 'lmb', {
-          value: true,
-        })
-        break
-      case 1:
-        Object.defineProperty(mouse, 'mmb', {
-          value: true,
-        })
-        break
-      case 2:
-        Object.defineProperty(mouse, 'rmb', {
-          value: true,
-        })
-        break
-    }
-  }
-  document.onmouseup = evt => {
-    switch (evt.button) {
-      case 0:
-        Object.defineProperty(mouse, 'lmb', {
-          value: false,
-        })
-        break
-      case 1:
-        Object.defineProperty(mouse, 'mmb', {
-          value: false,
-        })
-        break
-      case 2:
-        Object.defineProperty(mouse, 'rmb', {
-          value: false,
-        })
-        break
     }
   }
 
