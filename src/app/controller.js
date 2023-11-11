@@ -26,15 +26,6 @@ class Controller {
                 camera.translate(0, 5);
                 drawScene(grid, ctx, camera, Config.uiConfig);
             }
-            // Zoom of the camera
-            if (this.keyboard.NumpadAdd) {
-                camera.zoom += 0.01;
-                drawScene(grid, ctx, camera, Config.uiConfig);
-            }
-            if (this.keyboard.NumpadSubtract) {
-                camera.zoom -= 0.01;
-                drawScene(grid, ctx, camera, Config.uiConfig);
-            }
         }, 16.67);
     }
 }
