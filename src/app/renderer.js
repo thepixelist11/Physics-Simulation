@@ -19,11 +19,17 @@ ipcRenderer.on('newSize', (evt, val) => {
     drawScene(mainGrid, ctx, mainCam, Config.uiConfig);
 });
 // Initializes main grid
-let mainGrid = new Grid([], 100);
+let mainGrid = new Grid([
+    new Point(new Eclipse.Vector2(-50, 0), 1, 30, Eclipse.Color.RED, false),
+    new Point(new Eclipse.Vector2(0, 300), 1, 80, Eclipse.Color.BLUE, true),
+    new Point(new Eclipse.Vector2(250, 470), 1, 80, Eclipse.Color.GREEN, true),
+    new Point(new Eclipse.Vector2(-20, 700), 1, 80, Eclipse.Color.BLUE, true),
+    new Point(new Eclipse.Vector2(170, 880), 1, 80, Eclipse.Color.GREEN, true),
+], 100);
 // Number of pixels per metre
 const pxPerM = 100;
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.3);
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.2);
 const controller = new Controller(mainGrid, ctx, mainCam, document);
 controller.mouse.onmove = () => {
     drawScene(mainGrid, ctx, mainCam, Config.uiConfig);
@@ -44,20 +50,31 @@ const Config = {
             enabled: true,
             position: new Eclipse.Vector2(5, 30),
             color: Eclipse.Color.BLACK,
-            mouse: controller.mouse
+            mouse: controller.mouse,
+            cam: mainCam,
         },
         relativeMousePos: {
             enabled: true,
             position: new Eclipse.Vector2(5, 45),
             color: Eclipse.Color.BLACK,
-            mouse: controller.mouse
+            mouse: controller.mouse,
+            cam: mainCam,
         },
+        gridIndex: {
+            enabled: true,
+            position: new Eclipse.Vector2(5, 60),
+            color: Eclipse.Color.BLACK,
+            mouse: controller.mouse,
+            grid: mainGrid,
+            cam: mainCam,
+        }
     }
 };
 function resetPoints() {
     for (let i = 0; i < mainGrid.points.length; i++) {
         mainGrid.points[i].reset();
     }
+    mainGrid.updateCells();
 }
 // When false will call cancelInterval in main loop
 let loopPhysics = false;

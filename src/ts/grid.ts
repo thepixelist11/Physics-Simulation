@@ -9,9 +9,11 @@ type cellPositions = {
 }
 
 class Grid {
-  #cells = new Map<String, Array<Point>>()
+  #cells = new Map<string, Array<Point>>()
   #points = Array<Point>()
   #cellSize
+  // The cells that every point is in
+  #pointsCells = new Map<string, Array<string>>()
   constructor(points: Array<Point>, cellSize: number) {
     this.#cellSize = cellSize
     this.#points = points
@@ -30,6 +32,10 @@ class Grid {
   get cellSize() {
     return this.#cellSize
   }
+  
+  get pointsCells() {
+    return this.#pointsCells
+  }
 
   addPoint(p: Point) {
     this.#points.push(p)
@@ -41,6 +47,7 @@ class Grid {
     this.clearCells()
     for(let i = 0; i < this.#points.length; i++) {
       const p = this.#points[i]
+      const pointIdentifier = `${p.x.toFixed(4)},${p.y.toFixed(4)},${p.mass.toFixed(4)},${p.radius.toFixed(4)}`
       const posCellIndicies = this.#possibleCellIndicies(p)
       for(let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
         for(let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
@@ -50,7 +57,13 @@ class Grid {
             )
             const cellPos = new Eclipse.Vector2(j, k)
           // Checks if any part of the point is inside the grid cell
-          if(gridPosition.dist(p.position) <= p.radius + (this.#cellSize / Math.sqrt(2))) {
+          if(gridPosition.dist(p.position) <= p.radius + (this.#cellSize * Math.SQRT1_2)) {
+            if(this.#pointsCells.has(pointIdentifier)) {
+              let existingCells = this.#pointsCells.get(pointIdentifier)
+              existingCells?.push(cellPos.toString())
+            } else {
+              this.#pointsCells.set(pointIdentifier, [cellPos.toString()])
+            }
             if(this.#cells.has(cellPos.toString())) {
               let existingPoints = this.#cells.get(cellPos.toString())
               existingPoints?.push(p)
@@ -67,7 +80,8 @@ class Grid {
   }
 
   clearCells() {
-    this.#cells = new Map<String, Array<Point>>()
+    this.#cells = new Map<string, Array<Point>>()
+    this.#pointsCells = new Map<string, Array<string>>()
   }
 
   #possibleCellIndicies(p: Point): cellPositions

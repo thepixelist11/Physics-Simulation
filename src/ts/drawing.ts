@@ -14,6 +14,11 @@ function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, ov
   ctx.save()
   ctx.translate(-camera.x, -camera.y)
   ctx.scale(camera.zoom, camera.zoom)
+
+  // Debug -
+  // fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER)
+  // -
+
   // TODO: Allow toggling on and off grid lines on top
   drawGrid(grid, ctx, camera)
   drawPoints(grid.points, ctx)
@@ -55,15 +60,16 @@ type Overlay = {
   cameraPos?: cameraPosOptions,
   globalMousePos?: mousePos,
   relativeMousePos?: mousePos,
+  gridIndex?: gridIndex,
 }
 type overlayOptions = {
   position: Eclipse.Vector2,
   color: Eclipse.Color,
   enabled: boolean,
+  cam: Camera,
 }
 type cameraPosOptions = overlayOptions & {
   fontStyle?: string,
-  cam: Camera,
   camX?: boolean,
   camY?: boolean,
   camZoom?: boolean,
@@ -71,11 +77,19 @@ type cameraPosOptions = overlayOptions & {
 type mousePos = overlayOptions & {
   mouse: Eclipse.Mouse | null,
   fontStyle?: string,
-  x?: boolean,
-  y?: boolean,
+  showX?: boolean,
+  showY?: boolean,
+}
+type gridIndex = overlayOptions & {
+  mouse: Eclipse.Mouse | null,
+  grid: Grid,
+  fontStyle?: string,
+  showX?: boolean,
+  showY?: boolean,
 }
 
 function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
+  // Camera Position
   if(options.cameraPos && options.cameraPos.enabled) {
     ctx.font = options.cameraPos.fontStyle ?? 'courier 100px'
     ctx.fillStyle = options.cameraPos.color.toString()
@@ -85,13 +99,14 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
     if(options.cameraPos.camZoom ?? true) text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom} `)
     ctx.fillText(text, options.cameraPos.position.x, options.cameraPos.position.y)
   }
+  // Global Mouse Position
   if(options.globalMousePos && options.globalMousePos.enabled) {
     ctx.font = options.globalMousePos.fontStyle ?? 'courier 100px'
     ctx.fillStyle = options.globalMousePos.color.toString()
     if(options.globalMousePos.mouse !== null) {
       let text = ''
-      if(options.globalMousePos.x ?? true) text = text.concat(`globalMouseX: ${options.globalMousePos.mouse.x + mainCam.x} `)
-      if(options.globalMousePos.y ?? true) text = text.concat(`globalMouseY: ${options.globalMousePos.mouse.y + mainCam.y} `)
+      if(options.globalMousePos.showX ?? true) text = text.concat(`globalMouseX: ${Math.round((options.globalMousePos.mouse.x + mainCam.x) / options.globalMousePos.cam.zoom)} `)
+      if(options.globalMousePos.showY ?? true) text = text.concat(`globalMouseY: ${Math.round((options.globalMousePos.mouse.y + mainCam.y) / options.globalMousePos.cam.zoom)} `)
       ctx.fillText(text, options.globalMousePos.position.x, options.globalMousePos.position.y)
     } else {
       ctx.fillText(
@@ -101,13 +116,14 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
       )
     }
   }
+  // Relative Mouse Position
   if(options.relativeMousePos && options.relativeMousePos.enabled) {
     ctx.font = options.relativeMousePos.fontStyle ?? 'courier 100px'
     ctx.fillStyle = options.relativeMousePos.color.toString()
     if(options.relativeMousePos.mouse !== null) {
       let text = ''
-      if(options.relativeMousePos.x ?? true) text = text.concat(`mouseX: ${options.relativeMousePos.mouse.x + mainCam.x} `)
-      if(options.relativeMousePos.y ?? true) text = text.concat(`mouseY: ${options.relativeMousePos.mouse.y + mainCam.y} `)
+      if(options.relativeMousePos.showX ?? true) text = text.concat(`mouseX: ${Math.round((options.relativeMousePos.mouse.x) / options.relativeMousePos.cam.zoom)} `)
+      if(options.relativeMousePos.showY ?? true) text = text.concat(`mouseY: ${Math.round((options.relativeMousePos.mouse.y) / options.relativeMousePos.cam.zoom)} `)
       ctx.fillText(text, options.relativeMousePos.position.x, options.relativeMousePos.position.y)
     } else {
       ctx.fillText(
@@ -116,6 +132,31 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
         options.relativeMousePos.position.y
       )
     }
+  }
+  // Grid Index
+  if(options.gridIndex && options.gridIndex.enabled) {
+    ctx.font = options.gridIndex.fontStyle ?? 'courier 100px'
+    ctx.fillStyle = options.gridIndex.color.toString()
+    if(options.gridIndex.mouse !== null) {
+      let text = ''
+      if(options.gridIndex.showX ?? true) text = text.concat(`gridX: ${Math.floor((options.gridIndex.mouse.x + mainCam.x) / options.gridIndex.cam.zoom / options.gridIndex.grid.cellSize)} `)
+      if(options.gridIndex.showY ?? true) text = text.concat(`gridY: ${Math.floor((options.gridIndex.mouse.y + mainCam.y) / options.gridIndex.cam.zoom / options.gridIndex.grid.cellSize)} `)
+      ctx.fillText(text, options.gridIndex.position.x, options.gridIndex.position.y)
+    } else {
+      ctx.fillText(
+        `Failed to get mouse`, 
+        options.gridIndex.position.x, 
+        options.gridIndex.position.y
+      )
+    }
+  }
+}
+
+function fillNonEmptyGridCells(ctx: CanvasRenderingContext2D, grid: Grid, color: Eclipse.Color) {
+  for(const cell of grid.cells) {
+    const pos = Eclipse.Vector2.create(cell[0])
+    ctx.fillStyle = color.toString()
+    ctx.fillRect(pos.x * grid.cellSize, pos.y * grid.cellSize, grid.cellSize, grid.cellSize)
   }
 }
 

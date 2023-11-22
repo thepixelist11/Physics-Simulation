@@ -1,29 +1,38 @@
 require('./eclipse')
 class Point {
+  static idCounter = 0
+
   // Standard properties
   #position = Eclipse.Vector2.ZERO
+  #lastPosition: null | Eclipse.Vector2 = null
   #radius = 5
   #color = Eclipse.Color.BLACK
   #mass = 1
+  #isStatic = false
+  #identifier
 
   // Initial properties
   // Standard properties will be set to these on reset
-  #lastPosition = Eclipse.Vector2.ZERO
   #initialPosition
   #initialMass
   #initialRadius
   #initialColor
-  constructor(position: Eclipse.Vector2, mass: number, radius = 5, color = Eclipse.Color.BLACK) {
+  #initialIsStatic
+  constructor(position: Eclipse.Vector2, mass: number, radius = 5, color = Eclipse.Color.BLACK, isStatic = false) {
     this.position = position
     this.mass = mass
     this.radius = radius
     this.color = color
-    this.lastPosition = this.position
+    this.lastPosition = position
+    this.isStatic = isStatic
 
     this.#initialColor = this.#color
     this.#initialMass = this.#mass
     this.#initialPosition = this.#position
     this.#initialRadius = this.#radius
+    this.#initialIsStatic = this.#isStatic
+
+    this.#identifier = Point.idCounter++
   }
   get position() {
     return this.#position
@@ -40,7 +49,7 @@ class Point {
   }
   set x(x) {
     if (typeof x === 'number') {
-      this.#position = new Eclipse.Vector2(x, this.#position.x)
+      this.#position = new Eclipse.Vector2(x, this.#position.y)
     } else {
       throw new Error(`x (${x}) is not of type number`)
     }
@@ -50,7 +59,7 @@ class Point {
   }
   set y(y) {
     if (typeof y === 'number') {
-      this.#position = new Eclipse.Vector2(this.#position.y, y)
+      this.#position = new Eclipse.Vector2(this.#position.x, y)
     } else {
       throw new Error(`y (${y}) is not of type number`)
     }
@@ -89,11 +98,19 @@ class Point {
     return this.#lastPosition
   }
   set lastPosition(newLastPosition) {
-    if (newLastPosition instanceof Eclipse.Vector2) {
-      this.#lastPosition = newLastPosition
-    } else {
-      throw new Error(`newLastPosition (${newLastPosition}) is not an instance of Vector2`)
-    }
+    this.#lastPosition = newLastPosition
+  }
+  get isStatic() {
+    return this.#isStatic
+  }
+  set isStatic(isStatic: boolean) {
+    this.#isStatic = isStatic
+  }
+  get velocity() {
+    return this.#position.getSub(this.#lastPosition ?? Eclipse.Vector2.ZERO)
+  }
+  get identifier() {
+    return this.#identifier
   }
 
   get rect() {
@@ -112,10 +129,15 @@ class Point {
   // Sets the standard properties to the initial properties, resetting the point
   reset() {
     this.position = this.#initialPosition
-    this.lastPosition = this.#position
+    this.lastPosition = this.position
     this.mass = this.#initialMass
     this.color = this.#initialColor
     this.radius = this.#initialRadius
+    this.#isStatic = this.#initialIsStatic
+  }
+
+  isSameAs(other: Point) {
+    return this.identifier === other.identifier
   }
 }
 
