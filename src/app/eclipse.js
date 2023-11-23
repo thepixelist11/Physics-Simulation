@@ -1123,6 +1123,12 @@ var Eclipse;
             this.mmb = false;
             this.rmb = false;
             this.onmove = () => { };
+            this.onlmbdown = () => { };
+            this.onlmbup = () => { };
+            this.onrmbdown = () => { };
+            this.onrmbup = () => { };
+            this.onmmbdown = () => { };
+            this.onmmbup = () => { };
             doc.onmousemove = evt => {
                 Object.defineProperty(this, 'x', {
                     value: evt.clientX,
@@ -1141,16 +1147,19 @@ var Eclipse;
                         Object.defineProperty(this, 'lmb', {
                             value: true,
                         });
+                        this.onlmbdown();
                         break;
                     case 1:
                         Object.defineProperty(this, 'mmb', {
                             value: true,
                         });
+                        this.onmmbdown();
                         break;
                     case 2:
                         Object.defineProperty(this, 'rmb', {
                             value: true,
                         });
+                        this.onrmbdown();
                         break;
                 }
             };
@@ -1160,16 +1169,19 @@ var Eclipse;
                         Object.defineProperty(this, 'lmb', {
                             value: false,
                         });
+                        this.onlmbup();
                         break;
                     case 1:
                         Object.defineProperty(this, 'mmb', {
                             value: false,
                         });
+                        this.onmmbup();
                         break;
                     case 2:
                         Object.defineProperty(this, 'rmb', {
                             value: false,
                         });
+                        this.onrmbup();
                         break;
                 }
             };

@@ -1222,8 +1222,14 @@ namespace Eclipse {
     readonly lmb: boolean = false
     readonly mmb: boolean = false
     readonly rmb: boolean = false
-
+    
     onmove: Function = () => {}
+    onlmbdown: Function = () => {}
+    onlmbup: Function = () => {}
+    onrmbdown: Function = () => {}
+    onrmbup: Function = () => {}
+    onmmbdown: Function = () => {}
+    onmmbup: Function = () => {}
 
     constructor(doc: Document) {
       doc.onmousemove = evt => {
@@ -1244,16 +1250,19 @@ namespace Eclipse {
             Object.defineProperty(this, 'lmb', {
               value: true,
             })
+            this.onlmbdown()
             break
           case 1:
             Object.defineProperty(this, 'mmb', {
               value: true,
             })
+            this.onmmbdown()
             break
           case 2:
             Object.defineProperty(this, 'rmb', {
               value: true,
             })
+            this.onrmbdown()
             break
         }
       }
@@ -1263,16 +1272,19 @@ namespace Eclipse {
             Object.defineProperty(this, 'lmb', {
               value: false,
             })
+            this.onlmbup()
             break
           case 1:
             Object.defineProperty(this, 'mmb', {
               value: false,
             })
+            this.onmmbup()
             break
           case 2:
             Object.defineProperty(this, 'rmb', {
               value: false,
             })
+            this.onrmbup()
             break
         }
       }
