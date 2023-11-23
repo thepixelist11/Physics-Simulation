@@ -91,10 +91,11 @@ let loopPhysics = false;
 let time = 0;
 // Time in ms to pass per frame. Lower number reduces performance, but increases accuracy. 
 // Do not go below 0.01667 or results will be inaccurate due to numerical instability of floats
-const timeStep = 166.7;
+let timeStep = 16.67;
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 16.67;
 function startPhysics() {
+    timeStep = Eclipse.clamp(timeStep, 0.01667, 16.67);
     time = 0;
     loopPhysics = true;
     // Main loop

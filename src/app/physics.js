@@ -31,14 +31,14 @@ function handleCollisions(grid, checkCount = 1) {
         let pointIndex = 0;
         for (const cells of grid.pointsCells) {
             // Iterates through the points of the cell
-            for (let i = 0; i < cells[1].length; i++) {
-                let points = grid.cells.get(cells[1][i]);
+            for (let cellIndex = 0; cellIndex < cells[1].length; cellIndex++) {
+                let points = grid.cells.get(cells[1][cellIndex]);
                 // True if there is another point in the cell
                 if (((_a = points === null || points === void 0 ? void 0 : points.length) !== null && _a !== void 0 ? _a : 0) >= 2) {
                     if (points) {
                         const p = grid.points[pointIndex];
-                        for (let i = 0; i < points.length; i++) {
-                            const other = points[i];
+                        for (let pointIndex = 0; pointIndex < points.length; pointIndex++) {
+                            const other = points[pointIndex];
                             if (!(p.isSameAs(other))) {
                                 // Check if the points are overlapping
                                 const dist = p.position.dist(other.position);
