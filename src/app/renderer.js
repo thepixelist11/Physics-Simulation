@@ -20,12 +20,21 @@ ipcRenderer.on('newSize', (evt, val) => {
 });
 // Initializes main grid
 let mainGrid = new Grid([
-    new Point(new Eclipse.Vector2(-50, 0), 1, 30, Eclipse.Color.RED, false),
-    new Point(new Eclipse.Vector2(0, 300), 1, 80, Eclipse.Color.BLUE, true),
-    new Point(new Eclipse.Vector2(250, 470), 1, 80, Eclipse.Color.GREEN, true),
-    new Point(new Eclipse.Vector2(-20, 700), 1, 80, Eclipse.Color.BLUE, true),
-    new Point(new Eclipse.Vector2(170, 880), 1, 80, Eclipse.Color.GREEN, true),
+    new Point(new Eclipse.Vector2(0, 0), 1, 30, Eclipse.Color.RED, false),
+    new Point(new Eclipse.Vector2(0, -500), 1, 70, Eclipse.Color.GREEN, false),
+    new Point(new Eclipse.Vector2(10, -100), 1, 30, Eclipse.Color.RED, false),
+    new Point(new Eclipse.Vector2(-60, -200), 1, 30, Eclipse.Color.RED, false),
+    new Point(new Eclipse.Vector2(-200, 400), 1, 200, Eclipse.Color.BLUE, true),
+    new Point(new Eclipse.Vector2(200, 400), 1, 200, Eclipse.Color.BLUE, true),
 ], 100);
+// generatePointGrid(500, 1500, 30, Eclipse.Color.BLUE, 200, 200, 40, 1200)
+function generatePointGrid(width, height, radii, color, spacingX, spacingY, offsetX, offsetY, isStatic = true) {
+    for (let i = -width / 2 + offsetX; i <= width / 2 + offsetX; i += spacingX) {
+        for (let j = -height / 2 + offsetY; j <= height / 2 + offsetY; j += spacingY) {
+            mainGrid.addPoint(new Point(new Eclipse.Vector2(i, j), 1, radii, color, isStatic));
+        }
+    }
+}
 // Number of pixels per metre
 const pxPerM = 100;
 // Initialize main camera
@@ -82,7 +91,7 @@ let loopPhysics = false;
 let time = 0;
 // Time in ms to pass per frame. Lower number reduces performance, but increases accuracy. 
 // Do not go below 0.01667 or results will be inaccurate due to numerical instability of floats
-const timeStep = 16.67;
+const timeStep = 166.7;
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 16.67;
 function startPhysics() {

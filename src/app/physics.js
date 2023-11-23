@@ -66,7 +66,7 @@ function handleCollisions(grid, checkCount = 1) {
                                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                                         (p.radius + other.radius - Math.sqrt((Math.pow((other.x - p.x), 2)) + (Math.pow((other.y - p.y), 2))))) /
                                         (p.isStatic ? 1 : 2) * (other.x <= p.x ? 1 : -1));
-                                    if (!p.isStatic && !arrayContainsPoint(pointsHandled, p))
+                                    if (!p.isStatic /* && !arrayContainsPoint(pointsHandled, p)*/)
                                         pNewPosition.add(pDisplacement);
                                     if (!other.isStatic && !arrayContainsPoint(pointsHandled, other))
                                         otherNewPosition.sub(otherDisplacement);
