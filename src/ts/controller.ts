@@ -7,6 +7,8 @@ require('./grid')
 class Controller {
   keyboard
   mouse
+  pointPlacementRadius = 0
+  pointPlacementColor = Eclipse.Color.BLACK
   constructor(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, doc: Document) {
     this.keyboard = new Eclipse.KeyBoard()
     this.mouse = new Eclipse.Mouse(doc)
@@ -14,19 +16,19 @@ class Controller {
       // Movement of the camera
       if(this.keyboard.KeyD) {
         camera.translate(5, 0)
-        drawScene(grid, ctx, camera, Config.uiConfig)
+        drawScene(grid, ctx, camera, ConfigObject.uiConfig)
       }
       if(this.keyboard.KeyA) {
         camera.translate(-5, 0)
-        drawScene(grid, ctx, camera, Config.uiConfig)
+        drawScene(grid, ctx, camera, ConfigObject.uiConfig)
       }
       if(this.keyboard.KeyW) {
         camera.translate(0, -5)
-        drawScene(grid, ctx, camera, Config.uiConfig)
+        drawScene(grid, ctx, camera, ConfigObject.uiConfig)
       }
       if(this.keyboard.KeyS) {
         camera.translate(0, 5)
-        drawScene(grid, ctx, camera, Config.uiConfig)
+        drawScene(grid, ctx, camera, ConfigObject.uiConfig)
       }
     }, 16.67)
   }

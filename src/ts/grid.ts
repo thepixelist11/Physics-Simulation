@@ -38,8 +38,34 @@ class Grid {
   }
 
   addPoint(p: Point) {
-    this.#points.push(p)
-    this.updateCells()
+    if(this.containsPoint(p) === -1) {
+      this.#points.push(p)  
+      this.updateCells()
+      return true
+    }
+    return false
+  }
+
+  removePoint(p: Point): boolean
+  removePoint(p: number): boolean
+  removePoint(p: Point | number) {
+    if(p instanceof Point) {
+      const index = this.containsPoint(p)
+      if(index !== -1) {
+        this.points.splice(index, 1)
+        this.updateCells()
+        return true
+      } else {
+        return false
+      }
+    } else {
+      if(this.points.splice(p, 1)) {
+        this.updateCells()
+        return true
+      } else {
+        return false
+      }
+    }
   }
 
   updateCells() {
@@ -84,6 +110,12 @@ class Grid {
     this.#pointsCells = new Map<string, Array<string>>()
   }
 
+  clearAllPoints() {
+    this.#cells = new Map<string, Array<Point>>()
+    this.#pointsCells = new Map<string, Array<string>>()
+    this.#points = Array<Point>()
+  }
+
   #possibleCellIndicies(p: Point): cellPositions
   #possibleCellIndicies(id: number): cellPositions
   #possibleCellIndicies(point: number | Point) {
@@ -105,6 +137,17 @@ class Grid {
               Math.floor(p.rect.bottom / this.#cellSize) - 0 : 
               Math.floor(p.rect.bottom / this.#cellSize),
     }
+  }
+
+  /**
+   * Returns -1 if the grid does not contain the point specified.
+   * Returns the index of the first identical point otherwise. 
+   */
+  containsPoint(p: Point) {
+    for(let i = 0; i < this.#points.length; i++) {
+      if(this.#points[i].isSameAs(p)) return i
+    }
+    return -1
   }
 }
 

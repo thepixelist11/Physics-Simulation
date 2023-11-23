@@ -110,6 +110,19 @@ function drawOverlay(ctx, options) {
             ctx.fillText(`Failed to get mouse`, options.gridIndex.position.x, options.gridIndex.position.y);
         }
     }
+    // Mouse Cursor
+    if (options.cursorDisplay && options.cursorDisplay.enabled) {
+        switch (options.cursorDisplay.type) {
+            case 'pointPlace':
+                ctx.globalAlpha = options.cursorDisplay.opacity;
+                options.cursorDisplay.controller.mouse.x;
+                options.cursorDisplay.controller.mouse.y;
+                Eclipse.drawPoint(ctx, options.cursorDisplay.controller.mouse.x, options.cursorDisplay.controller.mouse.y, options.cursorDisplay.controller.pointPlacementRadius
+                    * options.cursorDisplay.cam.zoom, options.cursorDisplay.controller.pointPlacementColor);
+                ctx.globalAlpha = 1;
+                break;
+        }
+    }
 }
 function fillNonEmptyGridCells(ctx, grid, color) {
     for (const cell of grid.cells) {

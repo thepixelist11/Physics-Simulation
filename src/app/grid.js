@@ -38,8 +38,34 @@ class Grid {
         return __classPrivateFieldGet(this, _Grid_pointsCells, "f");
     }
     addPoint(p) {
-        __classPrivateFieldGet(this, _Grid_points, "f").push(p);
-        this.updateCells();
+        if (this.containsPoint(p) === -1) {
+            __classPrivateFieldGet(this, _Grid_points, "f").push(p);
+            this.updateCells();
+            return true;
+        }
+        return false;
+    }
+    removePoint(p) {
+        if (p instanceof Point) {
+            const index = this.containsPoint(p);
+            if (index !== -1) {
+                this.points.splice(index, 1);
+                this.updateCells();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            if (this.points.splice(p, 1)) {
+                this.updateCells();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
     }
     updateCells() {
         // Clear cells to prevent adding points multiple times
@@ -79,6 +105,22 @@ class Grid {
     clearCells() {
         __classPrivateFieldSet(this, _Grid_cells, new Map(), "f");
         __classPrivateFieldSet(this, _Grid_pointsCells, new Map(), "f");
+    }
+    clearAllPoints() {
+        __classPrivateFieldSet(this, _Grid_cells, new Map(), "f");
+        __classPrivateFieldSet(this, _Grid_pointsCells, new Map(), "f");
+        __classPrivateFieldSet(this, _Grid_points, Array(), "f");
+    }
+    /**
+     * Returns -1 if the grid does not contain the point specified.
+     * Returns the index of the first identical point otherwise.
+     */
+    containsPoint(p) {
+        for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
+            if (__classPrivateFieldGet(this, _Grid_points, "f")[i].isSameAs(p))
+                return i;
+        }
+        return -1;
     }
 }
 _Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new WeakMap(), _Grid_pointsCells = new WeakMap(), _Grid_instances = new WeakSet(), _Grid_possibleCellIndicies = function _Grid_possibleCellIndicies(point) {

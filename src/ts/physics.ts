@@ -71,7 +71,7 @@ function handleCollisions(grid: Grid, checkCount = 1) {
                     (p.isStatic ? 1 : 2) * (other.x <= p.x ? 1 : -1)
                   )
                   
-                  if(!p.isStatic/* && !arrayContainsPoint(pointsHandled, p)*/) pNewPosition.add(pDisplacement)
+                  if(!p.isStatic) pNewPosition.add(pDisplacement)
                   if(!other.isStatic && !arrayContainsPoint(pointsHandled, other)) otherNewPosition.sub(otherDisplacement)
 
                   p.position = pNewPosition

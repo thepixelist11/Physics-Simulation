@@ -137,7 +137,13 @@ class Point {
   }
 
   isSameAs(other: Point) {
-    return this.identifier === other.identifier
+    if(
+      this.x === other.x &&
+      this.y === other.y &&
+      this.radius === other.radius &&
+      this.mass === other.mass
+    ) return true 
+    else return false
   }
 }
 

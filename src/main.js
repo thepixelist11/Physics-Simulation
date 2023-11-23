@@ -17,6 +17,18 @@ const createWindow = () => {
       ],
     },
     {
+      label: 'Edit',
+      submenu: [
+        {
+          label: 'Clear All Points',
+          accelerator: 'CmdOrCtrl+Shift+Delete',
+          click: () => {
+            win.webContents.send('clearAllPoints', null)
+          },
+        },
+      ],
+    },
+    {
       label: 'Dev',
       submenu: [
         {

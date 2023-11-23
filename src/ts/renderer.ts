@@ -17,19 +17,19 @@ canvas.height = document.body.clientHeight
 ipcRenderer.on('newSize', (evt: Event, val: any) => {
   canvas.width = val[0]
   canvas.height = val[1]
-  drawScene(mainGrid, ctx, mainCam, Config.uiConfig)
+  drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+})
+
+// Clears all points
+ipcRenderer.on('clearAllPoints', (evt: Event, val: any) => {
+  mainGrid.clearAllPoints()
+  drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
 })
 
 // Initializes main grid
 let mainGrid = new Grid([
-  new Point(new Eclipse.Vector2(0, 0), 1, 30, Eclipse.Color.RED, false),
-  new Point(new Eclipse.Vector2(0, -500), 1, 70, Eclipse.Color.GREEN, false),
-  new Point(new Eclipse.Vector2(10, -100), 1, 30, Eclipse.Color.RED, false),
-  new Point(new Eclipse.Vector2(-60, -200), 1, 30, Eclipse.Color.RED, false),
-  new Point(new Eclipse.Vector2(-200, 400), 1, 200, Eclipse.Color.BLUE, true),
-  new Point(new Eclipse.Vector2(200, 400), 1, 200, Eclipse.Color.BLUE, true),
+  new Point(new Eclipse.Vector2(0, 400), 1, 200, Eclipse.Color.BLUE, true),
 ], 100)
-// generatePointGrid(500, 1500, 30, Eclipse.Color.BLUE, 200, 200, 40, 1200)
 
 function generatePointGrid(width: number, height: number, radii: number, color: Eclipse.Color, spacingX: number, spacingY: number, offsetX: number, offsetY: number, isStatic = true) {
   for(let i = -width / 2 + offsetX; i <= width / 2 + offsetX; i += spacingX) {
@@ -47,11 +47,17 @@ let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.2)
 
 const controller = new Controller(mainGrid, ctx, mainCam, document)
 controller.mouse.onmove = () => {
-  drawScene(mainGrid, ctx, mainCam, Config.uiConfig)
+  drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+}
+controller.pointPlacementRadius = 20
+controller.pointPlacementColor = Eclipse.Color.BLACK
+
+type ConfigType = {
+  uiConfig: Overlay
 }
 
 // Configuration for simulation
-const Config = {
+const ConfigObject: ConfigType = {
   uiConfig: {
     cameraPos: {
       enabled: true,
@@ -83,6 +89,14 @@ const Config = {
       mouse: controller.mouse,
       grid: mainGrid,
       cam: mainCam,
+    },
+    cursorDisplay: {
+      enabled: true,
+      grid: mainGrid,
+      controller: controller,
+      type: 'pointPlace',
+      opacity: 0.5,
+      cam: mainCam
     }
   }
 }
@@ -103,6 +117,8 @@ let time = 0
 let timeStep = 16.67
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 16.67
+
+// Main physics loop
 function startPhysics() {
   timeStep = Eclipse.clamp(timeStep, 0.01667, 16.67)
   time = 0
@@ -126,8 +142,22 @@ function startPhysics() {
       // Increment time
       time += timeStep
     }
-    drawScene(mainGrid, ctx, mainCam, Config.uiConfig)
+    drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
   }, FPS)
+}
+
+// Setup events and loops
+controller.mouse.onlmbdown = () => {
+  switch(loopPhysics) {
+    case false:
+      let p = new Point(new Eclipse.Vector2(
+        (controller.mouse.x + mainCam.x) / mainCam.zoom,
+        (controller.mouse.y + mainCam.y) / mainCam.zoom,
+      ), 1, 20, Eclipse.Color.BLACK, false)
+      mainGrid.addPoint(p)
+      drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+      break
+  }
 }
 
 function stopPhysics() {
@@ -135,4 +165,4 @@ function stopPhysics() {
   resetPoints()
 }
 
-drawScene(mainGrid, ctx, mainCam, Config.uiConfig)
+drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)

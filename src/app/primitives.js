@@ -148,7 +148,13 @@ class Point {
         __classPrivateFieldSet(this, _Point_isStatic, __classPrivateFieldGet(this, _Point_initialIsStatic, "f"), "f");
     }
     isSameAs(other) {
-        return this.identifier === other.identifier;
+        if (this.x === other.x &&
+            this.y === other.y &&
+            this.radius === other.radius &&
+            this.mass === other.mass)
+            return true;
+        else
+            return false;
     }
 }
 _Point_position = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_isStatic = new WeakMap(), _Point_identifier = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap(), _Point_initialIsStatic = new WeakMap();

@@ -61,6 +61,7 @@ type Overlay = {
   globalMousePos?: mousePos,
   relativeMousePos?: mousePos,
   gridIndex?: gridIndex,
+  cursorDisplay?: cursorDisplay,
 }
 type overlayOptions = {
   position: Eclipse.Vector2,
@@ -86,6 +87,14 @@ type gridIndex = overlayOptions & {
   fontStyle?: string,
   showX?: boolean,
   showY?: boolean,
+}
+type cursorDisplay = {
+  grid: Grid,
+  controller: Controller,
+  type: 'pointPlace' | 'pointRemove' | 'default'
+  opacity: number,
+  enabled: boolean,
+  cam: Camera,
 }
 
 function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
@@ -148,6 +157,25 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
         options.gridIndex.position.x, 
         options.gridIndex.position.y
       )
+    }
+  }
+  // Mouse Cursor
+  if(options.cursorDisplay && options.cursorDisplay.enabled) {
+    switch(options.cursorDisplay.type) {
+      case 'pointPlace':
+        ctx.globalAlpha = options.cursorDisplay.opacity
+        options.cursorDisplay.controller.mouse.x
+        options.cursorDisplay.controller.mouse.y
+        Eclipse.drawPoint(
+          ctx, 
+          options.cursorDisplay.controller.mouse.x, 
+          options.cursorDisplay.controller.mouse.y, 
+          options.cursorDisplay.controller.pointPlacementRadius
+          * options.cursorDisplay.cam.zoom, 
+          options.cursorDisplay.controller.pointPlacementColor
+        )
+        ctx.globalAlpha = 1
+        break
     }
   }
 }
