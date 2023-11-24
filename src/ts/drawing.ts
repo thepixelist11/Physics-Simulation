@@ -63,6 +63,7 @@ type Overlay = {
   gridIndex?: gridIndex,
   cursorDisplay?: cursorDisplay,
   cellSize?: number,
+  entityDisplay?: entityDisplay,
 }
 type overlayOptions = {
   position: Eclipse.Vector2,
@@ -96,6 +97,19 @@ type cursorDisplay = {
   opacity: number,
   enabled: boolean,
   cam: Camera,
+}
+type entityDisplay = {
+  grid: Grid,
+  showTotal?: boolean,
+  showDynamic?: boolean,
+  showStatic?: boolean,
+  fontStyle?: string,
+  enabled: boolean,
+  staticColor: Eclipse.Color,
+  dynamicColor: Eclipse.Color,
+  totalColor: Eclipse.Color,
+  position: Eclipse.Vector2,
+  spacingBetweenTotals?: number,
 }
 
 function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
@@ -173,10 +187,32 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
           options.cursorDisplay.controller.mouse.y, 
           options.cursorDisplay.controller.pointPlacementRadius
           * options.cursorDisplay.cam.zoom, 
-          options.cursorDisplay.controller.pointPlacementColor
+          options.cursorDisplay.controller.pointDynamicPlacementColor
         )
         ctx.globalAlpha = 1
         break
+    }
+  }
+  // Entity Display
+  if(options.entityDisplay && options.entityDisplay.enabled) {
+    ctx.font = options.entityDisplay.fontStyle ?? 'courier 100px'
+    let textX = parseInt(JSON.parse(JSON.stringify(options.entityDisplay.position.x)))
+    if(options.entityDisplay.showTotal ?? true) {
+      ctx.fillStyle = options.entityDisplay.totalColor.toString()
+      let text = `Total Entities: ${options.entityDisplay.grid.points.length} `
+      ctx.fillText(text, textX, options.entityDisplay.position.y)
+      textX += ctx.measureText(text).width + (options.entityDisplay.spacingBetweenTotals ?? 0)
+    }
+    if(options.entityDisplay.showDynamic ?? true) {
+      ctx.fillStyle = options.entityDisplay.dynamicColor.toString()
+      let text = `Dynamic Entities: ${options.entityDisplay.grid.totalDynamic} `
+      ctx.fillText(text, textX, options.entityDisplay.position.y)
+      textX += ctx.measureText(text).width + (options.entityDisplay.spacingBetweenTotals ?? 0)
+    }
+    if(options.entityDisplay.showStatic ?? true) {
+      ctx.fillStyle = options.entityDisplay.staticColor.toString()
+      let text = `Static Entities: ${options.entityDisplay.grid.totalStatic} `
+      ctx.fillText(text, textX, options.entityDisplay.position.y)
     }
   }
 }

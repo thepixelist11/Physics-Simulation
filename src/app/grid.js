@@ -136,6 +136,22 @@ class Grid {
         }
         return -1;
     }
+    get totalDynamic() {
+        let total = 0;
+        for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
+            if (!__classPrivateFieldGet(this, _Grid_points, "f")[i].isStatic)
+                total++;
+        }
+        return total;
+    }
+    get totalStatic() {
+        let total = 0;
+        for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
+            if (__classPrivateFieldGet(this, _Grid_points, "f")[i].isStatic)
+                total++;
+        }
+        return total;
+    }
 }
 _Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new WeakMap(), _Grid_pointsCells = new WeakMap(), _Grid_instances = new WeakSet(), _Grid_possibleCellIndicies = function _Grid_possibleCellIndicies(point) {
     let p;

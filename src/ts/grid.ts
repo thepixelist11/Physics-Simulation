@@ -163,6 +163,22 @@ class Grid {
     }
     return -1
   }
+
+  get totalDynamic() {
+    let total = 0
+    for(let i = 0; i < this.#points.length; i++) {
+      if(!this.#points[i].isStatic) total++
+    }
+    return total
+  }
+
+  get totalStatic() {
+    let total = 0
+    for(let i = 0; i < this.#points.length; i++) {
+      if(this.#points[i].isStatic) total++
+    }
+    return total
+  }
 }
 
 module.exports = {

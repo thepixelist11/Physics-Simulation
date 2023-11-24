@@ -7,8 +7,9 @@ require('./grid');
 class Controller {
     constructor(grid, ctx, camera, doc) {
         this.pointPlacementRadius = 0;
-        this.pointPlacementColor = Eclipse.Color.BLACK;
-        this.keyboard = new Eclipse.KeyBoard();
+        this.pointDynamicPlacementColor = Eclipse.Color.BLACK;
+        this.pointStaticPlacementColor = Eclipse.Color.BLACK;
+        this.keyboard = new Eclipse.KeyBoard(doc);
         this.mouse = new Eclipse.Mouse(doc);
         setInterval(() => {
             // Movement of the camera

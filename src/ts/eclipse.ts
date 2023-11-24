@@ -1,4 +1,8 @@
 namespace Eclipse {
+
+  // For iterable types
+  type UnionKeys<T> = T extends T ? keyof T : never
+
   // ----- MATH FUNCTIONS AND CLASSES
   export const PI = Math.PI
   export const TAU = PI * 2
@@ -34,7 +38,13 @@ namespace Eclipse {
    * @param {number} radius The radius of the point. Defaults to 1
    */
   export function drawPoint(ctx: CanvasRenderingContext2D, position: number[], radius: number, color: Color): void // Overload 2
-  export function drawPoint(ctx: CanvasRenderingContext2D, x: number | Vector2 | number[], y?: number | Color, radius: number | Color = 1, color: Color = Color.BLACK) {
+  export function drawPoint(
+    ctx: CanvasRenderingContext2D,
+    x: number | Vector2 | number[],
+    y?: number | Color,
+    radius: number | Color = 1,
+    color: Color = Color.BLACK
+  ) {
     if (typeof x === 'number' && typeof y === 'number' && !(radius instanceof Color)) {
       // Overload 0
       ctx.fillStyle = color.toString()
@@ -1222,7 +1232,7 @@ namespace Eclipse {
     readonly lmb: boolean = false
     readonly mmb: boolean = false
     readonly rmb: boolean = false
-    
+
     onmove: Function = () => {}
     onlmbdown: Function = () => {}
     onlmbup: Function = () => {}
@@ -1293,9 +1303,9 @@ namespace Eclipse {
       }
       doc.onwheel = evt => {
         this.onscroll(evt)
-        if(evt.deltaY > 0) {
+        if (evt.deltaY > 0) {
           this.onscrolldown(evt)
-        } else if(evt.deltaY > 0) {
+        } else if (evt.deltaY > 0) {
           this.onscrollup(evt)
         }
       }
@@ -1373,6 +1383,112 @@ namespace Eclipse {
       document.exitPointerLock()
     }
   }
+
+  export type Key =
+    | 'KeyA'
+    | 'KeyB'
+    | 'KeyC'
+    | 'KeyD'
+    | 'KeyE'
+    | 'KeyF'
+    | 'KeyG'
+    | 'KeyH'
+    | 'KeyI'
+    | 'KeyJ'
+    | 'KeyK'
+    | 'KeyL'
+    | 'KeyM'
+    | 'KeyN'
+    | 'KeyO'
+    | 'KeyP'
+    | 'KeyQ'
+    | 'KeyR'
+    | 'KeyS'
+    | 'KeyT'
+    | 'KeyU'
+    | 'KeyV'
+    | 'KeyW'
+    | 'KeyX'
+    | 'KeyY'
+    | 'KeyZ'
+    | 'Digit1'
+    | 'Digit2'
+    | 'Digit3'
+    | 'Digit4'
+    | 'Digit5'
+    | 'Digit6'
+    | 'Digit7'
+    | 'Digit8'
+    | 'Digit9'
+    | 'Digit0'
+    | 'Space'
+    | 'ArrowUp'
+    | 'ArrowDown'
+    | 'ArrowLeft'
+    | 'ArrowRight'
+    | 'Enter'
+    | 'Backspace'
+    | 'Tab'
+    | 'ShiftLeft'
+    | 'ControlLeft'
+    | 'AltLeft'
+    | 'MetaLeft'
+    | 'ShiftRight'
+    | 'ControlRight'
+    | 'AltRight'
+    | 'MetaRight'
+    | 'Escape'
+    | 'F1'
+    | 'F2'
+    | 'F3'
+    | 'F4'
+    | 'F5'
+    | 'F6'
+    | 'F7'
+    | 'F8'
+    | 'F9'
+    | 'F10'
+    | 'F11'
+    | 'F12'
+    | 'PrintScreen'
+    | 'ScrollLock'
+    | 'Pause'
+    | 'Backquote'
+    | 'Minus'
+    | 'Equal'
+    | 'BracketLeft'
+    | 'BracketRight'
+    | 'Semicolon'
+    | 'Quote'
+    | 'Backslash'
+    | 'Comma'
+    | 'Period'
+    | 'Slash'
+    | 'Insert'
+    | 'Delete'
+    | 'Home'
+    | 'End'
+    | 'PageUp'
+    | 'PageDown'
+    | 'CapsLock'
+    | 'ContextMenu'
+    | 'Numpad0'
+    | 'Numpad1'
+    | 'Numpad2'
+    | 'Numpad3'
+    | 'Numpad4'
+    | 'Numpad5'
+    | 'Numpad6'
+    | 'Numpad7'
+    | 'Numpad8'
+    | 'Numpad9'
+    | 'NumpadMultiply'
+    | 'NumpadAdd'
+    | 'NumpadSubtract'
+    | 'NumpadDecimal'
+    | 'NumpadDivide'
+    | 'NumpadEnter'
+    | 'NumLock'
 
   export class KeyBoard {
     readonly KeyA: boolean = false
@@ -1479,125 +1595,41 @@ namespace Eclipse {
     readonly NumpadDivide: boolean = false
     readonly NumpadEnter: boolean = false
     readonly NumLock: boolean = false
-    #keyboardCodes = [
-      'KeyA',
-      'KeyB',
-      'KeyC',
-      'KeyD',
-      'KeyE',
-      'KeyF',
-      'KeyG',
-      'KeyH',
-      'KeyI',
-      'KeyJ',
-      'KeyK',
-      'KeyL',
-      'KeyM',
-      'KeyN',
-      'KeyO',
-      'KeyP',
-      'KeyQ',
-      'KeyR',
-      'KeyS',
-      'KeyT',
-      'KeyU',
-      'KeyV',
-      'KeyW',
-      'KeyX',
-      'KeyY',
-      'KeyZ',
-      'Digit1',
-      'Digit2',
-      'Digit3',
-      'Digit4',
-      'Digit5',
-      'Digit6',
-      'Digit7',
-      'Digit8',
-      'Digit9',
-      'Digit0',
-      'Space',
-      'ArrowUp',
-      'ArrowDown',
-      'ArrowLeft',
-      'ArrowRight',
-      'Enter',
-      'Backspace',
-      'Tab',
-      'ShiftLeft',
-      'ControlLeft',
-      'AltLeft',
-      'MetaLeft',
-      'ShiftRight',
-      'ControlRight',
-      'AltRight',
-      'MetaRight',
-      'Escape',
-      'F1',
-      'F2',
-      'F3',
-      'F4',
-      'F5',
-      'F6',
-      'F7',
-      'F8',
-      'F9',
-      'F10',
-      'F11',
-      'F12',
-      'PrintScreen',
-      'ScrollLock',
-      'Pause',
-      'Backquote',
-      'Minus',
-      'Equal',
-      'BracketLeft',
-      'BracketRight',
-      'Semicolon',
-      'Quote',
-      'Backslash',
-      'Comma',
-      'Period',
-      'Slash',
-      'Insert',
-      'Delete',
-      'Home',
-      'End',
-      'PageUp',
-      'PageDown',
-      'CapsLock',
-      'ContextMenu',
-      'Numpad0',
-      'Numpad1',
-      'Numpad2',
-      'Numpad3',
-      'Numpad4',
-      'Numpad5',
-      'Numpad6',
-      'Numpad7',
-      'Numpad8',
-      'Numpad9',
-      'NumpadMultiply',
-      'NumpadAdd',
-      'NumpadSubtract',
-      'NumpadDecimal',
-      'NumpadDivide',
-      'NumpadEnter',
-      'NumLock',
-    ]
+    #keyCodes: Array<Key>
 
-    constructor() {
-      document.onkeydown = evt => {
+    onkeydown: Function = () => {}
+    onkeyup: Function = () => {}
+    onshiftdown: Function = () => {}
+    onshiftup: Function = () => {}
+    onaltup: Function = () => {}
+    onaltdown: Function = () => {}
+    onctrlup: Function = () => {}
+    onctrldown: Function = () => {}
+
+    constructor(doc: Document) {
+      // Make key type iterable for keyCodes array
+      type AllTypeValues = { [K in UnionKeys<Key>]: K };
+      this.#keyCodes = Object.keys({} as AllTypeValues) as Array<Key>
+
+      doc.onkeydown = evt => {
         Object.defineProperty(this, evt.code, {
           value: true,
         })
+        if(evt.code === 'ShiftLeft' || evt.code === 'ShiftRight') this.onshiftdown()
+        if(evt.code === 'ControlLeft' || evt.code === 'ControlRight') this.onctrldown()
+        if(evt.code === 'AltLeft' || evt.code === 'AltRight') this.onaltdown()
+        this.onkeydown(evt.code)
       }
-      document.onkeyup = evt => {
+      doc.onkeyup = evt => {
         Object.defineProperty(this, evt.code, {
           value: false,
         })
+        if(evt.code === 'ShiftLeft' || evt.code === 'ShiftRight') this.onshiftup()
+        if(evt.code === 'ControlLeft' || evt.code === 'ControlRight') this.onctrlup()
+        if(evt.code === 'AltLeft' || evt.code === 'AltRight') this.onaltup()
+        this.onkeyup(evt.code)
       }
-      document.onblur = () => {
+      doc.onblur = () => {
         this.clearKeys()
       }
     }
@@ -1606,8 +1638,8 @@ namespace Eclipse {
      * Clears all the key inputs
      */
     clearKeys(): void {
-      for (let i = 0; i < this.#keyboardCodes.length; i++) {
-        const key = this.#keyboardCodes[i]
+      for (let i = 0; i < this.#keyCodes.length; i++) {
+        const key = this.#keyCodes[i]
         Object.defineProperty(this, key, {
           value: false,
         })
@@ -1617,28 +1649,28 @@ namespace Eclipse {
     /**
      * Returns true if any shift key is pressed
      */
-    shiftDown(): boolean {
+    get shiftDown(): boolean {
       return this.ShiftLeft || this.ShiftRight
     }
 
     /**
      * Returns true if any alt key is pressed
      */
-    altDown(): boolean {
+    get altDown(): boolean {
       return this.AltLeft || this.AltRight
     }
 
     /**
      * Returns true if any control key is pressed
      */
-    ctrlDown(): boolean {
+    get ctrlDown(): boolean {
       return this.ControlLeft || this.ControlRight
     }
 
     /**
      * Returns the currently focused element.
      */
-    focused(): Element {
+    get focused(): Element {
       const focus = document.querySelector(':focus')
       const body = document.querySelector('body')
       if (focus !== null) {
@@ -1650,7 +1682,7 @@ namespace Eclipse {
       return new Element()
     }
   }
-  
+
   // ------ FILES FUNCTIONS AND CLASSES
   /**
    * Downloads a file from a path

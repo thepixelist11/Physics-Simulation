@@ -1,4 +1,10 @@
 "use strict";
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
 var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
@@ -6,7 +12,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var Eclipse;
 (function (Eclipse) {
-    var _KeyBoard_keyboardCodes;
+    var _KeyBoard_keyCodes;
     // ----- MATH FUNCTIONS AND CLASSES
     Eclipse.PI = Math.PI;
     Eclipse.TAU = Eclipse.PI * 2;
@@ -1270,7 +1276,7 @@ var Eclipse;
     }
     Eclipse.Mouse = Mouse;
     class KeyBoard {
-        constructor() {
+        constructor(doc) {
             this.KeyA = false;
             this.KeyB = false;
             this.KeyC = false;
@@ -1375,123 +1381,41 @@ var Eclipse;
             this.NumpadDivide = false;
             this.NumpadEnter = false;
             this.NumLock = false;
-            _KeyBoard_keyboardCodes.set(this, [
-                'KeyA',
-                'KeyB',
-                'KeyC',
-                'KeyD',
-                'KeyE',
-                'KeyF',
-                'KeyG',
-                'KeyH',
-                'KeyI',
-                'KeyJ',
-                'KeyK',
-                'KeyL',
-                'KeyM',
-                'KeyN',
-                'KeyO',
-                'KeyP',
-                'KeyQ',
-                'KeyR',
-                'KeyS',
-                'KeyT',
-                'KeyU',
-                'KeyV',
-                'KeyW',
-                'KeyX',
-                'KeyY',
-                'KeyZ',
-                'Digit1',
-                'Digit2',
-                'Digit3',
-                'Digit4',
-                'Digit5',
-                'Digit6',
-                'Digit7',
-                'Digit8',
-                'Digit9',
-                'Digit0',
-                'Space',
-                'ArrowUp',
-                'ArrowDown',
-                'ArrowLeft',
-                'ArrowRight',
-                'Enter',
-                'Backspace',
-                'Tab',
-                'ShiftLeft',
-                'ControlLeft',
-                'AltLeft',
-                'MetaLeft',
-                'ShiftRight',
-                'ControlRight',
-                'AltRight',
-                'MetaRight',
-                'Escape',
-                'F1',
-                'F2',
-                'F3',
-                'F4',
-                'F5',
-                'F6',
-                'F7',
-                'F8',
-                'F9',
-                'F10',
-                'F11',
-                'F12',
-                'PrintScreen',
-                'ScrollLock',
-                'Pause',
-                'Backquote',
-                'Minus',
-                'Equal',
-                'BracketLeft',
-                'BracketRight',
-                'Semicolon',
-                'Quote',
-                'Backslash',
-                'Comma',
-                'Period',
-                'Slash',
-                'Insert',
-                'Delete',
-                'Home',
-                'End',
-                'PageUp',
-                'PageDown',
-                'CapsLock',
-                'ContextMenu',
-                'Numpad0',
-                'Numpad1',
-                'Numpad2',
-                'Numpad3',
-                'Numpad4',
-                'Numpad5',
-                'Numpad6',
-                'Numpad7',
-                'Numpad8',
-                'Numpad9',
-                'NumpadMultiply',
-                'NumpadAdd',
-                'NumpadSubtract',
-                'NumpadDecimal',
-                'NumpadDivide',
-                'NumpadEnter',
-                'NumLock',
-            ]);
-            document.onkeydown = evt => {
+            _KeyBoard_keyCodes.set(this, void 0);
+            this.onkeydown = () => { };
+            this.onkeyup = () => { };
+            this.onshiftdown = () => { };
+            this.onshiftup = () => { };
+            this.onaltup = () => { };
+            this.onaltdown = () => { };
+            this.onctrlup = () => { };
+            this.onctrldown = () => { };
+            __classPrivateFieldSet(this, _KeyBoard_keyCodes, Object.keys({}), "f");
+            doc.onkeydown = evt => {
                 Object.defineProperty(this, evt.code, {
                     value: true,
                 });
+                if (evt.code === 'ShiftLeft' || evt.code === 'ShiftRight')
+                    this.onshiftdown();
+                if (evt.code === 'ControlLeft' || evt.code === 'ControlRight')
+                    this.onctrldown();
+                if (evt.code === 'AltLeft' || evt.code === 'AltRight')
+                    this.onaltdown();
+                this.onkeydown(evt.code);
             };
-            document.onkeyup = evt => {
+            doc.onkeyup = evt => {
                 Object.defineProperty(this, evt.code, {
                     value: false,
                 });
+                if (evt.code === 'ShiftLeft' || evt.code === 'ShiftRight')
+                    this.onshiftup();
+                if (evt.code === 'ControlLeft' || evt.code === 'ControlRight')
+                    this.onctrlup();
+                if (evt.code === 'AltLeft' || evt.code === 'AltRight')
+                    this.onaltup();
+                this.onkeyup(evt.code);
             };
-            document.onblur = () => {
+            doc.onblur = () => {
                 this.clearKeys();
             };
         }
@@ -1499,8 +1423,8 @@ var Eclipse;
          * Clears all the key inputs
          */
         clearKeys() {
-            for (let i = 0; i < __classPrivateFieldGet(this, _KeyBoard_keyboardCodes, "f").length; i++) {
-                const key = __classPrivateFieldGet(this, _KeyBoard_keyboardCodes, "f")[i];
+            for (let i = 0; i < __classPrivateFieldGet(this, _KeyBoard_keyCodes, "f").length; i++) {
+                const key = __classPrivateFieldGet(this, _KeyBoard_keyCodes, "f")[i];
                 Object.defineProperty(this, key, {
                     value: false,
                 });
@@ -1509,25 +1433,25 @@ var Eclipse;
         /**
          * Returns true if any shift key is pressed
          */
-        shiftDown() {
+        get shiftDown() {
             return this.ShiftLeft || this.ShiftRight;
         }
         /**
          * Returns true if any alt key is pressed
          */
-        altDown() {
+        get altDown() {
             return this.AltLeft || this.AltRight;
         }
         /**
          * Returns true if any control key is pressed
          */
-        ctrlDown() {
+        get ctrlDown() {
             return this.ControlLeft || this.ControlRight;
         }
         /**
          * Returns the currently focused element.
          */
-        focused() {
+        get focused() {
             const focus = document.querySelector(':focus');
             const body = document.querySelector('body');
             if (focus !== null) {
@@ -1539,7 +1463,7 @@ var Eclipse;
             return new Element();
         }
     }
-    _KeyBoard_keyboardCodes = new WeakMap();
+    _KeyBoard_keyCodes = new WeakMap();
     Eclipse.KeyBoard = KeyBoard;
     // ------ FILES FUNCTIONS AND CLASSES
     /**

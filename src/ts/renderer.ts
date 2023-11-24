@@ -38,7 +38,8 @@ controller.mouse.onmove = () => {
   drawScene(mainGrid, ctx, mainCam, ConfigObject)
 }
 controller.pointPlacementRadius = 20
-controller.pointPlacementColor = Eclipse.Color.BLACK
+controller.pointDynamicPlacementColor = Eclipse.Color.RED
+controller.pointStaticPlacementColor = Eclipse.Color.BLUE
 
 // Number of pixels per metre
 const pxPerM = 100
@@ -85,17 +86,28 @@ const ConfigObject: ConfigType = {
       opacity: 0.5,
       cam: mainCam
     },
+    entityDisplay: {
+      enabled: true,
+      grid: mainGrid,
+      position: new Eclipse.Vector2(5, 75),
+      staticColor: Eclipse.Color.BLUE,
+      dynamicColor: Eclipse.Color.RED,
+      totalColor: Eclipse.Color.BLACK,
+      showDynamic: true,
+      showStatic: true,
+      showTotal: true,
+      spacingBetweenTotals: 3
+    },
     cellSize: pxPerM,
   }, 
   generalConfig: {
     spacPartCellSize: 500,
-    allowPointsOnPoints: false,
+    allowDynamicPointsOnPoints: false,
+    allowStaticPointsOnPoints: true,
   }
 }
 
 mainGrid.cellSize = ConfigObject.generalConfig.spacPartCellSize
-
-
 
 function generatePointGrid(width: number, height: number, radii: number, color: Eclipse.Color, spacingX: number, spacingY: number, offsetX: number, offsetY: number, isStatic = true) {
   for(let i = -width / 2 + offsetX; i <= width / 2 + offsetX; i += spacingX) {
@@ -109,7 +121,8 @@ type ConfigType = {
   uiConfig: Overlay,
   generalConfig: {
     spacPartCellSize: number,
-    allowPointsOnPoints: boolean,
+    allowDynamicPointsOnPoints: boolean,
+    allowStaticPointsOnPoints: boolean,
   },
 }
 
@@ -160,8 +173,8 @@ controller.mouse.onlmbdown = () => {
       let p = new Point(new Eclipse.Vector2(
         (controller.mouse.x + mainCam.x) / mainCam.zoom,
         (controller.mouse.y + mainCam.y) / mainCam.zoom,
-      ), 1, controller.pointPlacementRadius, controller.pointPlacementColor, false)
-      if(ConfigObject.generalConfig.allowPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
+      ), 1, controller.pointPlacementRadius, controller.pointDynamicPlacementColor, false)
+      if(ConfigObject.generalConfig.allowDynamicPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
         mainGrid.addPoint(p)
         drawScene(mainGrid, ctx, mainCam, ConfigObject)
       }
@@ -176,8 +189,8 @@ controller.mouse.onrmbdown = () => {
       let p = new Point(new Eclipse.Vector2(
         (controller.mouse.x + mainCam.x) / mainCam.zoom,
         (controller.mouse.y + mainCam.y) / mainCam.zoom,
-      ), 1, controller.pointPlacementRadius, controller.pointPlacementColor, true)
-      if(ConfigObject.generalConfig.allowPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
+      ), 1, controller.pointPlacementRadius, controller.pointStaticPlacementColor, true)
+      if(ConfigObject.generalConfig.allowStaticPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
         mainGrid.addPoint(p)
         drawScene(mainGrid, ctx, mainCam, ConfigObject)
       }
@@ -187,8 +200,21 @@ controller.mouse.onrmbdown = () => {
 
 controller.mouse.onscroll = (evt: WheelEvent) => {
   controller.pointPlacementRadius += -evt.deltaY / 100
+  controller.pointPlacementRadius = Eclipse.clamp(controller.pointPlacementRadius, 1, 10000)
   drawScene(mainGrid, ctx, mainCam, ConfigObject)
 }
+
+controller.keyboard.onkeydown = (code: Eclipse.Key) => {
+  if(code === 'Space') {
+    if(loopPhysics) {
+      stopPhysics()
+    } else {
+      startPhysics()
+    }
+  }
+}
+
+controller.keyboard
 
 function stopPhysics() {
   loopPhysics = false

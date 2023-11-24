@@ -8,9 +8,10 @@ class Controller {
   keyboard
   mouse
   pointPlacementRadius = 0
-  pointPlacementColor = Eclipse.Color.BLACK
+  pointDynamicPlacementColor = Eclipse.Color.BLACK
+  pointStaticPlacementColor = Eclipse.Color.BLACK
   constructor(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, doc: Document) {
-    this.keyboard = new Eclipse.KeyBoard()
+    this.keyboard = new Eclipse.KeyBoard(doc)
     this.mouse = new Eclipse.Mouse(doc)
     setInterval(() => {
       // Movement of the camera

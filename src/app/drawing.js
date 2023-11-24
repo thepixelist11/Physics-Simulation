@@ -49,7 +49,7 @@ function drawBackground(ctx, color) {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 function drawOverlay(ctx, options) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
     // Camera Position
     if (options.cameraPos && options.cameraPos.enabled) {
         ctx.font = (_a = options.cameraPos.fontStyle) !== null && _a !== void 0 ? _a : 'courier 100px';
@@ -119,9 +119,31 @@ function drawOverlay(ctx, options) {
                 options.cursorDisplay.controller.mouse.x;
                 options.cursorDisplay.controller.mouse.y;
                 Eclipse.drawPoint(ctx, options.cursorDisplay.controller.mouse.x, options.cursorDisplay.controller.mouse.y, options.cursorDisplay.controller.pointPlacementRadius
-                    * options.cursorDisplay.cam.zoom, options.cursorDisplay.controller.pointPlacementColor);
+                    * options.cursorDisplay.cam.zoom, options.cursorDisplay.controller.pointDynamicPlacementColor);
                 ctx.globalAlpha = 1;
                 break;
+        }
+    }
+    // Entity Display
+    if (options.entityDisplay && options.entityDisplay.enabled) {
+        ctx.font = (_r = options.entityDisplay.fontStyle) !== null && _r !== void 0 ? _r : 'courier 100px';
+        let textX = parseInt(JSON.parse(JSON.stringify(options.entityDisplay.position.x)));
+        if ((_s = options.entityDisplay.showTotal) !== null && _s !== void 0 ? _s : true) {
+            ctx.fillStyle = options.entityDisplay.totalColor.toString();
+            let text = `Total Entities: ${options.entityDisplay.grid.points.length} `;
+            ctx.fillText(text, textX, options.entityDisplay.position.y);
+            textX += ctx.measureText(text).width + ((_t = options.entityDisplay.spacingBetweenTotals) !== null && _t !== void 0 ? _t : 0);
+        }
+        if ((_u = options.entityDisplay.showDynamic) !== null && _u !== void 0 ? _u : true) {
+            ctx.fillStyle = options.entityDisplay.dynamicColor.toString();
+            let text = `Dynamic Entities: ${options.entityDisplay.grid.totalDynamic} `;
+            ctx.fillText(text, textX, options.entityDisplay.position.y);
+            textX += ctx.measureText(text).width + ((_v = options.entityDisplay.spacingBetweenTotals) !== null && _v !== void 0 ? _v : 0);
+        }
+        if ((_w = options.entityDisplay.showStatic) !== null && _w !== void 0 ? _w : true) {
+            ctx.fillStyle = options.entityDisplay.staticColor.toString();
+            let text = `Static Entities: ${options.entityDisplay.grid.totalStatic} `;
+            ctx.fillText(text, textX, options.entityDisplay.position.y);
         }
     }
 }
