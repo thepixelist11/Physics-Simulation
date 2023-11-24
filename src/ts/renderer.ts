@@ -17,44 +17,31 @@ canvas.height = document.body.clientHeight
 ipcRenderer.on('newSize', (evt: Event, val: any) => {
   canvas.width = val[0]
   canvas.height = val[1]
-  drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+  drawScene(mainGrid, ctx, mainCam, ConfigObject)
 })
 
 // Clears all points
 ipcRenderer.on('clearAllPoints', (evt: Event, val: any) => {
   mainGrid.clearAllPoints()
-  drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+  drawScene(mainGrid, ctx, mainCam, ConfigObject)
 })
 
-// Initializes main grid
-let mainGrid = new Grid([
-  new Point(new Eclipse.Vector2(0, 400), 1, 200, Eclipse.Color.BLUE, true),
-], 100)
-
-function generatePointGrid(width: number, height: number, radii: number, color: Eclipse.Color, spacingX: number, spacingY: number, offsetX: number, offsetY: number, isStatic = true) {
-  for(let i = -width / 2 + offsetX; i <= width / 2 + offsetX; i += spacingX) {
-    for(let j = -height / 2 + offsetY; j <= height / 2 + offsetY; j += spacingY) {
-      mainGrid.addPoint(new Point(new Eclipse.Vector2(i, j), 1, radii, color, isStatic))
-    }
-  }
-}
-
-// Number of pixels per metre
-const pxPerM = 100
-
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.2)
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
 
+// Initializes main grid
+let mainGrid = new Grid([], 100)
+
+// Initializes main controller
 const controller = new Controller(mainGrid, ctx, mainCam, document)
 controller.mouse.onmove = () => {
-  drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+  drawScene(mainGrid, ctx, mainCam, ConfigObject)
 }
 controller.pointPlacementRadius = 20
 controller.pointPlacementColor = Eclipse.Color.BLACK
 
-type ConfigType = {
-  uiConfig: Overlay
-}
+// Number of pixels per metre
+const pxPerM = 100
 
 // Configuration for simulation
 const ConfigObject: ConfigType = {
@@ -97,8 +84,33 @@ const ConfigObject: ConfigType = {
       type: 'pointPlace',
       opacity: 0.5,
       cam: mainCam
+    },
+    cellSize: pxPerM,
+  }, 
+  generalConfig: {
+    spacPartCellSize: 500,
+    allowPointsOnPoints: false,
+  }
+}
+
+mainGrid.cellSize = ConfigObject.generalConfig.spacPartCellSize
+
+
+
+function generatePointGrid(width: number, height: number, radii: number, color: Eclipse.Color, spacingX: number, spacingY: number, offsetX: number, offsetY: number, isStatic = true) {
+  for(let i = -width / 2 + offsetX; i <= width / 2 + offsetX; i += spacingX) {
+    for(let j = -height / 2 + offsetY; j <= height / 2 + offsetY; j += spacingY) {
+      mainGrid.addPoint(new Point(new Eclipse.Vector2(i, j), 1, radii, color, isStatic))
     }
   }
+}
+
+type ConfigType = {
+  uiConfig: Overlay,
+  generalConfig: {
+    spacPartCellSize: number,
+    allowPointsOnPoints: boolean,
+  },
 }
 
 function resetPoints() {
@@ -133,16 +145,10 @@ function startPhysics() {
       }
       updatePoints(timeStep / 1000, mainGrid, pxPerM)
 
-      // Find how long it takes for point 0 to fall a certain number of units
-      if (mainGrid.points[0].y > 1000 * pxPerM) {
-        window.alert(time / 1000)
-        stopPhysics()
-      }
-
       // Increment time
       time += timeStep
     }
-    drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+    drawScene(mainGrid, ctx, mainCam, ConfigObject)
   }, FPS)
 }
 
@@ -150,14 +156,38 @@ function startPhysics() {
 controller.mouse.onlmbdown = () => {
   switch(loopPhysics) {
     case false:
+      // Create new dynamic point
       let p = new Point(new Eclipse.Vector2(
         (controller.mouse.x + mainCam.x) / mainCam.zoom,
         (controller.mouse.y + mainCam.y) / mainCam.zoom,
-      ), 1, 20, Eclipse.Color.BLACK, false)
-      mainGrid.addPoint(p)
-      drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+      ), 1, controller.pointPlacementRadius, controller.pointPlacementColor, false)
+      if(ConfigObject.generalConfig.allowPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
+        mainGrid.addPoint(p)
+        drawScene(mainGrid, ctx, mainCam, ConfigObject)
+      }
       break
   }
+}
+
+controller.mouse.onrmbdown = () => {
+  switch(loopPhysics) {
+    case false:
+      // Create new static point
+      let p = new Point(new Eclipse.Vector2(
+        (controller.mouse.x + mainCam.x) / mainCam.zoom,
+        (controller.mouse.y + mainCam.y) / mainCam.zoom,
+      ), 1, controller.pointPlacementRadius, controller.pointPlacementColor, true)
+      if(ConfigObject.generalConfig.allowPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
+        mainGrid.addPoint(p)
+        drawScene(mainGrid, ctx, mainCam, ConfigObject)
+      }
+      break
+  }
+}
+
+controller.mouse.onscroll = (evt: WheelEvent) => {
+  controller.pointPlacementRadius += -evt.deltaY / 100
+  drawScene(mainGrid, ctx, mainCam, ConfigObject)
 }
 
 function stopPhysics() {
@@ -165,4 +195,4 @@ function stopPhysics() {
   resetPoints()
 }
 
-drawScene(mainGrid, ctx, mainCam, ConfigObject.uiConfig)
+drawScene(mainGrid, ctx, mainCam, ConfigObject)

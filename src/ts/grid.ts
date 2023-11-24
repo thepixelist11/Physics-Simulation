@@ -13,7 +13,7 @@ class Grid {
   #points = Array<Point>()
   #cellSize
   // The cells that every point is in
-  #pointsCells = new Map<string, Array<string>>()
+  #pointsCells = new Map<number, Array<string>>()
   constructor(points: Array<Point>, cellSize: number) {
     this.#cellSize = cellSize
     this.#points = points
@@ -31,6 +31,9 @@ class Grid {
 
   get cellSize() {
     return this.#cellSize
+  }
+  set cellSize(newCellSize) {
+    this.#cellSize = newCellSize
   }
   
   get pointsCells() {
@@ -73,7 +76,7 @@ class Grid {
     this.clearCells()
     for(let i = 0; i < this.#points.length; i++) {
       const p = this.#points[i]
-      const pointIdentifier = `${p.x.toFixed(4)},${p.y.toFixed(4)},${p.mass.toFixed(4)},${p.radius.toFixed(4)}`
+      const pointIdentifier = p.identifier
       const posCellIndicies = this.#possibleCellIndicies(p)
       for(let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
         for(let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
@@ -107,13 +110,24 @@ class Grid {
 
   clearCells() {
     this.#cells = new Map<string, Array<Point>>()
-    this.#pointsCells = new Map<string, Array<string>>()
+    this.#pointsCells = new Map<number, Array<string>>()
   }
 
   clearAllPoints() {
     this.#cells = new Map<string, Array<Point>>()
-    this.#pointsCells = new Map<string, Array<string>>()
+    this.#pointsCells = new Map<number, Array<string>>()
     this.#points = Array<Point>()
+  }
+
+  pointOverlapping(p: Point) {
+    // FIXME: Implement spacial partitioning
+    for(const other of this.points) {
+      if(p.identifier !== other.identifier) {
+        const totalRadii = p.radius + other.radius
+        if(totalRadii >= p.position.dist(other.position)) return true
+      }
+    }
+    return false
   }
 
   #possibleCellIndicies(p: Point): cellPositions

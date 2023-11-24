@@ -1129,6 +1129,9 @@ var Eclipse;
             this.onrmbup = () => { };
             this.onmmbdown = () => { };
             this.onmmbup = () => { };
+            this.onscrolldown = () => { };
+            this.onscrollup = () => { };
+            this.onscroll = () => { };
             doc.onmousemove = evt => {
                 Object.defineProperty(this, 'x', {
                     value: evt.clientX,
@@ -1183,6 +1186,15 @@ var Eclipse;
                         });
                         this.onrmbup();
                         break;
+                }
+            };
+            doc.onwheel = evt => {
+                this.onscroll(evt);
+                if (evt.deltaY > 0) {
+                    this.onscrolldown(evt);
+                }
+                else if (evt.deltaY > 0) {
+                    this.onscrollup(evt);
                 }
             };
         }

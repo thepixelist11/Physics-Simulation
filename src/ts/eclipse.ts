@@ -1230,6 +1230,9 @@ namespace Eclipse {
     onrmbup: Function = () => {}
     onmmbdown: Function = () => {}
     onmmbup: Function = () => {}
+    onscrolldown: Function = () => {}
+    onscrollup: Function = () => {}
+    onscroll: Function = () => {}
 
     constructor(doc: Document) {
       doc.onmousemove = evt => {
@@ -1286,6 +1289,14 @@ namespace Eclipse {
             })
             this.onrmbup()
             break
+        }
+      }
+      doc.onwheel = evt => {
+        this.onscroll(evt)
+        if(evt.deltaY > 0) {
+          this.onscrolldown(evt)
+        } else if(evt.deltaY > 0) {
+          this.onscrollup(evt)
         }
       }
     }

@@ -34,6 +34,9 @@ class Grid {
     get cellSize() {
         return __classPrivateFieldGet(this, _Grid_cellSize, "f");
     }
+    set cellSize(newCellSize) {
+        __classPrivateFieldSet(this, _Grid_cellSize, newCellSize, "f");
+    }
     get pointsCells() {
         return __classPrivateFieldGet(this, _Grid_pointsCells, "f");
     }
@@ -72,7 +75,7 @@ class Grid {
         this.clearCells();
         for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
             const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
-            const pointIdentifier = `${p.x.toFixed(4)},${p.y.toFixed(4)},${p.mass.toFixed(4)},${p.radius.toFixed(4)}`;
+            const pointIdentifier = p.identifier;
             const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
             for (let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
                 for (let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
@@ -110,6 +113,17 @@ class Grid {
         __classPrivateFieldSet(this, _Grid_cells, new Map(), "f");
         __classPrivateFieldSet(this, _Grid_pointsCells, new Map(), "f");
         __classPrivateFieldSet(this, _Grid_points, Array(), "f");
+    }
+    pointOverlapping(p) {
+        // FIXME: Implement spacial partitioning
+        for (const other of this.points) {
+            if (p.identifier !== other.identifier) {
+                const totalRadii = p.radius + other.radius;
+                if (totalRadii >= p.position.dist(other.position))
+                    return true;
+            }
+        }
+        return false;
     }
     /**
      * Returns -1 if the grid does not contain the point specified.

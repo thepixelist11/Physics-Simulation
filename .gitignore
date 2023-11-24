@@ -2,3 +2,4 @@ node_modules/
 *.code-workspace
 run.ps1
 compile.ps1
+resources

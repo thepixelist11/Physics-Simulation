@@ -14,19 +14,19 @@ class Controller {
             // Movement of the camera
             if (this.keyboard.KeyD) {
                 camera.translate(5, 0);
-                drawScene(grid, ctx, camera, ConfigObject.uiConfig);
+                drawScene(grid, ctx, camera, ConfigObject);
             }
             if (this.keyboard.KeyA) {
                 camera.translate(-5, 0);
-                drawScene(grid, ctx, camera, ConfigObject.uiConfig);
+                drawScene(grid, ctx, camera, ConfigObject);
             }
             if (this.keyboard.KeyW) {
                 camera.translate(0, -5);
-                drawScene(grid, ctx, camera, ConfigObject.uiConfig);
+                drawScene(grid, ctx, camera, ConfigObject);
             }
             if (this.keyboard.KeyS) {
                 camera.translate(0, 5);
-                drawScene(grid, ctx, camera, ConfigObject.uiConfig);
+                drawScene(grid, ctx, camera, ConfigObject);
             }
         }, 16.67);
     }
