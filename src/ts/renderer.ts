@@ -45,7 +45,7 @@ controller.pointStaticPlacementColor = Eclipse.Color.BLUE
 const pxPerM = 100
 
 // Configuration for simulation
-const ConfigObject: ConfigType = {
+let ConfigObject: ConfigType = {
   uiConfig: {
     cameraPos: {
       enabled: true,

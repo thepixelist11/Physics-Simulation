@@ -179,6 +179,34 @@ class Grid {
     }
     return total
   }
+
+  toJSON() {
+    return {
+      cells: Array.from(this.#cells.entries()).reduce((acc: Record<string, any>, [key, value]) => {
+        acc[key] = value.map(point => point.toJSON());
+        return acc;
+      }, {}),
+      points: this.#points.map(point => point.toJSON()),
+      cellSize: this.#cellSize,
+      pointsCells: Array.from(this.#pointsCells.entries()).reduce((acc: Record<string, any>, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {}),
+    };
+  }
+
+  fromJSON(jsonString: string) {
+    this.clearAllPoints()
+    const parsedJSON = JSON.parse(jsonString)
+    this.cellSize = parseFloat(parsedJSON.cellSize)
+    for(let i = 0; i < parsedJSON.points.length; i++) {
+      const p = new Point(Eclipse.Vector2.ZERO, 0, 0, Eclipse.Color.BLACK, false)
+      p.fromJSON(JSON.stringify(parsedJSON.points[i]))
+      this.addPoint(p)
+    }
+    this.updateCells()
+    drawScene(this, ctx, mainCam, ConfigObject)
+  }
 }
 
 module.exports = {

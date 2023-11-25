@@ -145,6 +145,46 @@ class Point {
     ) return true 
     else return false
   }
+
+  toJSON() {
+    return {
+      position: JSON.stringify(this.#position),
+      lastPosition: JSON.stringify(this.#lastPosition),
+      radius: this.#radius,
+      color: JSON.stringify(this.#color),
+      mass: this.#mass,
+      isStatic: this.#isStatic,
+      identifier: this.#identifier,
+      initialPosition: JSON.stringify(this.#initialPosition),
+      initialMass: JSON.stringify(this.#initialMass),
+      initialColor: JSON.stringify(this.#initialColor),
+      initialRadius: this.#initialRadius,
+      initialIsStatic: this.#initialIsStatic
+    }
+  }
+
+
+  fromJSON(jsonString: string) {
+    const parsedJSON = JSON.parse(jsonString)
+
+    const position = JSON.parse(parsedJSON.position)
+    this.#position = new Eclipse.Vector2(position.x, position.y)
+    const lastPosition = JSON.parse(parsedJSON.lastPosition)
+    this.#lastPosition = new Eclipse.Vector2(lastPosition.x, lastPosition.y)
+    this.#radius = parseFloat(parsedJSON.radius)
+    const color = JSON.parse(parsedJSON.color)
+    this.#color = new Eclipse.Color(color.r, color.g, color.b)
+    this.#mass = parseFloat(parsedJSON.mass)
+    this.#isStatic = Boolean(parsedJSON.isStatic)
+    this.#identifier = parsedJSON.identifier
+    const initPosition = JSON.parse(parsedJSON.initialPosition)
+    this.#initialPosition = new Eclipse.Vector2(initPosition.x, initPosition.y)
+    this.#initialMass = parseFloat(parsedJSON.initialMass)
+    const initColor = JSON.parse(parsedJSON.initialColor)
+    this.#initialColor = new Eclipse.Color(initColor.r, initColor.g, initColor.b)
+    this.#initialRadius = parseFloat(parsedJSON.initialRadius)
+    this.#initialIsStatic = Boolean(parsedJSON.initialIsStatic)
+  }
 }
 
 module.exports = {

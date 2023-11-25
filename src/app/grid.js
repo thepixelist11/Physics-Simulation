@@ -152,6 +152,32 @@ class Grid {
         }
         return total;
     }
+    toJSON() {
+        return {
+            cells: Array.from(__classPrivateFieldGet(this, _Grid_cells, "f").entries()).reduce((acc, [key, value]) => {
+                acc[key] = value.map(point => point.toJSON());
+                return acc;
+            }, {}),
+            points: __classPrivateFieldGet(this, _Grid_points, "f").map(point => point.toJSON()),
+            cellSize: __classPrivateFieldGet(this, _Grid_cellSize, "f"),
+            pointsCells: Array.from(__classPrivateFieldGet(this, _Grid_pointsCells, "f").entries()).reduce((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {}),
+        };
+    }
+    fromJSON(jsonString) {
+        this.clearAllPoints();
+        const parsedJSON = JSON.parse(jsonString);
+        this.cellSize = parseFloat(parsedJSON.cellSize);
+        for (let i = 0; i < parsedJSON.points.length; i++) {
+            const p = new Point(Eclipse.Vector2.ZERO, 0, 0, Eclipse.Color.BLACK, false);
+            p.fromJSON(JSON.stringify(parsedJSON.points[i]));
+            this.addPoint(p);
+        }
+        this.updateCells();
+        drawScene(this, ctx, mainCam, ConfigObject);
+    }
 }
 _Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new WeakMap(), _Grid_pointsCells = new WeakMap(), _Grid_instances = new WeakSet(), _Grid_possibleCellIndicies = function _Grid_possibleCellIndicies(point) {
     let p;

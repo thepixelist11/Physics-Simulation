@@ -156,6 +156,42 @@ class Point {
         else
             return false;
     }
+    toJSON() {
+        return {
+            position: JSON.stringify(__classPrivateFieldGet(this, _Point_position, "f")),
+            lastPosition: JSON.stringify(__classPrivateFieldGet(this, _Point_lastPosition, "f")),
+            radius: __classPrivateFieldGet(this, _Point_radius, "f"),
+            color: JSON.stringify(__classPrivateFieldGet(this, _Point_color, "f")),
+            mass: __classPrivateFieldGet(this, _Point_mass, "f"),
+            isStatic: __classPrivateFieldGet(this, _Point_isStatic, "f"),
+            identifier: __classPrivateFieldGet(this, _Point_identifier, "f"),
+            initialPosition: JSON.stringify(__classPrivateFieldGet(this, _Point_initialPosition, "f")),
+            initialMass: JSON.stringify(__classPrivateFieldGet(this, _Point_initialMass, "f")),
+            initialColor: JSON.stringify(__classPrivateFieldGet(this, _Point_initialColor, "f")),
+            initialRadius: __classPrivateFieldGet(this, _Point_initialRadius, "f"),
+            initialIsStatic: __classPrivateFieldGet(this, _Point_initialIsStatic, "f")
+        };
+    }
+    fromJSON(jsonString) {
+        const parsedJSON = JSON.parse(jsonString);
+        const position = JSON.parse(parsedJSON.position);
+        __classPrivateFieldSet(this, _Point_position, new Eclipse.Vector2(position.x, position.y), "f");
+        const lastPosition = JSON.parse(parsedJSON.lastPosition);
+        __classPrivateFieldSet(this, _Point_lastPosition, new Eclipse.Vector2(lastPosition.x, lastPosition.y), "f");
+        __classPrivateFieldSet(this, _Point_radius, parseFloat(parsedJSON.radius), "f");
+        const color = JSON.parse(parsedJSON.color);
+        __classPrivateFieldSet(this, _Point_color, new Eclipse.Color(color.r, color.g, color.b), "f");
+        __classPrivateFieldSet(this, _Point_mass, parseFloat(parsedJSON.mass), "f");
+        __classPrivateFieldSet(this, _Point_isStatic, Boolean(parsedJSON.isStatic), "f");
+        __classPrivateFieldSet(this, _Point_identifier, parsedJSON.identifier, "f");
+        const initPosition = JSON.parse(parsedJSON.initialPosition);
+        __classPrivateFieldSet(this, _Point_initialPosition, new Eclipse.Vector2(initPosition.x, initPosition.y), "f");
+        __classPrivateFieldSet(this, _Point_initialMass, parseFloat(parsedJSON.initialMass), "f");
+        const initColor = JSON.parse(parsedJSON.initialColor);
+        __classPrivateFieldSet(this, _Point_initialColor, new Eclipse.Color(initColor.r, initColor.g, initColor.b), "f");
+        __classPrivateFieldSet(this, _Point_initialRadius, parseFloat(parsedJSON.initialRadius), "f");
+        __classPrivateFieldSet(this, _Point_initialIsStatic, Boolean(parsedJSON.initialIsStatic), "f");
+    }
 }
 _Point_position = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_isStatic = new WeakMap(), _Point_identifier = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap(), _Point_initialIsStatic = new WeakMap();
 Point.idCounter = 0;

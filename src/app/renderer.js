@@ -38,7 +38,7 @@ controller.pointStaticPlacementColor = Eclipse.Color.BLUE;
 // Number of pixels per metre
 const pxPerM = 100;
 // Configuration for simulation
-const ConfigObject = {
+let ConfigObject = {
     uiConfig: {
         cameraPos: {
             enabled: true,
