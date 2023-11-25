@@ -9,12 +9,15 @@ function drawPoints(points, ctx) {
     }
 }
 function drawScene(grid, ctx, camera, ConfigObject, bgColor = Eclipse.Color.WHITE) {
+    var _a;
     drawBackground(ctx, bgColor);
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
     ctx.scale(camera.zoom, camera.zoom);
     // Debug -
-    // fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER)
+    if ((_a = ConfigObject.debugConfig.fillFilledGridCells) !== null && _a !== void 0 ? _a : false) {
+        fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER);
+    }
     // -
     // TODO: Allow toggling on and off grid lines on top
     drawGrid(grid, ctx, camera, ConfigObject);
@@ -23,7 +26,7 @@ function drawScene(grid, ctx, camera, ConfigObject, bgColor = Eclipse.Color.WHIT
     drawOverlay(ctx, ConfigObject.uiConfig);
 }
 function drawGrid(grid, ctx, camera, ConfigObject) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     const canvas = ctx.canvas;
     let { left, right, top, bottom } = canvas.getBoundingClientRect();
     // Scale grid based on camera
@@ -35,13 +38,15 @@ function drawGrid(grid, ctx, camera, ConfigObject) {
     left *= 1 / camera.zoom;
     top *= 1 / camera.zoom;
     bottom *= 1 / camera.zoom;
-    // Vertical Grid Lines
-    for (let i = Math.floor(left / ((_a = ConfigObject.uiConfig.cellSize) !== null && _a !== void 0 ? _a : 100)); i <= Math.floor(right / ((_b = ConfigObject.uiConfig.cellSize) !== null && _b !== void 0 ? _b : 100)); i++) {
-        Eclipse.drawLine(ctx, new Eclipse.Vector2(i * ((_c = ConfigObject.uiConfig.cellSize) !== null && _c !== void 0 ? _c : 100), top), new Eclipse.Vector2(i * ((_d = ConfigObject.uiConfig.cellSize) !== null && _d !== void 0 ? _d : 100), bottom), 5 * camera.zoom, Eclipse.Color.LIGHTGREY);
-    }
-    // Horizontal Grid Lines
-    for (let i = Math.floor(top / ((_e = ConfigObject.uiConfig.cellSize) !== null && _e !== void 0 ? _e : 100)); i <= Math.floor(bottom / ((_f = ConfigObject.uiConfig.cellSize) !== null && _f !== void 0 ? _f : 100)); i++) {
-        Eclipse.drawLine(ctx, new Eclipse.Vector2(left, i * ((_g = ConfigObject.uiConfig.cellSize) !== null && _g !== void 0 ? _g : 100)), new Eclipse.Vector2(right, i * ((_h = ConfigObject.uiConfig.cellSize) !== null && _h !== void 0 ? _h : 100)), 5 * camera.zoom, Eclipse.Color.LIGHTGREY);
+    if ((_a = ConfigObject.uiConfig.drawGridLines) !== null && _a !== void 0 ? _a : true) {
+        // Vertical Grid Lines
+        for (let i = Math.floor(left / ((_b = ConfigObject.uiConfig.cellSize) !== null && _b !== void 0 ? _b : 100)); i <= Math.floor(right / ((_c = ConfigObject.uiConfig.cellSize) !== null && _c !== void 0 ? _c : 100)); i++) {
+            Eclipse.drawLine(ctx, new Eclipse.Vector2(i * ((_d = ConfigObject.uiConfig.cellSize) !== null && _d !== void 0 ? _d : 100), top), new Eclipse.Vector2(i * ((_e = ConfigObject.uiConfig.cellSize) !== null && _e !== void 0 ? _e : 100), bottom), 5 * camera.zoom, Eclipse.Color.LIGHTGREY);
+        }
+        // Horizontal Grid Lines
+        for (let i = Math.floor(top / ((_f = ConfigObject.uiConfig.cellSize) !== null && _f !== void 0 ? _f : 100)); i <= Math.floor(bottom / ((_g = ConfigObject.uiConfig.cellSize) !== null && _g !== void 0 ? _g : 100)); i++) {
+            Eclipse.drawLine(ctx, new Eclipse.Vector2(left, i * ((_h = ConfigObject.uiConfig.cellSize) !== null && _h !== void 0 ? _h : 100)), new Eclipse.Vector2(right, i * ((_j = ConfigObject.uiConfig.cellSize) !== null && _j !== void 0 ? _j : 100)), 5 * camera.zoom, Eclipse.Color.LIGHTGREY);
+        }
     }
 }
 function drawBackground(ctx, color) {

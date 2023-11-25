@@ -92,11 +92,15 @@ const ConfigObject = {
             spacingBetweenTotals: 3
         },
         cellSize: pxPerM,
+        drawGridLines: true,
     },
     generalConfig: {
         spacPartCellSize: 500,
         allowDynamicPointsOnPoints: false,
         allowStaticPointsOnPoints: true,
+    },
+    debugConfig: {
+        fillFilledGridCells: false,
     }
 };
 mainGrid.cellSize = ConfigObject.generalConfig.spacPartCellSize;
@@ -168,7 +172,7 @@ controller.mouse.onrmbdown = () => {
     }
 };
 controller.mouse.onscroll = (evt) => {
-    controller.pointPlacementRadius += -evt.deltaY / 100;
+    controller.pointPlacementRadius += -evt.deltaY / (controller.keyboard.shiftDown ? 10 : 100);
     controller.pointPlacementRadius = Eclipse.clamp(controller.pointPlacementRadius, 1, 10000);
     drawScene(mainGrid, ctx, mainCam, ConfigObject);
 };

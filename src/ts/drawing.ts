@@ -16,7 +16,9 @@ function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, Co
   ctx.scale(camera.zoom, camera.zoom)
 
   // Debug -
-  // fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER)
+  if(ConfigObject.debugConfig.fillFilledGridCells ?? false) { 
+    fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER)
+  }
   // -
 
   // TODO: Allow toggling on and off grid lines on top
@@ -41,13 +43,15 @@ function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, Con
   top *= 1 / camera.zoom
   bottom *= 1 / camera.zoom
   
-  // Vertical Grid Lines
-  for(let i = Math.floor(left / (ConfigObject.uiConfig.cellSize ?? 100)); i <= Math.floor(right / (ConfigObject.uiConfig.cellSize ?? 100)); i++) {
-    Eclipse.drawLine(ctx, new Eclipse.Vector2(i * (ConfigObject.uiConfig.cellSize ?? 100), top), new Eclipse.Vector2(i * (ConfigObject.uiConfig.cellSize ?? 100), bottom), 5 * camera.zoom, Eclipse.Color.LIGHTGREY)
-  }
-  // Horizontal Grid Lines
-  for(let i = Math.floor(top / (ConfigObject.uiConfig.cellSize ?? 100)); i <= Math.floor(bottom / (ConfigObject.uiConfig.cellSize ?? 100)); i++) {
-    Eclipse.drawLine(ctx, new Eclipse.Vector2(left, i * (ConfigObject.uiConfig.cellSize ?? 100)), new Eclipse.Vector2(right, i * (ConfigObject.uiConfig.cellSize ?? 100)), 5 * camera.zoom, Eclipse.Color.LIGHTGREY)
+  if(ConfigObject.uiConfig.drawGridLines ?? true) {
+    // Vertical Grid Lines
+    for(let i = Math.floor(left / (ConfigObject.uiConfig.cellSize ?? 100)); i <= Math.floor(right / (ConfigObject.uiConfig.cellSize ?? 100)); i++) {
+      Eclipse.drawLine(ctx, new Eclipse.Vector2(i * (ConfigObject.uiConfig.cellSize ?? 100), top), new Eclipse.Vector2(i * (ConfigObject.uiConfig.cellSize ?? 100), bottom), 5 * camera.zoom, Eclipse.Color.LIGHTGREY)
+    }
+    // Horizontal Grid Lines
+    for(let i = Math.floor(top / (ConfigObject.uiConfig.cellSize ?? 100)); i <= Math.floor(bottom / (ConfigObject.uiConfig.cellSize ?? 100)); i++) {
+      Eclipse.drawLine(ctx, new Eclipse.Vector2(left, i * (ConfigObject.uiConfig.cellSize ?? 100)), new Eclipse.Vector2(right, i * (ConfigObject.uiConfig.cellSize ?? 100)), 5 * camera.zoom, Eclipse.Color.LIGHTGREY)
+    }
   }
 }
 
@@ -64,6 +68,7 @@ type Overlay = {
   cursorDisplay?: cursorDisplay,
   cellSize?: number,
   entityDisplay?: entityDisplay,
+  drawGridLines?: boolean
 }
 type overlayOptions = {
   position: Eclipse.Vector2,

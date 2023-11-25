@@ -99,11 +99,15 @@ const ConfigObject: ConfigType = {
       spacingBetweenTotals: 3
     },
     cellSize: pxPerM,
+    drawGridLines: true,
   }, 
   generalConfig: {
     spacPartCellSize: 500,
     allowDynamicPointsOnPoints: false,
     allowStaticPointsOnPoints: true,
+  },
+  debugConfig: {
+    fillFilledGridCells: false,
   }
 }
 
@@ -124,6 +128,9 @@ type ConfigType = {
     allowDynamicPointsOnPoints: boolean,
     allowStaticPointsOnPoints: boolean,
   },
+  debugConfig: {
+    fillFilledGridCells?: boolean
+  }
 }
 
 function resetPoints() {
@@ -199,7 +206,7 @@ controller.mouse.onrmbdown = () => {
 }
 
 controller.mouse.onscroll = (evt: WheelEvent) => {
-  controller.pointPlacementRadius += -evt.deltaY / 100
+  controller.pointPlacementRadius += -evt.deltaY / (controller.keyboard.shiftDown ? 10 : 100)
   controller.pointPlacementRadius = Eclipse.clamp(controller.pointPlacementRadius, 1, 10000)
   drawScene(mainGrid, ctx, mainCam, ConfigObject)
 }

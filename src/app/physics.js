@@ -24,7 +24,7 @@ function updatePoints(deltaTime, grid, pxPerM) {
     grid.updateCells();
     handleCollisions(grid);
 }
-function handleCollisions(grid, checkCount = 1) {
+function handleCollisions(grid, checkCount = 8) {
     var _a;
     let pointsHandled = [];
     for (let j = 0; j < checkCount; j++) {
@@ -51,21 +51,21 @@ function handleCollisions(grid, checkCount = 1) {
                                     const pDisplacement = new Eclipse.Vector2(
                                     // X
                                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                                        (p.radius + other.radius - Math.sqrt((Math.pow((other.x - p.x), 2)) + (Math.pow((other.y - p.y), 2))))) /
-                                        (other.isStatic ? 1 : 2) * (p.x >= other.x ? 1 : -1), 
+                                        (p.radius + other.radius - dist)) /
+                                        (other.isStatic ? 1 : 2) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0), 
                                     // Y
                                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                                        (p.radius + other.radius - Math.sqrt((Math.pow((other.x - p.x), 2)) + (Math.pow((other.y - p.y), 2))))) /
+                                        (p.radius + other.radius - dist)) /
                                         (other.isStatic ? 1 : 2) * (p.x >= other.x ? 1 : -1));
                                     const otherDisplacement = new Eclipse.Vector2(
                                     // X
                                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                                        (p.radius + other.radius - Math.sqrt((Math.pow((other.x - p.x), 2)) + (Math.pow((other.y - p.y), 2))))) /
-                                        (p.isStatic ? 1 : 2) * (other.x <= p.x ? 1 : -1), 
+                                        (p.radius + other.radius - dist)) /
+                                        (p.isStatic ? 1 : 2) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0), 
                                     // Y
                                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                                        (p.radius + other.radius - Math.sqrt((Math.pow((other.x - p.x), 2)) + (Math.pow((other.y - p.y), 2))))) /
-                                        (p.isStatic ? 1 : 2) * (other.x <= p.x ? 1 : -1));
+                                        (p.radius + other.radius - dist)) /
+                                        (p.isStatic ? 1 : 2) * (other.x >= p.x ? 1 : -1));
                                     if (!p.isStatic)
                                         pNewPosition.add(pDisplacement);
                                     if (!other.isStatic && !arrayContainsPoint(pointsHandled, other))
