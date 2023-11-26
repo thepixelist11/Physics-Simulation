@@ -1491,111 +1491,111 @@ namespace Eclipse {
     | 'NumLock'
 
   export class KeyBoard {
-    readonly KeyA: boolean = false
-    readonly KeyB: boolean = false
-    readonly KeyC: boolean = false
-    readonly KeyD: boolean = false
-    readonly KeyE: boolean = false
-    readonly KeyF: boolean = false
-    readonly KeyG: boolean = false
-    readonly KeyH: boolean = false
-    readonly KeyI: boolean = false
-    readonly KeyJ: boolean = false
-    readonly KeyK: boolean = false
-    readonly KeyL: boolean = false
-    readonly KeyM: boolean = false
-    readonly KeyN: boolean = false
-    readonly KeyO: boolean = false
-    readonly KeyP: boolean = false
-    readonly KeyQ: boolean = false
-    readonly KeyR: boolean = false
-    readonly KeyS: boolean = false
-    readonly KeyT: boolean = false
-    readonly KeyU: boolean = false
-    readonly KeyV: boolean = false
-    readonly KeyW: boolean = false
-    readonly KeyX: boolean = false
-    readonly KeyY: boolean = false
-    readonly KeyZ: boolean = false
-    readonly Digit1: boolean = false
-    readonly Digit2: boolean = false
-    readonly Digit3: boolean = false
-    readonly Digit4: boolean = false
-    readonly Digit5: boolean = false
-    readonly Digit6: boolean = false
-    readonly Digit7: boolean = false
-    readonly Digit8: boolean = false
-    readonly Digit9: boolean = false
-    readonly Digit0: boolean = false
-    readonly Space: boolean = false
-    readonly ArrowUp: boolean = false
-    readonly ArrowDown: boolean = false
-    readonly ArrowLeft: boolean = false
-    readonly ArrowRight: boolean = false
-    readonly Enter: boolean = false
-    readonly Backspace: boolean = false
-    readonly Tab: boolean = false
-    readonly ShiftLeft: boolean = false
-    readonly ControlLeft: boolean = false
-    readonly AltLeft: boolean = false
-    readonly MetaLeft: boolean = false
-    readonly ShiftRight: boolean = false
-    readonly ControlRight: boolean = false
-    readonly AltRight: boolean = false
-    readonly MetaRight: boolean = false
-    readonly Escape: boolean = false
-    readonly F1: boolean = false
-    readonly F2: boolean = false
-    readonly F3: boolean = false
-    readonly F4: boolean = false
-    readonly F5: boolean = false
-    readonly F6: boolean = false
-    readonly F7: boolean = false
-    readonly F8: boolean = false
-    readonly F9: boolean = false
-    readonly F10: boolean = false
-    readonly F11: boolean = false
-    readonly F12: boolean = false
-    readonly PrintScreen: boolean = false
-    readonly ScrollLock: boolean = false
-    readonly Pause: boolean = false
-    readonly Backquote: boolean = false
-    readonly Minus: boolean = false
-    readonly Equal: boolean = false
-    readonly BracketLeft: boolean = false
-    readonly BracketRight: boolean = false
-    readonly Semicolon: boolean = false
-    readonly Quote: boolean = false
-    readonly Backslash: boolean = false
-    readonly Comma: boolean = false
-    readonly Period: boolean = false
-    readonly Slash: boolean = false
-    readonly Insert: boolean = false
-    readonly Delete: boolean = false
-    readonly Home: boolean = false
-    readonly End: boolean = false
-    readonly PageUp: boolean = false
-    readonly PageDown: boolean = false
-    readonly CapsLock: boolean = false
-    readonly ContextMenu: boolean = false
-    readonly Numpad0: boolean = false
-    readonly Numpad1: boolean = false
-    readonly Numpad2: boolean = false
-    readonly Numpad3: boolean = false
-    readonly Numpad4: boolean = false
-    readonly Numpad5: boolean = false
-    readonly Numpad6: boolean = false
-    readonly Numpad7: boolean = false
-    readonly Numpad8: boolean = false
-    readonly Numpad9: boolean = false
-    readonly NumpadMultiply: boolean = false
-    readonly NumpadAdd: boolean = false
-    readonly NumpadSubtract: boolean = false
-    readonly NumpadDecimal: boolean = false
-    readonly NumpadDivide: boolean = false
-    readonly NumpadEnter: boolean = false
-    readonly NumLock: boolean = false
-    #keyCodes: Array<Key>
+    KeyA: boolean = false
+    KeyB: boolean = false
+    KeyC: boolean = false
+    KeyD: boolean = false
+    KeyE: boolean = false
+    KeyF: boolean = false
+    KeyG: boolean = false
+    KeyH: boolean = false
+    KeyI: boolean = false
+    KeyJ: boolean = false
+    KeyK: boolean = false
+    KeyL: boolean = false
+    KeyM: boolean = false
+    KeyN: boolean = false
+    KeyO: boolean = false
+    KeyP: boolean = false
+    KeyQ: boolean = false
+    KeyR: boolean = false
+    KeyS: boolean = false
+    KeyT: boolean = false
+    KeyU: boolean = false
+    KeyV: boolean = false
+    KeyW: boolean = false
+    KeyX: boolean = false
+    KeyY: boolean = false
+    KeyZ: boolean = false
+    Digit1: boolean = false
+    Digit2: boolean = false
+    Digit3: boolean = false
+    Digit4: boolean = false
+    Digit5: boolean = false
+    Digit6: boolean = false
+    Digit7: boolean = false
+    Digit8: boolean = false
+    Digit9: boolean = false
+    Digit0: boolean = false
+    Space: boolean = false
+    ArrowUp: boolean = false
+    ArrowDown: boolean = false
+    ArrowLeft: boolean = false
+    ArrowRight: boolean = false
+    Enter: boolean = false
+    Backspace: boolean = false
+    Tab: boolean = false
+    ShiftLeft: boolean = false
+    ControlLeft: boolean = false
+    AltLeft: boolean = false
+    MetaLeft: boolean = false
+    ShiftRight: boolean = false
+    ControlRight: boolean = false
+    AltRight: boolean = false
+    MetaRight: boolean = false
+    Escape: boolean = false
+    F1: boolean = false
+    F2: boolean = false
+    F3: boolean = false
+    F4: boolean = false
+    F5: boolean = false
+    F6: boolean = false
+    F7: boolean = false
+    F8: boolean = false
+    F9: boolean = false
+    F10: boolean = false
+    F11: boolean = false
+    F12: boolean = false
+    PrintScreen: boolean = false
+    ScrollLock: boolean = false
+    Pause: boolean = false
+    Backquote: boolean = false
+    Minus: boolean = false
+    Equal: boolean = false
+    BracketLeft: boolean = false
+    BracketRight: boolean = false
+    Semicolon: boolean = false
+    Quote: boolean = false
+    Backslash: boolean = false
+    Comma: boolean = false
+    Period: boolean = false
+    Slash: boolean = false
+    Insert: boolean = false
+    Delete: boolean = false
+    Home: boolean = false
+    End: boolean = false
+    PageUp: boolean = false
+    PageDown: boolean = false
+    CapsLock: boolean = false
+    ContextMenu: boolean = false
+    Numpad0: boolean = false
+    Numpad1: boolean = false
+    Numpad2: boolean = false
+    Numpad3: boolean = false
+    Numpad4: boolean = false
+    Numpad5: boolean = false
+    Numpad6: boolean = false
+    Numpad7: boolean = false
+    Numpad8: boolean = false
+    Numpad9: boolean = false
+    NumpadMultiply: boolean = false
+    NumpadAdd: boolean = false
+    NumpadSubtract: boolean = false
+    NumpadDecimal: boolean = false
+    NumpadDivide: boolean = false
+    NumpadEnter: boolean = false
+    NumLock: boolean = false
+    #keyCodes: Array<string>
 
     onkeydown: Function = () => {}
     onkeyup: Function = () => {}
@@ -1607,10 +1607,6 @@ namespace Eclipse {
     onctrldown: Function = () => {}
 
     constructor(doc: Document) {
-      // Make key type iterable for keyCodes array
-      type AllTypeValues = { [K in UnionKeys<Key>]: K };
-      this.#keyCodes = Object.keys({} as AllTypeValues) as Array<Key>
-
       doc.onkeydown = evt => {
         Object.defineProperty(this, evt.code, {
           value: true,
@@ -1632,12 +1628,119 @@ namespace Eclipse {
       doc.onblur = () => {
         this.clearKeys()
       }
+
+      this.#keyCodes = [
+        'KeyA',
+        'KeyB',
+        'KeyC',
+        'KeyD',
+        'KeyE',
+        'KeyF',
+        'KeyG',
+        'KeyH',
+        'KeyI',
+        'KeyJ',
+        'KeyK',
+        'KeyL',
+        'KeyM',
+        'KeyN',
+        'KeyO',
+        'KeyP',
+        'KeyQ',
+        'KeyR',
+        'KeyS',
+        'KeyT',
+        'KeyU',
+        'KeyV',
+        'KeyW',
+        'KeyX',
+        'KeyY',
+        'KeyZ',
+        'Digit1',
+        'Digit2',
+        'Digit3',
+        'Digit4',
+        'Digit5',
+        'Digit6',
+        'Digit7',
+        'Digit8',
+        'Digit9',
+        'Digit0',
+        'Space',
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'Enter',
+        'Backspace',
+        'Tab',
+        'ShiftLeft',
+        'ControlLeft',
+        'AltLeft',
+        'MetaLeft',
+        'ShiftRight',
+        'ControlRight',
+        'AltRight',
+        'MetaRight',
+        'Escape',
+        'F1',
+        'F2',
+        'F3',
+        'F4',
+        'F5',
+        'F6',
+        'F7',
+        'F8',
+        'F9',
+        'F10',
+        'F11',
+        'F12',
+        'PrintScreen',
+        'ScrollLock',
+        'Pause',
+        'Backquote',
+        'Minus',
+        'Equal',
+        'BracketLeft',
+        'BracketRight',
+        'Semicolon',
+        'Quote',
+        'Backslash',
+        'Comma',
+        'Period',
+        'Slash',
+        'Insert',
+        'Delete',
+        'Home',
+        'End',
+        'PageUp',
+        'PageDown',
+        'CapsLock',
+        'ContextMenu',
+        'Numpad0',
+        'Numpad1',
+        'Numpad2',
+        'Numpad3',
+        'Numpad4',
+        'Numpad5',
+        'Numpad6',
+        'Numpad7',
+        'Numpad8',
+        'Numpad9',
+        'NumpadMultiply',
+        'NumpadAdd',
+        'NumpadSubtract',
+        'NumpadDecimal',
+        'NumpadDivide',
+        'NumpadEnter',
+        'NumLock'
+      ]
     }
 
     /**
      * Clears all the key inputs
      */
-    clearKeys(): void {
+    clearKeys() {
       for (let i = 0; i < this.#keyCodes.length; i++) {
         const key = this.#keyCodes[i]
         Object.defineProperty(this, key, {

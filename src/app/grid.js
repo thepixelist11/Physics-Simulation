@@ -160,6 +160,9 @@ class Grid {
             }, {}),
             points: __classPrivateFieldGet(this, _Grid_points, "f").map(point => point.toJSON()),
             cellSize: __classPrivateFieldGet(this, _Grid_cellSize, "f"),
+            camX: mainCam.x,
+            camY: mainCam.y,
+            camZoom: mainCam.zoom,
             pointsCells: Array.from(__classPrivateFieldGet(this, _Grid_pointsCells, "f").entries()).reduce((acc, [key, value]) => {
                 acc[key] = value;
                 return acc;
@@ -175,6 +178,9 @@ class Grid {
             p.fromJSON(JSON.stringify(parsedJSON.points[i]));
             this.addPoint(p);
         }
+        mainCam.x = parseFloat(parsedJSON.camX);
+        mainCam.y = parseFloat(parsedJSON.camY);
+        mainCam.zoom = parseFloat(parsedJSON.camZoom);
         this.updateCells();
         drawScene(this, ctx, mainCam, ConfigObject);
     }

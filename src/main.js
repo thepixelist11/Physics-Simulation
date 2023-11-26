@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, MenuItem } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, MenuItem, dialog, ipcRenderer } = require('electron')
 const path = require('path')
 
 const createWindow = () => {
@@ -7,6 +7,23 @@ const createWindow = () => {
     {
       label: 'File',
       submenu: [
+        {
+          label: 'Save Simulation',
+          accelerator: 'CmdOrCtrl+S',
+          click: async () => {
+            const path = await simSaveDialogue()
+            win.webContents.send('saveSim', path ?? null)
+          },
+        },
+        {
+          label: 'Load Simulation',
+          accelerator: 'CmdOrCtrl+L',
+          click: async () => {
+            const path = await simLoadDialogue()
+            win.webContents.send('loadSim', path ?? null)
+          },
+        },
+        {type: 'separator'},
         {
           label: 'Exit',
           accelerator: 'CmdOrCtrl+Q',
@@ -65,6 +82,10 @@ const createWindow = () => {
     var size = win.getSize()
     win.webContents.send('newSize', size)
   })
+
+  win.on('blur', () => {
+    win.webContents.send('lostFocus')
+  })
 }
 
 app.whenReady().then(() => {
@@ -73,3 +94,26 @@ app.whenReady().then(() => {
     if (process.platform !== 'darwin') app.quit()
   })
 })
+
+async function simSaveDialogue() {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+  })
+  if(!result.canceled && result.filePaths.length > 0) {
+    const selectedDirPath = result.filePaths[0]
+    return selectedDirPath
+  }
+  return null
+}
+
+async function simLoadDialogue() {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{name: 'SIMSAVE Files', extensions: '.simsave'}],
+  })
+  if(!result.canceled && result.filePaths.length > 0) {
+    const selectedFilePath = result.filePaths[0]
+    return selectedFilePath
+  }
+  return null
+}

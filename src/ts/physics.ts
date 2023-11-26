@@ -27,7 +27,7 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   handleCollisions(grid)
 }
 
-function handleCollisions(grid: Grid, checkCount = 8) {
+function handleCollisions(grid: Grid, checkCount = 16) {
   let pointsHandled = []
   for(let j = 0; j < checkCount; j++) {
     let pointIndex = 0

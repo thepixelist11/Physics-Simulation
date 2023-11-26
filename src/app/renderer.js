@@ -23,6 +23,21 @@ ipcRenderer.on('clearAllPoints', (evt, val) => {
     mainGrid.clearAllPoints();
     drawScene(mainGrid, ctx, mainCam, ConfigObject);
 });
+// Saves the simulation to a specified directory
+ipcRenderer.on('saveSim', (evt, val) => {
+    if (val) {
+        saveSimulation(val);
+    }
+});
+// Loads the simulation from a specific .simsave file
+ipcRenderer.on('loadSim', (evt, val) => {
+    if (val) {
+        loadSimulation(val);
+    }
+});
+ipcRenderer.on('lostFocus', (evt, val) => {
+    controller.keyboard.clearKeys();
+});
 // Initialize main camera
 let mainCam = new Camera(Eclipse.Vector2.ZERO, 1);
 // Initializes main grid

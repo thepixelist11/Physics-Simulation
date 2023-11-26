@@ -188,6 +188,9 @@ class Grid {
       }, {}),
       points: this.#points.map(point => point.toJSON()),
       cellSize: this.#cellSize,
+      camX: mainCam.x,
+      camY: mainCam.y,
+      camZoom: mainCam.zoom,
       pointsCells: Array.from(this.#pointsCells.entries()).reduce((acc: Record<string, any>, [key, value]) => {
         acc[key] = value;
         return acc;
@@ -204,6 +207,9 @@ class Grid {
       p.fromJSON(JSON.stringify(parsedJSON.points[i]))
       this.addPoint(p)
     }
+    mainCam.x = parseFloat(parsedJSON.camX)
+    mainCam.y = parseFloat(parsedJSON.camY)
+    mainCam.zoom = parseFloat(parsedJSON.camZoom)
     this.updateCells()
     drawScene(this, ctx, mainCam, ConfigObject)
   }
