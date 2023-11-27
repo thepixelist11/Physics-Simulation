@@ -48,6 +48,10 @@ class Camera {
       this.y += y ?? 0
     }
   }
+  changeZoom(scale: number) {
+    this.zoom += scale * Math.sqrt(this.zoom)
+    this.#zoom = Eclipse.clamp(this.zoom, 0.01, 50)
+  }
 }
 
 module.exports = {

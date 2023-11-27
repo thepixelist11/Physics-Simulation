@@ -54,6 +54,10 @@ class Camera {
             this.y += y !== null && y !== void 0 ? y : 0;
         }
     }
+    changeZoom(scale) {
+        this.zoom += scale * Math.sqrt(this.zoom);
+        __classPrivateFieldSet(this, _Camera_zoom, Eclipse.clamp(this.zoom, 0.01, 50), "f");
+    }
 }
 _Camera_pos = new WeakMap(), _Camera_zoom = new WeakMap();
 module.exports = {

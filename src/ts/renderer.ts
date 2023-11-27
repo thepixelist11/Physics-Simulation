@@ -45,7 +45,7 @@ ipcRenderer.on('lostFocus', (evt: Event, val: any) => {
 })
 
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.5)
 
 // Initializes main grid
 let mainGrid = new Grid([], 100)
@@ -120,7 +120,7 @@ let ConfigObject: ConfigType = {
     drawGridLines: true,
   }, 
   generalConfig: {
-    spacPartCellSize: 500,
+    spacPartCellSize: 100,
     allowDynamicPointsOnPoints: false,
     allowStaticPointsOnPoints: true,
   },

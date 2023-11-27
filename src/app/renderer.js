@@ -39,7 +39,7 @@ ipcRenderer.on('lostFocus', (evt, val) => {
     controller.keyboard.clearKeys();
 });
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 1);
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.5);
 // Initializes main grid
 let mainGrid = new Grid([], 100);
 // Initializes main controller
@@ -110,7 +110,7 @@ let ConfigObject = {
         drawGridLines: true,
     },
     generalConfig: {
-        spacPartCellSize: 500,
+        spacPartCellSize: 100,
         allowDynamicPointsOnPoints: false,
         allowStaticPointsOnPoints: true,
     },

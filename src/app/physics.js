@@ -2,7 +2,7 @@
 require('./eclipse');
 require('./primitives');
 require('./grid');
-const gravity = new Eclipse.Vector2(0, 9.81);
+const gravity = new Eclipse.Vector2(0, -9.81);
 function updatePoints(deltaTime, grid, pxPerM) {
     const points = grid.points;
     for (let i = 0; i < points.length; i++) {
@@ -24,7 +24,7 @@ function updatePoints(deltaTime, grid, pxPerM) {
     grid.updateCells();
     handleCollisions(grid);
 }
-function handleCollisions(grid, checkCount = 16) {
+function handleCollisions(grid, checkCount = 128) {
     var _a;
     let pointsHandled = [];
     for (let j = 0; j < checkCount; j++) {
@@ -56,7 +56,7 @@ function handleCollisions(grid, checkCount = 16) {
                                     // Y
                                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                                         (p.radius + other.radius - dist)) /
-                                        (other.isStatic ? 1 : 2) * (p.x >= other.x ? 1 : -1));
+                                        (other.isStatic ? 1 : 2) * (p.x <= other.x ? -1 : 1));
                                     const otherDisplacement = new Eclipse.Vector2(
                                     // X
                                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
@@ -65,7 +65,7 @@ function handleCollisions(grid, checkCount = 16) {
                                     // Y
                                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                                         (p.radius + other.radius - dist)) /
-                                        (p.isStatic ? 1 : 2) * (other.x >= p.x ? 1 : -1));
+                                        (p.isStatic ? 1 : 2) * (other.x <= p.x ? -1 : 1));
                                     if (!p.isStatic)
                                         pNewPosition.add(pDisplacement);
                                     if (!other.isStatic && !arrayContainsPoint(pointsHandled, other))

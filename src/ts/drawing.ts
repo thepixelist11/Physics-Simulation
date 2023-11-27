@@ -14,13 +14,13 @@ function drawScene(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, Co
   ctx.save()
   ctx.translate(-camera.x, -camera.y)
   ctx.scale(camera.zoom, camera.zoom)
-
+  
   // Debug -
   if(ConfigObject.debugConfig.fillFilledGridCells ?? false) { 
     fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER)
   }
   // -
-
+  
   // TODO: Allow toggling on and off grid lines on top
   drawGrid(grid, ctx, camera, ConfigObject)
   drawPoints(grid.points, ctx)
@@ -125,7 +125,7 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
     let text = ''
     if(options.cameraPos.camX ?? true) text = text.concat(`CamX: ${options.cameraPos.cam.x} `)
     if(options.cameraPos.camY ?? true) text = text.concat(`CamY: ${options.cameraPos.cam.y} `)
-    if(options.cameraPos.camZoom ?? true) text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom} `)
+    if(options.cameraPos.camZoom ?? true) text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom.toFixed(4)} `)
     ctx.fillText(text, options.cameraPos.position.x, options.cameraPos.position.y)
   }
   // Global Mouse Position

@@ -2,7 +2,7 @@ require('./eclipse')
 require('./primitives')
 require('./grid')
 
-const gravity = new Eclipse.Vector2(0, 9.81)
+const gravity = new Eclipse.Vector2(0, -9.81)
 
 function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   const points = grid.points
@@ -27,7 +27,7 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   handleCollisions(grid)
 }
 
-function handleCollisions(grid: Grid, checkCount = 16) {
+function handleCollisions(grid: Grid, checkCount = 128) {
   let pointsHandled = []
   for(let j = 0; j < checkCount; j++) {
     let pointIndex = 0
@@ -58,7 +58,7 @@ function handleCollisions(grid: Grid, checkCount = 16) {
                     // Y
                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                     (p.radius + other.radius - dist)) /
-                    (other.isStatic ? 1 : 2) * (p.x >= other.x ? 1 : -1)
+                    (other.isStatic ? 1 : 2) * (p.x <= other.x ? -1 : 1)
                   )
                   const otherDisplacement = new Eclipse.Vector2(
                     // X
@@ -68,7 +68,7 @@ function handleCollisions(grid: Grid, checkCount = 16) {
                     // Y
                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                     (p.radius + other.radius - dist)) /
-                    (p.isStatic ? 1 : 2) * (other.x >= p.x ? 1 : -1)
+                    (p.isStatic ? 1 : 2) * (other.x <= p.x ? -1 : 1)
                   )
                   
                   if(!p.isStatic) pNewPosition.add(pDisplacement)

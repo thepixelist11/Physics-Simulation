@@ -107,7 +107,7 @@ class Point {
     this.#isStatic = isStatic
   }
   get velocity() {
-    return this.#position.getSub(this.#lastPosition ?? Eclipse.Vector2.ZERO)
+    return this.#position.getSub(this.#lastPosition ?? Eclipse.Vector2.ZERO).getMult(Math.ceil((FPS * 1000) / (timeStep * 1000)) * 1 / FPS)
   }
   get identifier() {
     return this.#identifier

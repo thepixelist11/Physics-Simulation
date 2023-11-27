@@ -122,7 +122,7 @@ class Point {
     }
     get velocity() {
         var _a;
-        return __classPrivateFieldGet(this, _Point_position, "f").getSub((_a = __classPrivateFieldGet(this, _Point_lastPosition, "f")) !== null && _a !== void 0 ? _a : Eclipse.Vector2.ZERO);
+        return __classPrivateFieldGet(this, _Point_position, "f").getSub((_a = __classPrivateFieldGet(this, _Point_lastPosition, "f")) !== null && _a !== void 0 ? _a : Eclipse.Vector2.ZERO).getMult(Math.ceil((FPS * 1000) / (timeStep * 1000)) * 1 / FPS);
     }
     get identifier() {
         return __classPrivateFieldGet(this, _Point_identifier, "f");

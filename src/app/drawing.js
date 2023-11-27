@@ -65,7 +65,7 @@ function drawOverlay(ctx, options) {
         if ((_c = options.cameraPos.camY) !== null && _c !== void 0 ? _c : true)
             text = text.concat(`CamY: ${options.cameraPos.cam.y} `);
         if ((_d = options.cameraPos.camZoom) !== null && _d !== void 0 ? _d : true)
-            text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom} `);
+            text = text.concat(`CamZoom: ${options.cameraPos.cam.zoom.toFixed(4)} `);
         ctx.fillText(text, options.cameraPos.position.x, options.cameraPos.position.y);
     }
     // Global Mouse Position

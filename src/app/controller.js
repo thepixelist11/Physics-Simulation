@@ -27,6 +27,14 @@ class Controller {
                 camera.translate(0, this.keyboard.shiftDown ? 15 : 5);
                 drawScene(grid, ctx, camera, ConfigObject);
             }
+            // if(this.keyboard.Equal && !this.keyboard.ctrlDown) {
+            //   camera.changeZoom(this.keyboard.shiftDown ? 0.03 : 0.01)
+            //   drawScene(grid, ctx, camera, ConfigObject)
+            // }
+            // if(this.keyboard.Minus && !this.keyboard.ctrlDown) {
+            //   camera.changeZoom(this.keyboard.shiftDown ? -0.03 : -0.01)
+            //   drawScene(grid, ctx, camera, ConfigObject)
+            // }
         }, 16.67);
     }
 }
