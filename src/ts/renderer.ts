@@ -283,7 +283,7 @@ controller.mouse.onscroll = (evt: WheelEvent) => {
 }
 
 controller.keyboard.onkeydown = (code: Eclipse.Key) => {
-  if(code === 'Space') {
+  if(code === 'Enter') {
     if(loopPhysics) {
       stopPhysics()
     } else {
