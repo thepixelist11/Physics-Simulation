@@ -19,7 +19,7 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
     //@ts-ignore
     .getSub(p.lastPosition)
     .getAdd(gravity.getMult(pxPerM)
-      .getMult(deltaTime ** 2))
+      .getMult(deltaTime * deltaTime))
     p.lastPosition = currentPosition.copy()
     p.position = newPosition.copy()
   }
@@ -53,22 +53,22 @@ function handleCollisions(grid: Grid, checkCount = 16) {
                   const pDisplacement = new Eclipse.Vector2(
                     // X
                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                    (p.radius + other.radius - dist)) /
-                    (other.isStatic ? 1 : 2) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0),
+                    (p.radius + other.radius - dist)) *
+                    (other.isStatic ? 1 : 0.5) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0),
                     // Y
                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                    (p.radius + other.radius - dist)) /
-                    (other.isStatic ? 1 : 2) * (p.x <= other.x ? -1 : 1)
+                    (p.radius + other.radius - dist)) *
+                    (other.isStatic ? 1 : 0.5) * (p.x <= other.x ? -1 : 1)
                   )
                   const otherDisplacement = new Eclipse.Vector2(
                     // X
                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                    (p.radius + other.radius - dist)) /
-                    (p.isStatic ? 1 : 2) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0),
+                    (p.radius + other.radius - dist)) *
+                    (p.isStatic ? 1 : 0.5) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0),
                     // Y
                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
-                    (p.radius + other.radius - dist)) /
-                    (p.isStatic ? 1 : 2) * (other.x <= p.x ? -1 : 1)
+                    (p.radius + other.radius - dist)) *
+                    (p.isStatic ? 1 : 0.5) * (other.x <= p.x ? -1 : 1)
                   )
                   
                   if(!p.isStatic) pNewPosition.add(pDisplacement)
