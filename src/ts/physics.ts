@@ -2,7 +2,7 @@ require('./eclipse')
 require('./primitives')
 require('./grid')
 
-const gravity = new Eclipse.Vector2(0, -9.81)
+const gravity = new Eclipse.Vector2(0, 9.81)
 
 function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   const points = grid.points
@@ -27,7 +27,7 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   handleCollisions(grid)
 }
 
-function handleCollisions(grid: Grid, checkCount = 128) {
+function handleCollisions(grid: Grid, checkCount = 16) {
   let pointsHandled = []
   for(let j = 0; j < checkCount; j++) {
     let pointIndex = 0

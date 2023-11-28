@@ -9,10 +9,12 @@ class Controller {
   pointPlacementRadius = 0
   pointDynamicPlacementColor = Eclipse.Color.BLACK
   pointStaticPlacementColor = Eclipse.Color.BLACK
+  selectedPoint: Point | null
 
   constructor(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, doc: Document) {
     this.keyboard = new Eclipse.KeyBoard(doc)
     this.mouse = new Eclipse.Mouse(doc)
+    this.selectedPoint = null
     
     setInterval(() => {
       if(this.keyboard.KeyD && !this.keyboard.ctrlDown) {
@@ -40,6 +42,13 @@ class Controller {
       //   drawScene(grid, ctx, camera, ConfigObject)
       // }
     }, 16.67)
+  }
+
+  getGlobalMousePosition() {
+    return new Eclipse.Vector2(
+      (this.mouse.x + mainCam.x) / mainCam.zoom,
+      (this.mouse.y + mainCam.y) / mainCam.zoom
+    )
   }
 }
 

@@ -136,6 +136,12 @@ class Point {
         };
     }
     draw(ctx) {
+        var _a;
+        if (ConfigObject.uiConfig.selectedPointOutlineColor &&
+            this.identifier === ((_a = controller.selectedPoint) === null || _a === void 0 ? void 0 : _a.identifier) &&
+            ConfigObject.uiConfig.selectedPointOutlineRadius) {
+            Eclipse.drawPoint(ctx, this.position, this.radius + ConfigObject.uiConfig.selectedPointOutlineRadius, ConfigObject.uiConfig.selectedPointOutlineColor);
+        }
         Eclipse.drawPoint(ctx, this.position, this.radius, this.color);
     }
     // Sets the standard properties to the initial properties, resetting the point

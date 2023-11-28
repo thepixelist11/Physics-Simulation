@@ -68,7 +68,10 @@ type Overlay = {
   cursorDisplay?: cursorDisplay,
   cellSize?: number,
   entityDisplay?: entityDisplay,
-  drawGridLines?: boolean
+  drawGridLines?: boolean,
+  selectedPointOutlineColor?: Eclipse.Color,
+  selectedPointOutlineRadius?: number,
+  selectedIdentifier?: selectedIdentifier,
 }
 type overlayOptions = {
   position: Eclipse.Vector2,
@@ -116,6 +119,9 @@ type entityDisplay = {
   position: Eclipse.Vector2,
   spacingBetweenTotals?: number,
 }
+type selectedIdentifier = overlayOptions & {
+  fontStyle?: string
+}
 
 function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
   // Camera Position
@@ -134,8 +140,8 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
     ctx.fillStyle = options.globalMousePos.color.toString()
     if(options.globalMousePos.mouse !== null) {
       let text = ''
-      if(options.globalMousePos.showX ?? true) text = text.concat(`globalMouseX: ${Math.round((options.globalMousePos.mouse.x + mainCam.x) / options.globalMousePos.cam.zoom)} `)
-      if(options.globalMousePos.showY ?? true) text = text.concat(`globalMouseY: ${Math.round((options.globalMousePos.mouse.y + mainCam.y) / options.globalMousePos.cam.zoom)} `)
+      if(options.globalMousePos.showX ?? true) text = text.concat(`globalMouseX: ${Math.round(controller.getGlobalMousePosition().x)} `)
+      if(options.globalMousePos.showY ?? true) text = text.concat(`globalMouseY: ${Math.round(controller.getGlobalMousePosition().y)} `)
       ctx.fillText(text, options.globalMousePos.position.x, options.globalMousePos.position.y)
     } else {
       ctx.fillText(
@@ -162,7 +168,7 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
       )
     }
   }
-  // Grid Index
+  // Visual Grid Index
   if(options.gridIndex && options.gridIndex.enabled) {
     ctx.font = options.gridIndex.fontStyle ?? 'courier 100px'
     ctx.fillStyle = options.gridIndex.color.toString()
@@ -183,17 +189,19 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
   if(options.cursorDisplay && options.cursorDisplay.enabled) {
     switch(options.cursorDisplay.type) {
       case 'pointPlace':
-        ctx.globalAlpha = options.cursorDisplay.opacity
-        options.cursorDisplay.controller.mouse.x
-        options.cursorDisplay.controller.mouse.y
-        Eclipse.drawPoint(
+          ctx.globalAlpha = options.cursorDisplay.opacity
+          options.cursorDisplay.controller.mouse.x
+          options.cursorDisplay.controller.mouse.y
+          Eclipse.drawPoint(
           ctx, 
           options.cursorDisplay.controller.mouse.x, 
           options.cursorDisplay.controller.mouse.y, 
           options.cursorDisplay.controller.pointPlacementRadius
           * options.cursorDisplay.cam.zoom, 
+          controller.keyboard.shiftDown ? 
+          options.cursorDisplay.controller.pointStaticPlacementColor :
           options.cursorDisplay.controller.pointDynamicPlacementColor
-        )
+          )
         ctx.globalAlpha = 1
         break
     }
@@ -219,6 +227,13 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
       let text = `Static Entities: ${options.entityDisplay.grid.totalStatic} `
       ctx.fillText(text, textX, options.entityDisplay.position.y)
     }
+  }
+  // Selected Identifier
+  if(options.selectedIdentifier && options.selectedIdentifier.enabled) {
+    ctx.font = options.selectedIdentifier.fontStyle ?? 'courier 100px'
+    ctx.fillStyle = options.selectedIdentifier.color.toString()
+    let text = controller.selectedPoint?.identifier.toString()
+    ctx.fillText(`Selected Point ID: ${text ?? 'None'}`, options.selectedIdentifier.position.x, options.selectedIdentifier.position.y)
   }
 }
 

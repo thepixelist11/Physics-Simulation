@@ -48,25 +48,14 @@ class Grid {
         }
         return false;
     }
-    removePoint(p) {
-        if (p instanceof Point) {
-            const index = this.containsPoint(p);
-            if (index !== -1) {
-                this.points.splice(index, 1);
+    removePoint(id) {
+        for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
+            const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
+            if (p.identifier === id) {
+                __classPrivateFieldGet(this, _Grid_points, "f").splice(i, 1);
+                __classPrivateFieldGet(this, _Grid_pointsCells, "f").delete(i);
                 this.updateCells();
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            if (this.points.splice(p, 1)) {
-                this.updateCells();
-                return true;
-            }
-            else {
-                return false;
+                break;
             }
         }
     }
@@ -79,7 +68,7 @@ class Grid {
             const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
             for (let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
                 for (let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
-                    const gridPosition = new Eclipse.Vector2(j * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize / 2), k * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize / 2));
+                    const gridPosition = new Eclipse.Vector2(j * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize * 0.5), k * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize * 0.5));
                     const cellPos = new Eclipse.Vector2(j, k);
                     // Checks if any part of the point is inside the grid cell
                     if (gridPosition.dist(p.position) <= p.radius + (__classPrivateFieldGet(this, _Grid_cellSize, "f") * Math.SQRT1_2)) {

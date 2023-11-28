@@ -10,6 +10,7 @@ class Controller {
         this.pointStaticPlacementColor = Eclipse.Color.BLACK;
         this.keyboard = new Eclipse.KeyBoard(doc);
         this.mouse = new Eclipse.Mouse(doc);
+        this.selectedPoint = null;
         setInterval(() => {
             if (this.keyboard.KeyD && !this.keyboard.ctrlDown) {
                 camera.translate(this.keyboard.shiftDown ? 15 : 5, 0);
@@ -36,6 +37,9 @@ class Controller {
             //   drawScene(grid, ctx, camera, ConfigObject)
             // }
         }, 16.67);
+    }
+    getGlobalMousePosition() {
+        return new Eclipse.Vector2((this.mouse.x + mainCam.x) / mainCam.zoom, (this.mouse.y + mainCam.y) / mainCam.zoom);
     }
 }
 module.exports = {

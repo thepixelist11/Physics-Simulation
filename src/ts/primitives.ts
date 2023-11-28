@@ -123,6 +123,16 @@ class Point {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    if(ConfigObject.uiConfig.selectedPointOutlineColor && 
+      this.identifier === controller.selectedPoint?.identifier &&
+      ConfigObject.uiConfig.selectedPointOutlineRadius) {
+      Eclipse.drawPoint(
+        ctx, 
+        this.position, 
+        this.radius + ConfigObject.uiConfig.selectedPointOutlineRadius, 
+        ConfigObject.uiConfig.selectedPointOutlineColor
+      )
+    }
     Eclipse.drawPoint(ctx, this.position, this.radius, this.color)
   }
 

@@ -42,6 +42,11 @@ ipcRenderer.on('loadSim', (evt: Event, val: any) => {
 
 ipcRenderer.on('lostFocus', (evt: Event, val: any) => {
   controller.keyboard.clearKeys()
+  windowInFocus = false
+})
+
+window.addEventListener('focus', (evt: Event) => {
+  windowInFocus = true
 })
 
 // Initialize main camera
@@ -49,6 +54,8 @@ let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.5)
 
 // Initializes main grid
 let mainGrid = new Grid([], 100)
+
+let windowInFocus = true
 
 // Initializes main controller
 const controller = new Controller(mainGrid, ctx, mainCam, document)
@@ -116,11 +123,20 @@ let ConfigObject: ConfigType = {
       showTotal: true,
       spacingBetweenTotals: 3
     },
+    selectedIdentifier: {
+      enabled: true,
+      position: new Eclipse.Vector2(5, 90),
+      color: Eclipse.Color.BLACK,
+      cam: mainCam
+    },
     cellSize: pxPerM,
     drawGridLines: true,
+    selectedPointOutlineColor: Eclipse.Color.GREEN,
+    selectedPointOutlineRadius: 5,
   }, 
   generalConfig: {
-    spacPartCellSize: 100,
+    useSpacialPartitioning: true,
+    spacPartCellSize: 500,
     allowDynamicPointsOnPoints: false,
     allowStaticPointsOnPoints: true,
   },
@@ -145,6 +161,7 @@ type ConfigType = {
     spacPartCellSize: number,
     allowDynamicPointsOnPoints: boolean,
     allowStaticPointsOnPoints: boolean,
+    useSpacialPartitioning: boolean,
   },
   debugConfig: {
     fillFilledGridCells?: boolean
@@ -170,6 +187,8 @@ const FPS = 16.67
 
 // Main physics loop
 function startPhysics() {
+  // Disable cursor
+  if (ConfigObject.uiConfig.cursorDisplay) ConfigObject.uiConfig.cursorDisplay.enabled = false
   timeStep = Eclipse.clamp(timeStep, 0.01667, 16.67)
   time = 0
   loopPhysics = true
@@ -190,18 +209,37 @@ function startPhysics() {
   }, FPS)
 }
 
+function stopPhysics() {
+  // Enable cursor
+  if (ConfigObject.uiConfig.cursorDisplay) ConfigObject.uiConfig.cursorDisplay.enabled = true
+  loopPhysics = false
+  resetPoints()
+}
+
 // Setup events and loops
 controller.mouse.onlmbdown = () => {
   switch(loopPhysics) {
     case false:
-      // Create new dynamic point
-      let p = new Point(new Eclipse.Vector2(
-        (controller.mouse.x + mainCam.x) / mainCam.zoom,
-        (controller.mouse.y + mainCam.y) / mainCam.zoom,
-      ), 1, controller.pointPlacementRadius, controller.pointDynamicPlacementColor, false)
-      if(ConfigObject.generalConfig.allowDynamicPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
-        mainGrid.addPoint(p)
-        drawScene(mainGrid, ctx, mainCam, ConfigObject)
+      if(controller.keyboard.shiftDown) {
+        // Create new static point
+        let p = new Point(new Eclipse.Vector2(
+          (controller.mouse.x + mainCam.x) / mainCam.zoom,
+          (controller.mouse.y + mainCam.y) / mainCam.zoom,
+        ), 1, controller.pointPlacementRadius, controller.pointStaticPlacementColor, true)
+        if(ConfigObject.generalConfig.allowStaticPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
+          mainGrid.addPoint(p)
+          drawScene(mainGrid, ctx, mainCam, ConfigObject)
+        }
+      } else {
+        // Create new dynamic point
+        let p = new Point(new Eclipse.Vector2(
+          (controller.mouse.x + mainCam.x) / mainCam.zoom,
+          (controller.mouse.y + mainCam.y) / mainCam.zoom,
+        ), 1, controller.pointPlacementRadius, controller.pointDynamicPlacementColor, false)
+        if(ConfigObject.generalConfig.allowDynamicPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
+          mainGrid.addPoint(p)
+          drawScene(mainGrid, ctx, mainCam, ConfigObject)
+        }
       }
       break
   }
@@ -210,13 +248,28 @@ controller.mouse.onlmbdown = () => {
 controller.mouse.onrmbdown = () => {
   switch(loopPhysics) {
     case false:
-      // Create new static point
-      let p = new Point(new Eclipse.Vector2(
-        (controller.mouse.x + mainCam.x) / mainCam.zoom,
-        (controller.mouse.y + mainCam.y) / mainCam.zoom,
-      ), 1, controller.pointPlacementRadius, controller.pointStaticPlacementColor, true)
-      if(ConfigObject.generalConfig.allowStaticPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
-        mainGrid.addPoint(p)
+      const indicies = new Eclipse.Vector2(
+        Math.floor((controller.mouse.x + mainCam.x) / mainCam.zoom / (mainGrid.cellSize ?? 100)), 
+        Math.floor((controller.mouse.y + mainCam.y) / mainCam.zoom / (mainGrid.cellSize ?? 100))
+      )
+      const cell = mainGrid.cells.get(indicies.toString())
+      // Cell is undefined if there are no points in it
+      if(cell !== undefined) {
+        for(let i = 0; i < cell.length; i++) {
+          const p = cell[i]
+          // Do not select the same point twice in a row
+          if(p.identifier === controller.selectedPoint?.identifier) continue
+          const mouseDistFromP = 
+            ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
+            ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
+          if(mouseDistFromP <= p.radius * p.radius) {
+            controller.selectedPoint = p
+            drawScene(mainGrid, ctx, mainCam, ConfigObject)
+            break
+          }
+        }
+      } else {
+        controller.selectedPoint = null
         drawScene(mainGrid, ctx, mainCam, ConfigObject)
       }
       break
@@ -237,13 +290,23 @@ controller.keyboard.onkeydown = (code: Eclipse.Key) => {
       startPhysics()
     }
   }
+  if(code === 'ShiftLeft' || code === 'ShiftRight') {
+    drawScene(mainGrid, ctx, mainCam, ConfigObject)
+  }
+  if(code === 'Delete') {
+    if(controller.selectedPoint !== null) {
+      mainGrid.removePoint(controller.selectedPoint.identifier)
+      drawScene(mainGrid, ctx, mainCam, ConfigObject)
+    }
+  }
+}
+
+controller.keyboard.onkeyup = (code: Eclipse.Key) => {
+  if(code === 'ShiftLeft' || code === 'ShiftRight') {
+    drawScene(mainGrid, ctx, mainCam, ConfigObject)
+  }
 }
 
 controller.keyboard
-
-function stopPhysics() {
-  loopPhysics = false
-  resetPoints()
-}
 
 drawScene(mainGrid, ctx, mainCam, ConfigObject)

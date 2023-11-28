@@ -49,24 +49,14 @@ class Grid {
     return false
   }
 
-  removePoint(p: Point): boolean
-  removePoint(p: number): boolean
-  removePoint(p: Point | number) {
-    if(p instanceof Point) {
-      const index = this.containsPoint(p)
-      if(index !== -1) {
-        this.points.splice(index, 1)
+  removePoint(id: number) {
+    for(let i = 0; i < this.#points.length; i++) {
+      const p = this.#points[i]
+      if(p.identifier === id) {
+        this.#points.splice(i, 1)
+        this.#pointsCells.delete(i)
         this.updateCells()
-        return true
-      } else {
-        return false
-      }
-    } else {
-      if(this.points.splice(p, 1)) {
-        this.updateCells()
-        return true
-      } else {
-        return false
+        break
       }
     }
   }
@@ -81,8 +71,8 @@ class Grid {
       for(let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
         for(let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
           const gridPosition = new Eclipse.Vector2(
-              j * this.#cellSize + (this.cellSize / 2),
-              k * this.#cellSize + (this.cellSize / 2)
+              j * this.#cellSize + (this.cellSize * 0.5),
+              k * this.#cellSize + (this.cellSize * 0.5)
             )
             const cellPos = new Eclipse.Vector2(j, k)
           // Checks if any part of the point is inside the grid cell

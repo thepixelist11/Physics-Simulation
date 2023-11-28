@@ -54,7 +54,7 @@ function drawBackground(ctx, color) {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 function drawOverlay(ctx, options) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
     // Camera Position
     if (options.cameraPos && options.cameraPos.enabled) {
         ctx.font = (_a = options.cameraPos.fontStyle) !== null && _a !== void 0 ? _a : 'courier 100px';
@@ -75,9 +75,9 @@ function drawOverlay(ctx, options) {
         if (options.globalMousePos.mouse !== null) {
             let text = '';
             if ((_f = options.globalMousePos.showX) !== null && _f !== void 0 ? _f : true)
-                text = text.concat(`globalMouseX: ${Math.round((options.globalMousePos.mouse.x + mainCam.x) / options.globalMousePos.cam.zoom)} `);
+                text = text.concat(`globalMouseX: ${Math.round(controller.getGlobalMousePosition().x)} `);
             if ((_g = options.globalMousePos.showY) !== null && _g !== void 0 ? _g : true)
-                text = text.concat(`globalMouseY: ${Math.round((options.globalMousePos.mouse.y + mainCam.y) / options.globalMousePos.cam.zoom)} `);
+                text = text.concat(`globalMouseY: ${Math.round(controller.getGlobalMousePosition().y)} `);
             ctx.fillText(text, options.globalMousePos.position.x, options.globalMousePos.position.y);
         }
         else {
@@ -100,7 +100,7 @@ function drawOverlay(ctx, options) {
             ctx.fillText(`Failed to get mouse`, options.relativeMousePos.position.x, options.relativeMousePos.position.y);
         }
     }
-    // Grid Index
+    // Visual Grid Index
     if (options.gridIndex && options.gridIndex.enabled) {
         ctx.font = (_l = options.gridIndex.fontStyle) !== null && _l !== void 0 ? _l : 'courier 100px';
         ctx.fillStyle = options.gridIndex.color.toString();
@@ -124,7 +124,9 @@ function drawOverlay(ctx, options) {
                 options.cursorDisplay.controller.mouse.x;
                 options.cursorDisplay.controller.mouse.y;
                 Eclipse.drawPoint(ctx, options.cursorDisplay.controller.mouse.x, options.cursorDisplay.controller.mouse.y, options.cursorDisplay.controller.pointPlacementRadius
-                    * options.cursorDisplay.cam.zoom, options.cursorDisplay.controller.pointDynamicPlacementColor);
+                    * options.cursorDisplay.cam.zoom, controller.keyboard.shiftDown ?
+                    options.cursorDisplay.controller.pointStaticPlacementColor :
+                    options.cursorDisplay.controller.pointDynamicPlacementColor);
                 ctx.globalAlpha = 1;
                 break;
         }
@@ -150,6 +152,13 @@ function drawOverlay(ctx, options) {
             let text = `Static Entities: ${options.entityDisplay.grid.totalStatic} `;
             ctx.fillText(text, textX, options.entityDisplay.position.y);
         }
+    }
+    // Selected Identifier
+    if (options.selectedIdentifier && options.selectedIdentifier.enabled) {
+        ctx.font = (_x = options.selectedIdentifier.fontStyle) !== null && _x !== void 0 ? _x : 'courier 100px';
+        ctx.fillStyle = options.selectedIdentifier.color.toString();
+        let text = (_y = controller.selectedPoint) === null || _y === void 0 ? void 0 : _y.identifier.toString();
+        ctx.fillText(`Selected Point ID: ${text !== null && text !== void 0 ? text : 'None'}`, options.selectedIdentifier.position.x, options.selectedIdentifier.position.y);
     }
 }
 function fillNonEmptyGridCells(ctx, grid, color) {
