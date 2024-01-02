@@ -28,7 +28,8 @@ function updatePoints(deltaTime, grid, pxPerM) {
         p.position = newPosition.copy();
     }
     grid.updateCells();
-    handleCollisions(grid);
+    handlePointCollisions(grid);
+    handleWallCollisions();
 }
 // VELOCITY VERLET (More precise and performant, collision doesn't work.)
 // const currentVelocity = p.velocity.copy()
@@ -44,7 +45,7 @@ function updatePoints(deltaTime, grid, pxPerM) {
 //   p.acceleration.getMult(0.5 * deltaTime)
 // )
 // p.velocity = newVelocity.copy().getMult(pxPerM)
-function handleCollisions(grid, checkCount = 16) {
+function handlePointCollisions(grid, checkCount = 16) {
     var _a;
     let pointsHandled = [];
     for (let j = 0; j < checkCount; j++) {
@@ -112,6 +113,46 @@ function handleCollisions(grid, checkCount = 16) {
         }
     }
 }
+function handleWallCollisions() {
+    for (let i = 0; i < mainGrid.points.length; i++) {
+        const p = mainGrid.points[i];
+        // Wall collisions
+        for (let wallIndex = 0; wallIndex < mainGrid.walls.length; wallIndex++) {
+            const w = mainGrid.walls[wallIndex];
+            const COR = 0.7;
+            if (checkCollisionWithWall(p, w)) {
+                let newVelocity;
+                let newPosition = p.position.copy();
+                const previousVel = p.velocity.copy();
+                switch (w.side) {
+                    case "top":
+                        newPosition.y += Math.abs(p.y - p.radius - w.position);
+                        newVelocity = new Eclipse.Vector2(p.velocity.x, p.velocity.y * -COR);
+                        break;
+                    case "bottom":
+                        newPosition.y -= Math.abs(w.position - p.y - p.radius);
+                        newVelocity = new Eclipse.Vector2(p.velocity.x, p.velocity.y * -COR);
+                        break;
+                    case "left":
+                        newPosition.x += Math.abs(p.x - p.radius - w.position);
+                        newVelocity = new Eclipse.Vector2(p.velocity.x * -COR, p.velocity.y);
+                        break;
+                    case "right":
+                        newPosition.x -= Math.abs(p.x - p.radius - w.position);
+                        newVelocity = new Eclipse.Vector2(p.velocity.x * -COR, p.velocity.y);
+                        break;
+                }
+                p.position = newPosition;
+                // The velocity is changed twice so that the last position 
+                // relative to the current position remains the same after 
+                // the collision so that the final velocity can be accurately 
+                // determined
+                p.velocity = previousVel;
+                p.velocity = newVelocity;
+            }
+        }
+    }
+}
 function arrayContainsPoint(arr, point) {
     for (let i = 0; i < arr.length; i++) {
         if (point.identifier === arr[i].identifier)
@@ -164,7 +205,15 @@ function getCollisionPoint(p1, p2) {
     const p1y = p1.y + p1.radius * Math.sin(angle);
     return new Eclipse.Vector2(p1x, p1y);
 }
-module.exports = {
-    gravity: gravity,
-    updatePoints: updatePoints
-};
+function checkCollisionWithWall(p, w) {
+    switch (w.side) {
+        case "top":
+            return p.y - p.radius < w.position;
+        case "bottom":
+            return p.y + p.radius > w.position;
+        case "left":
+            return p.x - p.radius < w.position;
+        case "right":
+            return p.x + p.radius > w.position;
+    }
+}

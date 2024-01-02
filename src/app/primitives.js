@@ -341,21 +341,18 @@ class Wall {
         ctx.fillStyle = this.color.toString();
         switch (__classPrivateFieldGet(this, _Wall_side, "f")) {
             case "top":
-                ctx.fillRect(0, this.position - mainCam.y, canvas.width, -canvas.height);
+                ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, -canvas.height);
                 break;
             case "bottom":
-                ctx.fillRect(0, this.position - mainCam.y, canvas.width, canvas.height);
+                ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, canvas.height);
                 break;
             case "left":
-                ctx.fillRect(this.position - mainCam.x, 0, -canvas.width, canvas.height);
+                ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, -canvas.width, canvas.height);
                 break;
             case "right":
-                ctx.fillRect(this.position - mainCam.x, 0, canvas.width, canvas.height);
+                ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, canvas.width, canvas.height);
                 break;
         }
     }
 }
 _Wall_position = new WeakMap(), _Wall_side = new WeakMap(), _Wall_color = new WeakMap();
-module.exports = {
-    Point: Point,
-};

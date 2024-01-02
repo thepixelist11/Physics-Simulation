@@ -63,7 +63,3 @@ class Controller {
     )
   }
 }
-
-module.exports = {
-  Controller: Controller,
-}

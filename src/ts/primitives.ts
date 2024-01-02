@@ -387,21 +387,18 @@ class Wall {
     ctx.fillStyle = this.color.toString()
     switch(this.#side) {
       case "top":
-        ctx.fillRect(0, this.position - mainCam.y, canvas.width, -canvas.height)
+        ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, -canvas.height)
         break
       case "bottom":
-        ctx.fillRect(0, this.position - mainCam.y, canvas.width, canvas.height)
+        ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, canvas.height)
         break
       case "left":
-        ctx.fillRect(this.position - mainCam.x, 0, -canvas.width, canvas.height)
+        ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, -canvas.width, canvas.height)
         break
       case "right":
-        ctx.fillRect(this.position - mainCam.x, 0, canvas.width, canvas.height)
+        ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, canvas.width, canvas.height)
         break
     }
   }
 }
 
-module.exports = {
-  Point: Point,
-}

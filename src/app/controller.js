@@ -51,6 +51,3 @@ class Controller {
         return new Eclipse.Vector2((this.mouse.x + mainCam.x) / mainCam.zoom, (this.mouse.y + mainCam.y) / mainCam.zoom);
     }
 }
-module.exports = {
-    Controller: Controller,
-};

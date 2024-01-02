@@ -193,7 +193,3 @@ function fillNonEmptyGridCells(ctx, grid, color) {
         ctx.fillRect(pos.x * grid.cellSize, pos.y * grid.cellSize, grid.cellSize, grid.cellSize);
     }
 }
-module.exports = {
-    drawScene: drawScene,
-    drawOverlay: drawOverlay,
-};

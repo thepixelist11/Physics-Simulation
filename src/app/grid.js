@@ -208,6 +208,3 @@ _Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new 
             Math.floor(p.rect.bottom / __classPrivateFieldGet(this, _Grid_cellSize, "f")),
     };
 };
-module.exports = {
-    Grid: Grid,
-};

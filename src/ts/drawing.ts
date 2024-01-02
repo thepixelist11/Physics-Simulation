@@ -304,7 +304,3 @@ function fillNonEmptyGridCells(ctx: CanvasRenderingContext2D, grid: Grid, color:
   }
 }
 
-module.exports = {
-  drawScene: drawScene,
-  drawOverlay: drawOverlay,
-}
