@@ -46,9 +46,9 @@ var Eclipse;
     }
     Eclipse.drawPoint = drawPoint;
     function drawLine(ctx, x1, y1, x2, y2, weight = 2, color = Color.BLACK) {
-        ctx.lineWidth = weight;
         if (typeof x1 === 'number' && typeof x2 === 'number' && typeof y1 === 'number' && typeof y2 === 'number') {
             // Overload 2
+            ctx.lineWidth = weight;
             ctx.strokeStyle = color.toString();
             ctx.beginPath();
             ctx.moveTo(x1, y1);
@@ -57,6 +57,7 @@ var Eclipse;
         }
         else if (x1 instanceof Vector2 && y1 instanceof Vector2) {
             // Overload 1
+            ctx.lineWidth = x2;
             ctx.strokeStyle = y2.toString();
             ctx.beginPath();
             ctx.moveTo(x1.x, x1.y);
@@ -65,6 +66,25 @@ var Eclipse;
         }
     }
     Eclipse.drawLine = drawLine;
+    function drawPoly(ctx, verticies, borderColor, borderWeight, fill = false, fillColor = Eclipse.Color.BLACK) {
+        var _a;
+        if (fill) {
+            ctx.moveTo(verticies[0].x, verticies[0].y);
+            for (let i = 1; i < verticies.length; i++) {
+                ctx.lineTo(verticies[i].x, verticies[i].y);
+            }
+            ctx.fillStyle = fillColor.toString();
+            ctx.fill();
+        }
+        for (let i = 0; i < verticies.length; i++) {
+            drawLine(ctx, verticies[i], (_a = verticies[i + 1]) !== null && _a !== void 0 ? _a : verticies[0], borderWeight, borderColor);
+            if (fill) {
+                if (i !== 0)
+                    ctx.lineTo(verticies[i].x, verticies[i].y);
+            }
+        }
+    }
+    Eclipse.drawPoly = drawPoly;
     // ----- COLOR FUNCTIONS AND CLASSES
     class Color {
         constructor(r = 0, g = 0, b = 0) {
@@ -96,6 +116,7 @@ var Eclipse;
                 }
                 else if (new RegExp('rgb\\(\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)').test(r) && typeof r === 'string') {
                     // Regular expression to test whether or not value is in the format 'rgb(number, number, number)'
+                    r.toLowerCase();
                     const stringVals = (r.match(new RegExp('rgb\\(\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)')) || ['0', '0', '0']).slice(1, 4);
                     const parsedVals = new Array(3);
                     for (let i = 0; i < 3; i++) {
@@ -653,16 +674,34 @@ var Eclipse;
             const y = random(minY, maxY);
             return new Vector2(x, y);
         }
+        static get ZERO() {
+            return new Vector2(0, 0);
+        }
+        static get UP() {
+            return new Vector2(0, -1);
+        }
+        static get DOWN() {
+            return new Vector2(0, 1);
+        }
+        static get LEFT() {
+            return new Vector2(-1, 0);
+        }
+        static get RIGHT() {
+            return new Vector2(1, 0);
+        }
+        static get UPLEFT() {
+            return new Vector2(-1, -1);
+        }
+        static get UPRIGHT() {
+            return new Vector2(1, -1);
+        }
+        static get DOWNLEFT() {
+            return new Vector2(-1, 1);
+        }
+        static get DOWNRIGHT() {
+            return new Vector2(1, 1);
+        }
     }
-    Vector2.UP = new Vector2(0, -1);
-    Vector2.DOWN = new Vector2(0, 1);
-    Vector2.LEFT = new Vector2(-1, 0);
-    Vector2.RIGHT = new Vector2(1, 0);
-    Vector2.UPLEFT = new Vector2(-1, -1);
-    Vector2.UPRIGHT = new Vector2(1, -1);
-    Vector2.DOWNLEFT = new Vector2(-1, 1);
-    Vector2.DOWNRIGHT = new Vector2(1, 1);
-    Vector2.ZERO = new Vector2(0, 0);
     Eclipse.Vector2 = Vector2;
     // ------ UTILITY FUNCTIONS
     /**
@@ -1148,7 +1187,7 @@ var Eclipse;
                 Object.defineProperty(this, 'pos', {
                     value: new Vector2(this.x, this.y),
                 });
-                this.onmove();
+                this.onmove(evt);
             };
             doc.onmousedown = evt => {
                 switch (evt.button) {

@@ -10,7 +10,6 @@
     "start": "electron \"C:\\Users\\Benan\\Desktop\\Physics Simulation\\src\\main.js\""
   },
   "author": "thepixelist",
-  "license": "MIT",
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/node": "^20.8.9",

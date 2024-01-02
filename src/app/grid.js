@@ -10,19 +10,21 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Grid_instances, _Grid_cells, _Grid_points, _Grid_cellSize, _Grid_pointsCells, _Grid_possibleCellIndicies;
+var _Grid_instances, _Grid_cells, _Grid_points, _Grid_cellSize, _Grid_walls, _Grid_pointsCells, _Grid_possibleCellIndicies;
 require('./eclipse');
 require('./primitives');
 class Grid {
-    constructor(points, cellSize) {
+    constructor(points, cellSize, walls) {
         _Grid_instances.add(this);
         _Grid_cells.set(this, new Map());
         _Grid_points.set(this, Array());
         _Grid_cellSize.set(this, void 0);
+        _Grid_walls.set(this, void 0);
         // The cells that every point is in
         _Grid_pointsCells.set(this, new Map());
         __classPrivateFieldSet(this, _Grid_cellSize, cellSize, "f");
         __classPrivateFieldSet(this, _Grid_points, points, "f");
+        __classPrivateFieldSet(this, _Grid_walls, walls, "f");
         this.updateCells();
     }
     get points() {
@@ -39,6 +41,9 @@ class Grid {
     }
     get pointsCells() {
         return __classPrivateFieldGet(this, _Grid_pointsCells, "f");
+    }
+    get walls() {
+        return __classPrivateFieldGet(this, _Grid_walls, "f");
     }
     addPoint(p) {
         if (this.containsPoint(p) === -1) {
@@ -60,37 +65,46 @@ class Grid {
         }
     }
     updateCells() {
+        var _a;
         // Clear cells to prevent adding points multiple times
         this.clearCells();
-        for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
-            const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
-            const pointIdentifier = p.identifier;
-            const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
-            for (let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
-                for (let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
-                    const gridPosition = new Eclipse.Vector2(j * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize * 0.5), k * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize * 0.5));
-                    const cellPos = new Eclipse.Vector2(j, k);
-                    // Checks if any part of the point is inside the grid cell
-                    if (gridPosition.dist(p.position) <= p.radius + (__classPrivateFieldGet(this, _Grid_cellSize, "f") * Math.SQRT1_2)) {
-                        if (__classPrivateFieldGet(this, _Grid_pointsCells, "f").has(pointIdentifier)) {
-                            let existingCells = __classPrivateFieldGet(this, _Grid_pointsCells, "f").get(pointIdentifier);
-                            existingCells === null || existingCells === void 0 ? void 0 : existingCells.push(cellPos.toString());
-                        }
-                        else {
-                            __classPrivateFieldGet(this, _Grid_pointsCells, "f").set(pointIdentifier, [cellPos.toString()]);
-                        }
-                        if (__classPrivateFieldGet(this, _Grid_cells, "f").has(cellPos.toString())) {
-                            let existingPoints = __classPrivateFieldGet(this, _Grid_cells, "f").get(cellPos.toString());
-                            existingPoints === null || existingPoints === void 0 ? void 0 : existingPoints.push(p);
-                            if (existingPoints) {
-                                __classPrivateFieldGet(this, _Grid_cells, "f").set(cellPos.toString(), existingPoints);
+        if (ConfigObject && ((_a = ConfigObject.generalConfig.useSpacialPartitioning) !== null && _a !== void 0 ? _a : true)) {
+            for (let i = 0; i < __classPrivateFieldGet(this, _Grid_points, "f").length; i++) {
+                const p = __classPrivateFieldGet(this, _Grid_points, "f")[i];
+                const pointIdentifier = p.identifier;
+                const posCellIndicies = __classPrivateFieldGet(this, _Grid_instances, "m", _Grid_possibleCellIndicies).call(this, p);
+                for (let j = posCellIndicies.left; j <= posCellIndicies.right; j++) {
+                    for (let k = posCellIndicies.top; k <= posCellIndicies.bottom; k++) {
+                        const gridPosition = new Eclipse.Vector2(j * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize * 0.5), k * __classPrivateFieldGet(this, _Grid_cellSize, "f") + (this.cellSize * 0.5));
+                        const cellPos = new Eclipse.Vector2(j, k);
+                        // Checks if any part of the point is inside the grid cell
+                        if (gridPosition.dist(p.position) <= p.radius + (__classPrivateFieldGet(this, _Grid_cellSize, "f") * Math.SQRT1_2)) {
+                            if (__classPrivateFieldGet(this, _Grid_pointsCells, "f").has(pointIdentifier)) {
+                                let existingCells = __classPrivateFieldGet(this, _Grid_pointsCells, "f").get(pointIdentifier);
+                                existingCells === null || existingCells === void 0 ? void 0 : existingCells.push(cellPos.toString());
                             }
-                        }
-                        else {
-                            __classPrivateFieldGet(this, _Grid_cells, "f").set(cellPos.toString(), [p]);
+                            else {
+                                __classPrivateFieldGet(this, _Grid_pointsCells, "f").set(pointIdentifier, [cellPos.toString()]);
+                            }
+                            if (__classPrivateFieldGet(this, _Grid_cells, "f").has(cellPos.toString())) {
+                                let existingPoints = __classPrivateFieldGet(this, _Grid_cells, "f").get(cellPos.toString());
+                                existingPoints === null || existingPoints === void 0 ? void 0 : existingPoints.push(p);
+                                if (existingPoints) {
+                                    __classPrivateFieldGet(this, _Grid_cells, "f").set(cellPos.toString(), existingPoints);
+                                }
+                            }
+                            else {
+                                __classPrivateFieldGet(this, _Grid_cells, "f").set(cellPos.toString(), [p]);
+                            }
                         }
                     }
                 }
+            }
+        }
+        else {
+            __classPrivateFieldGet(this, _Grid_cells, "f").set(Eclipse.Vector2.ZERO.toString(), this.points);
+            for (let i = 0; i < this.points.length; i++) {
+                __classPrivateFieldGet(this, _Grid_pointsCells, "f").set(this.points[i].identifier, [Eclipse.Vector2.ZERO.toString()]);
             }
         }
     }
@@ -104,7 +118,6 @@ class Grid {
         __classPrivateFieldSet(this, _Grid_points, Array(), "f");
     }
     pointOverlapping(p) {
-        // FIXME: Implement spacial partitioning
         for (const other of this.points) {
             if (p.identifier !== other.identifier) {
                 const totalRadii = p.radius + other.radius;
@@ -174,7 +187,7 @@ class Grid {
         drawScene(this, ctx, mainCam, ConfigObject);
     }
 }
-_Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new WeakMap(), _Grid_pointsCells = new WeakMap(), _Grid_instances = new WeakSet(), _Grid_possibleCellIndicies = function _Grid_possibleCellIndicies(point) {
+_Grid_cells = new WeakMap(), _Grid_points = new WeakMap(), _Grid_cellSize = new WeakMap(), _Grid_walls = new WeakMap(), _Grid_pointsCells = new WeakMap(), _Grid_instances = new WeakSet(), _Grid_possibleCellIndicies = function _Grid_possibleCellIndicies(point) {
     let p;
     if (typeof point === 'number') {
         p = __classPrivateFieldGet(this, _Grid_points, "f")[point];

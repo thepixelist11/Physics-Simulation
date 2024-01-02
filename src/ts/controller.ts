@@ -3,6 +3,8 @@ require('./camera')
 require('./drawing')
 require('./grid')
 
+type MovementArrow = Eclipse.Axis | 'both'
+
 class Controller {
   keyboard
   mouse
@@ -10,6 +12,12 @@ class Controller {
   pointDynamicPlacementColor = Eclipse.Color.BLACK
   pointStaticPlacementColor = Eclipse.Color.BLACK
   selectedPoint: Point | null
+  canPlacePoint = true
+
+  selectionArrowHovered: null | MovementArrow = null
+  selectionArrowDragged = false
+  selectionArrowAxisDragged: null | MovementArrow = null
+  selectionArrowOffsetPos: null | Eclipse.Vector2 = null
 
   constructor(grid: Grid, ctx: CanvasRenderingContext2D, camera: Camera, doc: Document) {
     this.keyboard = new Eclipse.KeyBoard(doc)
@@ -19,18 +27,22 @@ class Controller {
     setInterval(() => {
       if(this.keyboard.KeyD && !this.keyboard.ctrlDown) {
         camera.translate(this.keyboard.shiftDown ? 15 : 5, 0)
+        updateSelectionArrows()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       if(this.keyboard.KeyA && !this.keyboard.ctrlDown) {
         camera.translate(this.keyboard.shiftDown ? -15 : -5, 0)
+        updateSelectionArrows()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       if(this.keyboard.KeyW && !this.keyboard.ctrlDown) {
         camera.translate(0, this.keyboard.shiftDown ? -15 : -5)
+        updateSelectionArrows()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       if(this.keyboard.KeyS && !this.keyboard.ctrlDown) {
         camera.translate(0, this.keyboard.shiftDown ? 15 : 5)
+        updateSelectionArrows()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       // if(this.keyboard.Equal && !this.keyboard.ctrlDown) {

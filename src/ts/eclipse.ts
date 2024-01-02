@@ -1,7 +1,43 @@
 namespace Eclipse {
 
-  // For iterable types
-  type UnionKeys<T> = T extends T ? keyof T : never
+  export type Axis = 'x' | 'y'
+  export type CSSCursorStyle = 
+  | 'auto' 
+  | 'default' 
+  | 'none' 
+  | 'context-menu' 
+  | 'help' 
+  | 'pointer' 
+  | 'progress' 
+  | 'wait' 
+  | 'cell' 
+  | 'crosshair' 
+  | 'text' 
+  | 'vertical-text' 
+  | 'alias' 
+  | 'copy' 
+  | 'move' 
+  | 'no-drop' 
+  | 'not-allowed' 
+  | 'e-resize' 
+  | 'n-resize' 
+  | 'ne-resize' 
+  | 'nw-resize' 
+  | 's-resize' 
+  | 'se-resize' 
+  | 'sw-resize' 
+  | 'w-resize' 
+  | 'ew-resize' 
+  | 'ns-resize' 
+  | 'nesw-resize' 
+  | 'nwse-resize' 
+  | 'col-resize' 
+  | 'row-resize' 
+  | 'all-scroll' 
+  | 'zoom-in' 
+  | 'zoom-out' 
+  | 'grab' 
+  | 'grabbing'
 
   // ----- MATH FUNCTIONS AND CLASSES
   export const PI = Math.PI
@@ -95,9 +131,9 @@ namespace Eclipse {
     weight: number = 2,
     color: Color = Color.BLACK
   ): void {
-    ctx.lineWidth = weight
     if (typeof x1 === 'number' && typeof x2 === 'number' && typeof y1 === 'number' && typeof y2 === 'number') {
       // Overload 2
+      ctx.lineWidth = weight
       ctx.strokeStyle = color.toString()
       ctx.beginPath()
       ctx.moveTo(x1, y1)
@@ -105,11 +141,28 @@ namespace Eclipse {
       ctx.stroke()
     } else if (x1 instanceof Vector2 && y1 instanceof Vector2) {
       // Overload 1
+      ctx.lineWidth = x2
       ctx.strokeStyle = y2.toString()
       ctx.beginPath()
       ctx.moveTo(x1.x, x1.y)
       ctx.lineTo(y1.x, y1.y)
       ctx.stroke()
+    }
+  }
+
+  export function drawPoly(ctx: CanvasRenderingContext2D, verticies: Array<Eclipse.Vector2>, borderColor: Eclipse.Color, borderWeight: number, fill = false, fillColor = Eclipse.Color.BLACK) {
+    if(fill) {
+      ctx.moveTo(verticies[0].x, verticies[0].y)
+      for(let i = 1; i < verticies.length; i++) {
+        ctx.lineTo(verticies[i].x, verticies[i].y)
+      }
+      ctx.fillStyle = fillColor.toString(); ctx.fill()
+    }
+    for(let i = 0; i < verticies.length; i++) {
+      drawLine(ctx, verticies[i], verticies[i + 1] ?? verticies[0], borderWeight, borderColor)
+      if(fill) {
+        if(i !== 0) ctx.lineTo(verticies[i].x, verticies[i].y)
+      }
     }
   }
 
@@ -154,6 +207,7 @@ namespace Eclipse {
           }
         } else if (new RegExp('rgb\\(\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)').test(r) && typeof r === 'string') {
           // Regular expression to test whether or not value is in the format 'rgb(number, number, number)'
+          r.toLowerCase()
           const stringVals: string[] = (r.match(new RegExp('rgb\\(\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)')) || ['0', '0', '0']).slice(1, 4)
           const parsedVals = new Array(3)
           for (let i = 0; i < 3; i++) {
@@ -748,15 +802,33 @@ namespace Eclipse {
       return new Vector2(x, y)
     }
 
-    static UP = new Vector2(0, -1)
-    static DOWN = new Vector2(0, 1)
-    static LEFT = new Vector2(-1, 0)
-    static RIGHT = new Vector2(1, 0)
-    static UPLEFT = new Vector2(-1, -1)
-    static UPRIGHT = new Vector2(1, -1)
-    static DOWNLEFT = new Vector2(-1, 1)
-    static DOWNRIGHT = new Vector2(1, 1)
-    static ZERO = new Vector2(0, 0)
+    static get ZERO() {
+      return new Vector2(0, 0)
+    }
+    static get UP() {
+      return new Vector2(0, -1)
+    }
+    static get DOWN() {
+      return new Vector2(0, 1)
+    }
+    static get LEFT() {
+      return new Vector2(-1, 0)
+    }
+    static get RIGHT() {
+      return new Vector2(1, 0)
+    }
+    static get UPLEFT() {
+      return new Vector2(-1, -1)
+    }
+    static get UPRIGHT() {
+      return new Vector2(1, -1)
+    }
+    static get DOWNLEFT() {
+      return new Vector2(-1, 1)
+    }
+    static get DOWNRIGHT() {
+      return new Vector2(1, 1)
+    }
   }
 
   // ------ UTILITY FUNCTIONS
@@ -1255,7 +1327,7 @@ namespace Eclipse {
         Object.defineProperty(this, 'pos', {
           value: new Vector2(this.x, this.y),
         })
-        this.onmove()
+        this.onmove(evt)
       }
       doc.onmousedown = evt => {
         switch (evt.button) {

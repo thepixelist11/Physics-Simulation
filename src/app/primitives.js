@@ -10,18 +10,24 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _Point_position, _Point_lastPosition, _Point_radius, _Point_color, _Point_mass, _Point_isStatic, _Point_identifier, _Point_initialPosition, _Point_initialMass, _Point_initialRadius, _Point_initialColor, _Point_initialIsStatic;
+var _Point_position, _Point_lastPosition, _Point_radius, _Point_color, _Point_mass, _Point_isStatic, _Point_identifier, _Point_appliedForces, _Point_constantAccelerations, _Point_velocity, _Point_initialPosition, _Point_initialMass, _Point_initialRadius, _Point_initialColor, _Point_initialIsStatic, _Point_initialVelocity, _Wall_position, _Wall_side, _Wall_color;
 require('./eclipse');
 class Point {
-    constructor(position, mass, radius = 5, color = Eclipse.Color.BLACK, isStatic = false) {
+    constructor(position, mass, radius = 5, color = Eclipse.Color.BLACK, isStatic = false, initialVelocity = Eclipse.Vector2.ZERO) {
         // Standard properties
         _Point_position.set(this, Eclipse.Vector2.ZERO);
-        _Point_lastPosition.set(this, null);
+        _Point_lastPosition.set(this, Eclipse.Vector2.ZERO);
         _Point_radius.set(this, 5);
         _Point_color.set(this, Eclipse.Color.BLACK);
         _Point_mass.set(this, 1);
         _Point_isStatic.set(this, false);
         _Point_identifier.set(this, void 0);
+        _Point_appliedForces.set(this, []);
+        _Point_constantAccelerations.set(this, [gravity]);
+        _Point_velocity.set(this, Eclipse.Vector2.ZERO
+        // Initial properties
+        // Standard properties will be set to these on reset
+        );
         // Initial properties
         // Standard properties will be set to these on reset
         _Point_initialPosition.set(this, void 0);
@@ -29,17 +35,20 @@ class Point {
         _Point_initialRadius.set(this, void 0);
         _Point_initialColor.set(this, void 0);
         _Point_initialIsStatic.set(this, void 0);
+        _Point_initialVelocity.set(this, void 0);
         this.position = position;
         this.mass = mass;
         this.radius = radius;
         this.color = color;
-        this.lastPosition = position;
         this.isStatic = isStatic;
+        // this.velocity = initialVelocity
         __classPrivateFieldSet(this, _Point_initialColor, __classPrivateFieldGet(this, _Point_color, "f"), "f");
         __classPrivateFieldSet(this, _Point_initialMass, __classPrivateFieldGet(this, _Point_mass, "f"), "f");
         __classPrivateFieldSet(this, _Point_initialPosition, __classPrivateFieldGet(this, _Point_position, "f"), "f");
         __classPrivateFieldSet(this, _Point_initialRadius, __classPrivateFieldGet(this, _Point_radius, "f"), "f");
         __classPrivateFieldSet(this, _Point_initialIsStatic, __classPrivateFieldGet(this, _Point_isStatic, "f"), "f");
+        __classPrivateFieldSet(this, _Point_initialVelocity, initialVelocity, "f");
+        this.velocity = __classPrivateFieldGet(this, _Point_initialVelocity, "f");
         __classPrivateFieldSet(this, _Point_identifier, Point.idCounter++, "f");
     }
     get position() {
@@ -120,9 +129,30 @@ class Point {
     set isStatic(isStatic) {
         __classPrivateFieldSet(this, _Point_isStatic, isStatic, "f");
     }
+    // Basic Stormer Method
+    // this.position.getSub(this.lastPosition ?? this.position).getDiv(timeStep / 1000).getDiv(pxPerM)
+    //
     get velocity() {
         var _a;
-        return __classPrivateFieldGet(this, _Point_position, "f").getSub((_a = __classPrivateFieldGet(this, _Point_lastPosition, "f")) !== null && _a !== void 0 ? _a : Eclipse.Vector2.ZERO).getMult(Math.ceil((FPS * 1000) / (timeStep * 1000)) * 1 / FPS);
+        return this.position.getSub((_a = this.lastPosition) !== null && _a !== void 0 ? _a : this.position).getDiv(timeStep / 1000).getDiv(pxPerM);
+    }
+    get velocityPXPerS() {
+        var _a;
+        return this.position.getSub((_a = this.lastPosition) !== null && _a !== void 0 ? _a : this.position).getDiv(timeStep / 1000);
+    }
+    // Changes the last position to change velocity in later calculations
+    set velocity(newVel) {
+        newVel.mult(pxPerM);
+        __classPrivateFieldSet(this, _Point_lastPosition, newVel.getMult(timeStep / 1000).getSub(this.position).getMult(-1), "f");
+    }
+    set velocityPXPerS(newVel) {
+        __classPrivateFieldSet(this, _Point_lastPosition, newVel.getMult(timeStep / 1000).getSub(this.position).getMult(-1), "f");
+    }
+    get initialVelocity() {
+        return __classPrivateFieldGet(this, _Point_initialVelocity, "f");
+    }
+    set initialVelocity(newVel) {
+        __classPrivateFieldSet(this, _Point_initialVelocity, newVel, "f");
     }
     get identifier() {
         return __classPrivateFieldGet(this, _Point_identifier, "f");
@@ -134,6 +164,22 @@ class Point {
             top: this.y - this.radius,
             bottom: this.y + this.radius,
         };
+    }
+    get acceleration() {
+        let totalForces = Eclipse.Vector2.ZERO;
+        for (let i = 0; i < __classPrivateFieldGet(this, _Point_appliedForces, "f").length; i++) {
+            totalForces.x += __classPrivateFieldGet(this, _Point_appliedForces, "f")[i].x;
+            totalForces.y += __classPrivateFieldGet(this, _Point_appliedForces, "f")[i].y;
+        }
+        let totalAcceleration = totalForces.getDiv(__classPrivateFieldGet(this, _Point_mass, "f"));
+        for (let i = 0; i < __classPrivateFieldGet(this, _Point_constantAccelerations, "f").length; i++) {
+            totalAcceleration = totalAcceleration.getAdd(__classPrivateFieldGet(this, _Point_constantAccelerations, "f")[i]);
+        }
+        totalAcceleration.mult(0.5);
+        return totalAcceleration;
+    }
+    getRelativePosition(other) {
+        return new Eclipse.Vector2(other.x - this.x, other.y - this.y);
     }
     draw(ctx) {
         var _a;
@@ -152,6 +198,7 @@ class Point {
         this.color = __classPrivateFieldGet(this, _Point_initialColor, "f");
         this.radius = __classPrivateFieldGet(this, _Point_initialRadius, "f");
         __classPrivateFieldSet(this, _Point_isStatic, __classPrivateFieldGet(this, _Point_initialIsStatic, "f"), "f");
+        this.velocityPXPerS = __classPrivateFieldGet(this, _Point_initialVelocity, "f");
     }
     isSameAs(other) {
         if (this.x === other.x &&
@@ -175,7 +222,10 @@ class Point {
             initialMass: JSON.stringify(__classPrivateFieldGet(this, _Point_initialMass, "f")),
             initialColor: JSON.stringify(__classPrivateFieldGet(this, _Point_initialColor, "f")),
             initialRadius: __classPrivateFieldGet(this, _Point_initialRadius, "f"),
-            initialIsStatic: __classPrivateFieldGet(this, _Point_initialIsStatic, "f")
+            initialIsStatic: __classPrivateFieldGet(this, _Point_initialIsStatic, "f"),
+            initialVelocity: JSON.stringify(__classPrivateFieldGet(this, _Point_initialVelocity, "f")),
+            appliedForces: JSON.stringify(__classPrivateFieldGet(this, _Point_constantAccelerations, "f")),
+            constantAccelerations: JSON.stringify(__classPrivateFieldGet(this, _Point_constantAccelerations, "f")),
         };
     }
     fromJSON(jsonString) {
@@ -183,7 +233,12 @@ class Point {
         const position = JSON.parse(parsedJSON.position);
         __classPrivateFieldSet(this, _Point_position, new Eclipse.Vector2(position.x, position.y), "f");
         const lastPosition = JSON.parse(parsedJSON.lastPosition);
-        __classPrivateFieldSet(this, _Point_lastPosition, new Eclipse.Vector2(lastPosition.x, lastPosition.y), "f");
+        if (lastPosition && lastPosition.x !== undefined) {
+            __classPrivateFieldSet(this, _Point_lastPosition, new Eclipse.Vector2(lastPosition.x, lastPosition.y), "f");
+        }
+        else {
+            Eclipse.Vector2.ZERO;
+        }
         __classPrivateFieldSet(this, _Point_radius, parseFloat(parsedJSON.radius), "f");
         const color = JSON.parse(parsedJSON.color);
         __classPrivateFieldSet(this, _Point_color, new Eclipse.Color(color.r, color.g, color.b), "f");
@@ -197,10 +252,110 @@ class Point {
         __classPrivateFieldSet(this, _Point_initialColor, new Eclipse.Color(initColor.r, initColor.g, initColor.b), "f");
         __classPrivateFieldSet(this, _Point_initialRadius, parseFloat(parsedJSON.initialRadius), "f");
         __classPrivateFieldSet(this, _Point_initialIsStatic, Boolean(parsedJSON.initialIsStatic), "f");
+        const parsedInitVel = JSON.parse(parsedJSON.initialVelocity);
+        __classPrivateFieldSet(this, _Point_initialVelocity, new Eclipse.Vector2(parsedInitVel.x, parsedInitVel.y), "f");
+        this.velocityPXPerS = __classPrivateFieldGet(this, _Point_initialVelocity, "f");
+        __classPrivateFieldSet(this, _Point_appliedForces, [], "f");
+        __classPrivateFieldSet(this, _Point_constantAccelerations, [], "f");
+        const parsedForcesArray = Array.isArray(parsedJSON.appliedForces) ? [] : JSON.parse(parsedJSON.appliedForces);
+        for (let i = 0; i < parsedForcesArray.length; i++) {
+            const parsedForces = parsedForcesArray[i];
+            __classPrivateFieldGet(this, _Point_constantAccelerations, "f").push(new Eclipse.Vector2(parsedForces.x, parsedForces.y));
+        }
+        const parsedAccelerationsArray = Array.isArray(parsedJSON.constantAccelerations) ? [] : JSON.parse(parsedJSON.constantAccelerations);
+        for (let i = 0; i < parsedAccelerationsArray.length; i++) {
+            const parsedAccelerations = parsedAccelerationsArray[i];
+            __classPrivateFieldGet(this, _Point_constantAccelerations, "f").push(new Eclipse.Vector2(parsedAccelerations.x, parsedAccelerations.y));
+        }
+    }
+    setNewInitialValues() {
+        __classPrivateFieldSet(this, _Point_initialVelocity, this.velocity, "f");
+        __classPrivateFieldSet(this, _Point_initialColor, this.color, "f");
+        __classPrivateFieldSet(this, _Point_initialIsStatic, this.isStatic, "f");
+        __classPrivateFieldSet(this, _Point_initialMass, this.mass, "f");
+        __classPrivateFieldSet(this, _Point_initialPosition, this.position, "f");
+        __classPrivateFieldSet(this, _Point_initialRadius, this.radius, "f");
+    }
+    drawMovementArrows(arrowSize, arrowWidth, xColor = Eclipse.Color.GREEN, yColor = Eclipse.Color.BLUE, centreColor = Eclipse.Color.YELLOW, xHoveredColor = Eclipse.Color.FORESTGREEN, yHoveredColor = Eclipse.Color.MIDNIGHTBLUE, centreHoveredColor = Eclipse.Color.GOLD) {
+        const xEnd = this.position.getAdd(Eclipse.Vector2.RIGHT.getMult(this.radius + arrowSize));
+        // X Arrow Body
+        Eclipse.drawLine(ctx, this.position, xEnd, arrowWidth, controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor);
+        // X Arrow Head
+        Eclipse.drawPoly(ctx, [
+            xEnd,
+            new Eclipse.Vector2(xEnd.x - arrowWidth * 2, this.y - arrowWidth * 2),
+            new Eclipse.Vector2(xEnd.x - arrowWidth * 2, this.y + arrowWidth * 2),
+        ], controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor, 1, true, controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor);
+        const yEnd = this.position.getAdd(Eclipse.Vector2.UP.getMult(this.radius + arrowSize));
+        // Y Arrow Body
+        Eclipse.drawLine(ctx, this.position, yEnd, arrowWidth, controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor);
+        // Y Arrow Head
+        Eclipse.drawPoly(ctx, [
+            yEnd,
+            new Eclipse.Vector2(this.x - arrowWidth * 2, yEnd.y + arrowWidth * 2),
+            new Eclipse.Vector2(this.x + arrowWidth * 2, yEnd.y + arrowWidth * 2),
+        ], controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor, 1, true, controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor);
+        // Centre
+        Eclipse.drawPoint(ctx, this.position, arrowWidth * 1.5, controller.selectionArrowHovered === 'both' ? centreHoveredColor : centreColor);
+    }
+    callAfterDisplacement(displacement, callback) {
+        const originalPos = this.position;
+        const interval = setInterval(() => {
+            if (originalPos.dist(this.position) > displacement) {
+                clearInterval(interval);
+                callback();
+            }
+        }, 1);
     }
 }
-_Point_position = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_isStatic = new WeakMap(), _Point_identifier = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap(), _Point_initialIsStatic = new WeakMap();
+_Point_position = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_isStatic = new WeakMap(), _Point_identifier = new WeakMap(), _Point_appliedForces = new WeakMap(), _Point_constantAccelerations = new WeakMap(), _Point_velocity = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap(), _Point_initialIsStatic = new WeakMap(), _Point_initialVelocity = new WeakMap();
 Point.idCounter = 0;
+class Wall {
+    constructor(position, side, color) {
+        _Wall_position.set(this, 0);
+        _Wall_side.set(this, 'bottom');
+        _Wall_color.set(this, Eclipse.Color.BLACK);
+        this.position = position;
+        this.side = side;
+        this.color = color;
+    }
+    get position() {
+        return __classPrivateFieldGet(this, _Wall_position, "f");
+    }
+    set position(newPos) {
+        __classPrivateFieldSet(this, _Wall_position, newPos, "f");
+    }
+    get side() {
+        return __classPrivateFieldGet(this, _Wall_side, "f");
+    }
+    set side(newSide) {
+        __classPrivateFieldSet(this, _Wall_side, newSide, "f");
+    }
+    get color() {
+        return __classPrivateFieldGet(this, _Wall_color, "f");
+    }
+    set color(newCol) {
+        __classPrivateFieldSet(this, _Wall_color, newCol, "f");
+    }
+    draw() {
+        ctx.fillStyle = this.color.toString();
+        switch (__classPrivateFieldGet(this, _Wall_side, "f")) {
+            case "top":
+                ctx.fillRect(0, this.position - mainCam.y, canvas.width, -canvas.height);
+                break;
+            case "bottom":
+                ctx.fillRect(0, this.position - mainCam.y, canvas.width, canvas.height);
+                break;
+            case "left":
+                ctx.fillRect(this.position - mainCam.x, 0, -canvas.width, canvas.height);
+                break;
+            case "right":
+                ctx.fillRect(this.position - mainCam.x, 0, canvas.width, canvas.height);
+                break;
+        }
+    }
+}
+_Wall_position = new WeakMap(), _Wall_side = new WeakMap(), _Wall_color = new WeakMap();
 module.exports = {
     Point: Point,
 };

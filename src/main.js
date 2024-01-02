@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, MenuItem, dialog, ipcRenderer } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, MenuItem, dialog } = require('electron')
 const path = require('path')
 
 const createWindow = () => {
@@ -14,6 +14,7 @@ const createWindow = () => {
             const path = await simSaveDialogue()
             win.webContents.send('saveSim', path ?? null)
           },
+          id: 'saveSim',
         },
         {
           label: 'Load Simulation',
@@ -22,6 +23,7 @@ const createWindow = () => {
             const path = await simLoadDialogue()
             win.webContents.send('loadSim', path ?? null)
           },
+          id: 'loadSim',
         },
         {type: 'separator'},
         {
@@ -30,6 +32,7 @@ const createWindow = () => {
           click: () => {
             app.quit()
           },
+          id: 'exit',
         },
       ],
     },
@@ -42,6 +45,7 @@ const createWindow = () => {
           click: () => {
             win.webContents.send('clearAllPoints', null)
           },
+          id: 'clearAll',
         },
       ],
     },
@@ -55,7 +59,8 @@ const createWindow = () => {
             win.webContents.openDevTools({
               mode: 'undocked'
             })
-          }
+          },
+          id: 'devTools',
         },
       ]
     }
@@ -74,6 +79,12 @@ const createWindow = () => {
   })
 
   const menu = Menu.buildFromTemplate(template)
+  ipcMain.on('disableMenuItem', (evt, id) => {
+    menu.getMenuItemById(id).enabled = false
+  })
+  ipcMain.on('enableMenuItem', (evt, id) => {
+    menu.getMenuItemById(id).enabled = true
+  })
 
   win.loadFile('.\\app\\index.html')
   Menu.setApplicationMenu(menu)
@@ -85,6 +96,12 @@ const createWindow = () => {
 
   win.on('blur', () => {
     win.webContents.send('lostFocus')
+  })
+
+  win.on('ready-to-show', () => {
+    win.maximize()
+    win.show()
+    // win.openDevTools()
   })
 }
 
