@@ -131,10 +131,18 @@ class Point {
     this.#lastPosition = newVel.getMult(timeStep / 1000).getSub(this.position).getMult(-1)
   }
   get initialVelocity() {
-    return this.#initialVelocity
+    return this.#initialVelocity.getDiv(pxPerM)
   }
   set initialVelocity(newVel: Eclipse.Vector2) {
+    this.#initialVelocity = newVel.getMult(pxPerM)
+    this.velocity = newVel
+  }
+  get initialVelocityPxPerM() {
+    return this.initialVelocity
+  }
+  set initialVelocityPxPerM(newVel: Eclipse.Vector2) {
     this.#initialVelocity = newVel
+    this.velocityPXPerS = newVel
   }
   get identifier() {
     return this.#identifier

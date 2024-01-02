@@ -54,7 +54,7 @@ window.addEventListener('focus', (evt: Event) => {
 })
 
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.5)
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
 
 let windowInFocus = true
 

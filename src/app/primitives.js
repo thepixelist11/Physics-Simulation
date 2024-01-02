@@ -149,10 +149,18 @@ class Point {
         __classPrivateFieldSet(this, _Point_lastPosition, newVel.getMult(timeStep / 1000).getSub(this.position).getMult(-1), "f");
     }
     get initialVelocity() {
-        return __classPrivateFieldGet(this, _Point_initialVelocity, "f");
+        return __classPrivateFieldGet(this, _Point_initialVelocity, "f").getDiv(pxPerM);
     }
     set initialVelocity(newVel) {
+        __classPrivateFieldSet(this, _Point_initialVelocity, newVel.getMult(pxPerM), "f");
+        this.velocity = newVel;
+    }
+    get initialVelocityPxPerM() {
+        return this.initialVelocity;
+    }
+    set initialVelocityPxPerM(newVel) {
         __classPrivateFieldSet(this, _Point_initialVelocity, newVel, "f");
+        this.velocityPXPerS = newVel;
     }
     get identifier() {
         return __classPrivateFieldGet(this, _Point_identifier, "f");

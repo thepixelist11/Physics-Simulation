@@ -46,7 +46,7 @@ window.addEventListener('focus', (evt) => {
     windowInFocus = true;
 });
 // Initialize main camera
-let mainCam = new Camera(Eclipse.Vector2.ZERO, 0.5);
+let mainCam = new Camera(Eclipse.Vector2.ZERO, 1);
 let windowInFocus = true;
 // Number of pixels per metre
 const pxPerM = 100;
