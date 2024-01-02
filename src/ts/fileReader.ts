@@ -16,13 +16,17 @@ function saveSimulation(dirPath: string = 'C:\\users\\benan\\desktop\\physics si
     }
     name = `${name}${count}`
   }
-  const savedSimUTF16 = JSON.stringify(mainGrid.toJSON())
-  fs.writeFileSync(path.join(dirPath, `${name}.simsave`), savedSimUTF16)
+  const savedSim = JSON.stringify(mainGrid.toJSON())
+  fs.writeFileSync(path.join(dirPath, `${name}.simsave`), savedSim)
 }
 
 function loadSimulation(filePath: string) {
   if(fs.existsSync(path.join(filePath))) {
-    mainGrid.fromJSON(fs.readFileSync(filePath).toString())
+    const saveFile = fs.readFileSync(filePath).toString()
+    mainGrid.fromJSON(saveFile)
+    const parsedGravity = JSON.parse(JSON.parse(saveFile).gravity)
+    console.log(parsedGravity)
+    gravity = new Eclipse.Vector2(parsedGravity.x, parsedGravity.y)
   } else {
     throw new Error(`Save "${filePath}" does not exist`)
   }

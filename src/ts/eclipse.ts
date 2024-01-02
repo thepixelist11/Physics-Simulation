@@ -737,10 +737,7 @@ namespace Eclipse {
      * Converts a vector to JSON string
      */
     toJSONString(): string {
-      return `{
-        x: ${this.x},
-        y: ${this.y}
-      }`
+      return `{x:${this.x},y:${this.y}}`
     }
 
     static create(val: number[]): Vector2

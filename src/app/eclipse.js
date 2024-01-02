@@ -613,10 +613,7 @@ var Eclipse;
          * Converts a vector to JSON string
          */
         toJSONString() {
-            return `{
-        x: ${this.x},
-        y: ${this.y}
-      }`;
+            return `{x:${this.x},y:${this.y}}`;
         }
         /**
          * Creates a vector from a value formatted '(x,y)', 'x,y' or an array with it's first two values numbers

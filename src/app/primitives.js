@@ -174,6 +174,7 @@ class Point {
         };
     }
     get acceleration() {
+        __classPrivateFieldSet(this, _Point_constantAccelerations, [gravity], "f");
         let totalForces = Eclipse.Vector2.ZERO;
         for (let i = 0; i < __classPrivateFieldGet(this, _Point_appliedForces, "f").length; i++) {
             totalForces.x += __classPrivateFieldGet(this, _Point_appliedForces, "f")[i].x;

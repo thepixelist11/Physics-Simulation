@@ -185,8 +185,8 @@ class Grid {
   toJSON() {
     return {
       cells: Array.from(this.#cells.entries()).reduce((acc: Record<string, any>, [key, value]) => {
-        acc[key] = value.map(point => point.toJSON());
-        return acc;
+        acc[key] = value.map(point => point.toJSON())
+        return acc
       }, {}),
       points: this.#points.map(point => point.toJSON()),
       cellSize: this.#cellSize,
@@ -194,10 +194,11 @@ class Grid {
       camY: mainCam.y,
       camZoom: mainCam.zoom,
       pointsCells: Array.from(this.#pointsCells.entries()).reduce((acc: Record<string, any>, [key, value]) => {
-        acc[key] = value;
-        return acc;
+        acc[key] = value
+        return acc
       }, {}),
-    };
+      gravity: JSON.stringify(gravity)
+    }
   }
 
   fromJSON(jsonString: string) {

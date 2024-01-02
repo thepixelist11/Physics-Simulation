@@ -2,7 +2,7 @@
 require('./eclipse');
 require('./primitives');
 require('./grid');
-const gravity = new Eclipse.Vector2(0, 9.81);
+let gravity = new Eclipse.Vector2(0, 9.81);
 function updatePoints(deltaTime, grid, pxPerM) {
     const points = grid.points;
     for (let i = 0; i < points.length; i++) {

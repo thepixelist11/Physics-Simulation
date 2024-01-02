@@ -156,6 +156,7 @@ class Point {
     }
   }
   get acceleration() {
+    this.#constantAccelerations = [gravity]
     let totalForces = Eclipse.Vector2.ZERO
     for(let i = 0; i < this.#appliedForces.length; i++) {
       totalForces.x += this.#appliedForces[i].x

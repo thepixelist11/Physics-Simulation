@@ -169,6 +169,7 @@ class Grid {
                 acc[key] = value;
                 return acc;
             }, {}),
+            gravity: JSON.stringify(gravity)
         };
     }
     fromJSON(jsonString) {
