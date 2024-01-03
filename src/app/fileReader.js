@@ -3,8 +3,7 @@
 // import * as path from 'path'
 const fs = require('fs');
 const path = require('path');
-// TODO: Remove default path
-function saveSimulation(dirPath = 'C:\\users\\benan\\desktop\\physics simulation\\resources', name = 'sim') {
+function saveSimulation(dirPath, name = 'sim') {
     if (fs.existsSync(path.join(dirPath, `${name}.simsave`))) {
         let count = 1;
         while (fs.existsSync(path.join(dirPath, `${name}${count}.simsave`))) {

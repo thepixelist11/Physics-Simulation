@@ -28,21 +28,25 @@ class Controller {
       if(this.keyboard.KeyD && !this.keyboard.ctrlDown) {
         camera.translate(this.keyboard.shiftDown ? 15 : 5, 0)
         updateSelectionArrows()
+        updateDraggedPointPosition()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       if(this.keyboard.KeyA && !this.keyboard.ctrlDown) {
         camera.translate(this.keyboard.shiftDown ? -15 : -5, 0)
         updateSelectionArrows()
+        updateDraggedPointPosition()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       if(this.keyboard.KeyW && !this.keyboard.ctrlDown) {
         camera.translate(0, this.keyboard.shiftDown ? -15 : -5)
         updateSelectionArrows()
+        updateDraggedPointPosition()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       if(this.keyboard.KeyS && !this.keyboard.ctrlDown) {
         camera.translate(0, this.keyboard.shiftDown ? 15 : 5)
         updateSelectionArrows()
+        updateDraggedPointPosition()
         drawScene(grid, ctx, camera, ConfigObject)
       }
       // if(this.keyboard.Equal && !this.keyboard.ctrlDown) {

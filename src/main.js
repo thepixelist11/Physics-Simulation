@@ -47,6 +47,14 @@ const createWindow = () => {
           },
           id: 'clearAll',
         },
+        {
+          label: 'Change Acceleration Due To Gravity',
+          accelerator: 'CmdOrCtrl+G',
+          click: () => {
+            win.webContents.send('changeGrav', null)
+          },
+          id: 'changeGrav',
+        },
       ],
     },
     {

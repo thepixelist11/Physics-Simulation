@@ -165,7 +165,8 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
     options.cursorDisplay.enabled && 
     controller.canPlacePoint && 
     controller.selectionArrowHovered === null && 
-    !controller.selectionArrowDragged
+    !controller.selectionArrowDragged &&
+    (controller.mouse.hoveredElement() ?? new Element()).id === 'mainCanvas'
   ) {
     switch(options.cursorDisplay.type) {
       case 'pointPlace':

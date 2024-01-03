@@ -49,6 +49,54 @@ ipcRenderer.on('lostFocus', (evt: Event, val: any) => {
   windowInFocus = false
 })
 
+ipcRenderer.on('changeGrav', (evt: Event, val: any) => {
+  ipcRenderer.send('disableMenuItem', 'changeGrav')
+
+  const menuHeight = 100
+
+  const menuBG = document.createElement('div')
+  menuBG.classList.add('menuBoxBack')
+  menuBG.style.width = `auto`
+  menuBG.style.height = `${menuHeight}px`
+  menuBG.style.top = '50%'
+  menuBG.style.left = '50%'
+  menuBG.style.transform = 'translate(-50%, -50%)'
+  document.body.appendChild(menuBG)
+
+  const title = document.createElement('p')
+  title.classList.add('menuBoxTitle')
+  title.innerHTML = 'Change Acceleration Due To Gravity'
+  menuBG.appendChild(title)
+
+  const inputDiv = document.createElement('div')
+  menuBG.appendChild(inputDiv)
+
+  const input = document.createElement('input')
+  input.type = 'number'
+  input.value = gravity.y.toString()
+  input.placeholder = gravity.y.toString()
+  input.classList.add('menuBoxInput')
+  input.title = ''
+  inputDiv.appendChild(input)
+
+  const confirm = document.createElement('button')
+  confirm.classList.add('menuBoxConfirm')
+  confirm.innerHTML = 'OK'
+  inputDiv.appendChild(confirm)
+
+  confirm.onclick = () => {
+  ipcRenderer.send('enableMenuItem', 'changeGrav')
+    gravity.y = parseFloat(input.value)
+    document.body.removeChild(menuBG)
+  }
+
+  // MenuBG
+  // ├───Title
+  // └───InputDiv
+  //     ├───Input
+  //     └───Confirm
+})
+
 window.addEventListener('focus', (evt: Event) => {
   windowInFocus = true
 })
@@ -239,9 +287,15 @@ function stopPhysics() {
 
 // Setup events and loops
 controller.mouse.onlmbdown = () => {
+  // Start point drag
+  if(controller.selectionArrowHovered !== null && controller.selectedPoint) {
+    controller.selectionArrowDragged = true
+    controller.selectionArrowOffsetPos = controller.getGlobalMousePosition().getSub(controller.selectedPoint?.position)
+    controller.selectionArrowAxisDragged = controller.selectionArrowHovered
+  }
   switch(loopPhysics) {
     case false:
-      if(controller.canPlacePoint) {
+      if(controller.canPlacePoint && (controller.mouse.hoveredElement() ?? new Element()).id === 'mainCanvas') {
         if(controller.keyboard.shiftDown) {
           // Create new static point
           let p = new Point(new Eclipse.Vector2(
@@ -264,87 +318,73 @@ controller.mouse.onlmbdown = () => {
           }
         }
       }
-      // Start point drag
-      if(controller.selectionArrowHovered !== null && controller.selectedPoint) {
-        controller.selectionArrowDragged = true
-        controller.selectionArrowOffsetPos = controller.getGlobalMousePosition().getSub(controller.selectedPoint?.position)
-        controller.selectionArrowAxisDragged = controller.selectionArrowHovered
-      }
       break
   }
 }
 
 controller.mouse.onlmbup = () => {
-  switch(loopPhysics) {
-    case false:
-      if(controller.selectionArrowDragged) {
-        controller.selectedPoint?.setNewInitialValues()
-        controller.selectionArrowDragged = false
-        controller.selectionArrowOffsetPos = null
-        controller.selectionArrowAxisDragged = null
-      }
+  if(controller.selectionArrowDragged) {
+    if(!loopPhysics) controller.selectedPoint?.setNewInitialValues()
+    controller.selectionArrowDragged = false
+    controller.selectionArrowOffsetPos = null
+    controller.selectionArrowAxisDragged = null
   }
 }
 
 controller.mouse.onrmbdown = () => {
-  switch(loopPhysics) {
-    case false:
-      // Select Point
-      const indicies = new Eclipse.Vector2(
-        Math.floor((controller.mouse.x + mainCam.x) / mainCam.zoom / (mainGrid.cellSize ?? 100)), 
-        Math.floor((controller.mouse.y + mainCam.y) / mainCam.zoom / (mainGrid.cellSize ?? 100))
-      )
-      const cell = mainGrid.cells.get(indicies.toString())
-      let mouseInPoint = false
-      // Cell is undefined if there are no points in it
-      if(cell !== undefined) {
-        for(let i = 0; i < cell.length; i++) {
-          const p = cell[i]
-          // Do not select the same point twice in a row
-          if(p.identifier === controller.selectedPoint?.identifier) continue
-          const mouseDistFromP = 
-            ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
-            ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
-          if(mouseDistFromP <= p.radius * p.radius) {
-            controller.selectedPoint = p
-            drawScene(mainGrid, ctx, mainCam, ConfigObject)
-            mouseInPoint = true
-            break
-          } else {
-            // Deselect
-            controller.selectedPoint = null
-            drawScene(mainGrid, ctx, mainCam, ConfigObject)
-          }
-        }
-        if(!mouseInPoint) {
-          controller.selectedPoint = null
-          drawScene(mainGrid, ctx, mainCam, ConfigObject)
-        }
-      } else if(ConfigObject.generalConfig.useSpacialPartitioning === false) {
-        for(let i = 0; i < mainGrid.points.length; i++) {
-          const p = mainGrid.points[i]
-          // Do not select the same point twice in a row
-          if(p.identifier === controller.selectedPoint?.identifier) continue
-          const mouseDistFromP = 
-            ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
-            ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
-          if(mouseDistFromP <= p.radius * p.radius) {
-            controller.selectedPoint = p
-            drawScene(mainGrid, ctx, mainCam, ConfigObject)
-            mouseInPoint = true
-            break
-          } else {
-            // Deselect
-            controller.selectedPoint = null
-            drawScene(mainGrid, ctx, mainCam, ConfigObject)
-          }
-        }
+  const indicies = new Eclipse.Vector2(
+    Math.floor((controller.mouse.x + mainCam.x) / mainCam.zoom / (mainGrid.cellSize ?? 100)), 
+    Math.floor((controller.mouse.y + mainCam.y) / mainCam.zoom / (mainGrid.cellSize ?? 100))
+  )
+  const cell = mainGrid.cells.get(indicies.toString())
+  let mouseInPoint = false
+  // Cell is undefined if there are no points in it
+  if(cell !== undefined) {
+    for(let i = 0; i < cell.length; i++) {
+      const p = cell[i]
+      // Do not select the same point twice in a row
+      if(p.identifier === controller.selectedPoint?.identifier) continue
+      const mouseDistFromP = 
+        ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
+        ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
+      if(mouseDistFromP <= p.radius * p.radius) {
+        controller.selectedPoint = p
+        drawScene(mainGrid, ctx, mainCam, ConfigObject)
+        mouseInPoint = true
+        break
       } else {
         // Deselect
         controller.selectedPoint = null
         drawScene(mainGrid, ctx, mainCam, ConfigObject)
       }
-      break
+    }
+    if(!mouseInPoint) {
+      controller.selectedPoint = null
+      drawScene(mainGrid, ctx, mainCam, ConfigObject)
+    }
+  } else if(ConfigObject.generalConfig.useSpacialPartitioning === false) {
+    for(let i = 0; i < mainGrid.points.length; i++) {
+      const p = mainGrid.points[i]
+      // Do not select the same point twice in a row
+      if(p.identifier === controller.selectedPoint?.identifier) continue
+      const mouseDistFromP = 
+        ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
+        ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
+      if(mouseDistFromP <= p.radius * p.radius) {
+        controller.selectedPoint = p
+        drawScene(mainGrid, ctx, mainCam, ConfigObject)
+        mouseInPoint = true
+        break
+      } else {
+        // Deselect
+        controller.selectedPoint = null
+        drawScene(mainGrid, ctx, mainCam, ConfigObject)
+      }
+    }
+  } else {
+    // Deselect
+    controller.selectedPoint = null
+    drawScene(mainGrid, ctx, mainCam, ConfigObject)
   }
 }
 
@@ -356,34 +396,35 @@ controller.mouse.onscroll = (evt: WheelEvent) => {
 
 controller.mouse.onmove = (evt: MouseEvent) => {
   drawScene(mainGrid, ctx, mainCam, ConfigObject)
-  switch(loopPhysics) {
-    case false:
-      updateSelectionArrows()
-      if(controller.selectionArrowDragged && controller.selectedPoint && controller.selectionArrowOffsetPos) {
-        const previousVelocity = controller.selectedPoint.velocity
-        switch(controller.selectionArrowAxisDragged) {
-          case 'x':
-            controller.selectedPoint.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
-            controller.selectedPoint.lastPosition.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
-            break
-          case 'y':
-            controller.selectedPoint.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
-            controller.selectedPoint.lastPosition.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
-            break
-          case 'both':
-            controller.selectedPoint.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
-            controller.selectedPoint.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
-            controller.selectedPoint.lastPosition.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
-            controller.selectedPoint.lastPosition.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
-        }
-        controller.selectedPoint.velocity = previousVelocity
-      }
-      break
+  updateDraggedPointPosition()
+}
+
+function updateDraggedPointPosition() {
+  updateSelectionArrows()
+  if(controller.selectionArrowDragged && controller.selectedPoint && controller.selectionArrowOffsetPos) {
+    const previousVelocity = controller.selectedPoint.velocity
+    switch(controller.selectionArrowAxisDragged) {
+      case 'x':
+        controller.selectedPoint.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
+        controller.selectedPoint.lastPosition.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
+        break
+      case 'y':
+        controller.selectedPoint.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
+        controller.selectedPoint.lastPosition.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
+        break
+      case 'both':
+        controller.selectedPoint.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
+        controller.selectedPoint.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
+        controller.selectedPoint.lastPosition.x = controller.getGlobalMousePosition().x - controller.selectionArrowOffsetPos.x
+        controller.selectedPoint.lastPosition.y = controller.getGlobalMousePosition().y - controller.selectionArrowOffsetPos.y
+    }
+    controller.selectedPoint.velocity = previousVelocity
+    if(loopPhysics) controller.selectedPoint.velocity = Eclipse.Vector2.ZERO
   }
 }
 
 controller.keyboard.onkeydown = (code: Eclipse.Key) => {
-  if(code === 'Enter') {
+  if(code === 'Enter' && (controller.mouse.hoveredElement() ?? new Element()).id === 'mainCanvas') {
     if(loopPhysics) {
       stopPhysics()
     } else {
@@ -399,7 +440,7 @@ controller.keyboard.onkeydown = (code: Eclipse.Key) => {
       drawScene(mainGrid, ctx, mainCam, ConfigObject)
     }
   }
-  if(code === 'Space') {
+  if(code === 'Space' && (controller.mouse.hoveredElement() ?? new Element()).id === 'mainCanvas') {
     if(loopPhysics) {
       // Pause or unpause the simulation
       simulationPaused = !simulationPaused
@@ -414,6 +455,7 @@ controller.keyboard.onkeyup = (code: Eclipse.Key) => {
 }
 
 function updateSelectionArrows() {
+  if(controller.selectionArrowDragged) return
   if(ConfigObject.uiConfig.cursorDisplay) ConfigObject.uiConfig.cursorDisplay.enabled = true
   const p = controller.selectedPoint
   controller.selectionArrowHovered = null

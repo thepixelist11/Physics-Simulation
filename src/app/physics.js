@@ -4,6 +4,7 @@ require('./primitives');
 require('./grid');
 let gravity = new Eclipse.Vector2(0, 9.81);
 function updatePoints(deltaTime, grid, pxPerM) {
+    var _a;
     const points = grid.points;
     for (let i = 0; i < points.length; i++) {
         const p = points[i];
@@ -24,8 +25,10 @@ function updatePoints(deltaTime, grid, pxPerM) {
                     .getSub(p.lastPosition)
                     .getAdd(p.acceleration.getMult(pxPerM * deltaTime * deltaTime));
         }
-        p.lastPosition = currentPosition.copy();
-        p.position = newPosition.copy();
+        if (!(((_a = controller.selectedPoint) === null || _a === void 0 ? void 0 : _a.identifier) === p.identifier && controller.selectionArrowDragged)) {
+            p.lastPosition = currentPosition.copy();
+            p.position = newPosition.copy();
+        }
     }
     grid.updateCells();
     handlePointCollisions(grid);
@@ -46,7 +49,7 @@ function updatePoints(deltaTime, grid, pxPerM) {
 // )
 // p.velocity = newVelocity.copy().getMult(pxPerM)
 function handlePointCollisions(grid, checkCount = 16) {
-    var _a;
+    var _a, _b, _c;
     let pointsHandled = [];
     for (let j = 0; j < checkCount; j++) {
         let pointIndex = 0;
@@ -58,8 +61,12 @@ function handlePointCollisions(grid, checkCount = 16) {
                 if (((_a = points === null || points === void 0 ? void 0 : points.length) !== null && _a !== void 0 ? _a : 0) >= 2) {
                     if (points) {
                         const p = grid.points[pointIndex];
+                        if (p.identifier === ((_b = controller.selectedPoint) === null || _b === void 0 ? void 0 : _b.identifier) && controller.selectionArrowDragged)
+                            continue;
                         for (let pointIndex = 0; pointIndex < points.length; pointIndex++) {
                             const other = points[pointIndex];
+                            if (other.identifier === ((_c = controller.selectedPoint) === null || _c === void 0 ? void 0 : _c.identifier) && controller.selectionArrowDragged)
+                                continue;
                             if (!(p.isSameAs(other))) {
                                 // Check if the points are overlapping
                                 const dist = p.position.dist(other.position);
@@ -114,8 +121,13 @@ function handlePointCollisions(grid, checkCount = 16) {
     }
 }
 function handleWallCollisions() {
+    var _a;
     for (let i = 0; i < mainGrid.points.length; i++) {
         const p = mainGrid.points[i];
+        if (p.isStatic)
+            continue;
+        if (p.identifier === ((_a = controller.selectedPoint) === null || _a === void 0 ? void 0 : _a.identifier) && controller.selectionArrowDragged)
+            continue;
         // Wall collisions
         for (let wallIndex = 0; wallIndex < mainGrid.walls.length; wallIndex++) {
             const w = mainGrid.walls[wallIndex];

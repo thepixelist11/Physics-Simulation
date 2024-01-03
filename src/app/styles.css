@@ -12,3 +12,41 @@ body {
 #mainCanvas {
   background-color: #ddd;
 }
+.menuBoxBack {
+  text-align: center;
+  background-color: #ddd;
+  outline: solid 2px #555;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+}
+.menuBoxTitle {
+  color: black;
+  font-family: 'Times New Roman';
+  font-weight: 800;
+  font-size: larger;
+  user-select: none;
+  margin: 15px;
+  padding: 0;
+}
+.menuBoxInput {
+  color: black;
+  font-family: 'Times New Roman';
+  font-weight: 800;
+  font-size: larger;
+  user-select: none;
+  margin-left: 10px;
+}
+.menuBoxConfirm {
+  color: black;
+  font-family: 'Times New Roman';
+  font-weight: 800;
+  font-size: larger;
+  user-select: none;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: auto;
+  height: auto;
+}

@@ -26,8 +26,10 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
         .getAdd(p.acceleration.getMult(pxPerM * deltaTime * deltaTime))
     }
 
-    p.lastPosition = currentPosition.copy()
-    p.position = newPosition.copy()
+    if(!(controller.selectedPoint?.identifier === p.identifier && controller.selectionArrowDragged)) {
+      p.lastPosition = currentPosition.copy()
+      p.position = newPosition.copy()
+    }
   }
   grid.updateCells()
   handlePointCollisions(grid)
@@ -62,8 +64,10 @@ function handlePointCollisions(grid: Grid, checkCount = 16) {
         if((points?.length ?? 0) >= 2) {
           if(points) {
             const p = grid.points[pointIndex]
+            if(p.identifier === controller.selectedPoint?.identifier && controller.selectionArrowDragged) continue
             for(let pointIndex = 0; pointIndex < points.length; pointIndex++) {
               const other = points[pointIndex]
+              if(other.identifier === controller.selectedPoint?.identifier && controller.selectionArrowDragged) continue
               if(!(p.isSameAs(other))) {
                 // Check if the points are overlapping
                 const dist = p.position.dist(other.position)
@@ -131,6 +135,8 @@ function handlePointCollisions(grid: Grid, checkCount = 16) {
 function handleWallCollisions() {
   for(let i = 0; i < mainGrid.points.length; i++) {
     const p = mainGrid.points[i]
+    if(p.isStatic) continue
+    if(p.identifier === controller.selectedPoint?.identifier && controller.selectionArrowDragged) continue
     // Wall collisions
     for(let wallIndex = 0; wallIndex < mainGrid.walls.length; wallIndex++) {
       const w = mainGrid.walls[wallIndex]
