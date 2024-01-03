@@ -76,25 +76,26 @@ function handlePointCollisions(grid, checkCount = 16) {
                                     // Handle change in position for projection collision reaction
                                     let pNewPosition = p.position.copy();
                                     let otherNewPosition = other.position.copy();
+                                    const totalMass = p.mass + other.mass;
                                     // Moves the points by half the overlap
                                     const pDisplacement = new Eclipse.Vector2(
                                     // X
                                     (collisionNormal.x *
                                         (p.radius + other.radius - dist)) *
-                                        (other.isStatic ? 1 : 0.5) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0), 
+                                        (other.isStatic ? 1 : other.mass / totalMass) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0), 
                                     // Y
                                     (collisionNormal.y *
                                         (p.radius + other.radius - dist)) *
-                                        (other.isStatic ? 1 : 0.5) * (p.x <= other.x ? -1 : 1));
+                                        (other.isStatic ? 1 : other.mass / totalMass) * (p.x <= other.x ? -1 : 1));
                                     const otherDisplacement = new Eclipse.Vector2(
                                     // X
                                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                                         (p.radius + other.radius - dist)) *
-                                        (p.isStatic ? 1 : 0.5) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0), 
+                                        (p.isStatic ? 1 : p.mass / totalMass) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0), 
                                     // Y
                                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                                         (p.radius + other.radius - dist)) *
-                                        (p.isStatic ? 1 : 0.5) * (other.x <= p.x ? -1 : 1));
+                                        (p.isStatic ? 1 : p.mass / totalMass) * (other.x <= p.x ? -1 : 1));
                                     if (!p.isStatic)
                                         pNewPosition.add(pDisplacement);
                                     if (!other.isStatic && !arrayContainsPoint(pointsHandled, other))
