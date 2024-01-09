@@ -3,6 +3,7 @@ require('./primitives')
 require('./grid')
 
 let gravity = new Eclipse.Vector2(0, 9.81)
+let COR = 0.2
 
 function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   const points = grid.points
@@ -27,13 +28,17 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
     }
 
     if(!(controller.selectedPoint?.identifier === p.identifier && controller.selectionArrowDragged)) {
+      p.lastVelocity = p.velocity
       p.lastPosition = currentPosition.copy()
       p.position = newPosition.copy()
     }
+
+    p.appliedForces = []
   }
+
   grid.updateCells()
-  handlePointCollisions(grid)
-  handleWallCollisions()
+  handlePointCollisions(grid, deltaTime)
+  handleWallCollisions(deltaTime)
 }
   // VELOCITY VERLET (More precise and performant, collision doesn't work.)
   // const currentVelocity = p.velocity.copy()
@@ -52,7 +57,7 @@ function updatePoints(deltaTime: number, grid: Grid, pxPerM: number) {
   // p.velocity = newVelocity.copy().getMult(pxPerM)
   
 
-function handlePointCollisions(grid: Grid, checkCount = 16) {
+function handlePointCollisions(grid: Grid, deltaTime: number, checkCount = 32) {
   let pointsHandled = []
   for(let j = 0; j < checkCount; j++) {
     let pointIndex = 0
@@ -89,21 +94,21 @@ function handlePointCollisions(grid: Grid, checkCount = 16) {
                     // X
                     (collisionNormal.x *
                     (p.radius + other.radius - dist)) *
-                    (other.isStatic ? 1 : other.mass / totalMass) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0),
+                    (other.isStatic ? 1 : Math.abs(other.mass / (totalMass || 1))) * (p.x > other.x ? 1 : p.x < other.x ? -1 : 0),
                     // Y
                     (collisionNormal.y *
                     (p.radius + other.radius - dist)) *
-                    (other.isStatic ? 1 : other.mass / totalMass) * (p.x <= other.x ? -1 : 1)
+                    (other.isStatic ? 1 : Math.abs(other.mass / (totalMass || 1))) * (p.x <= other.x ? -1 : 1)
                   )
                   const otherDisplacement = new Eclipse.Vector2(
                     // X
                     ((Math.cos(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                     (p.radius + other.radius - dist)) *
-                    (p.isStatic ? 1 : p.mass / totalMass) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0),
+                    (p.isStatic ? 1 : Math.abs(p.mass / (totalMass || 1))) * (other.x > p.x ? 1 : other.x < p.x ? -1 : 0),
                     // Y
                     ((Math.sin(Math.atan((other.y - p.y) / (other.x - p.x)))) *
                     (p.radius + other.radius - dist)) *
-                    (p.isStatic ? 1 : p.mass / totalMass) * (other.x <= p.x ? -1 : 1)
+                    (p.isStatic ? 1 : Math.abs(p.mass / (totalMass || 1))) * (other.x <= p.x ? -1 : 1)
                   )
                   
                   if(!p.isStatic) pNewPosition.add(pDisplacement)
@@ -112,15 +117,7 @@ function handlePointCollisions(grid: Grid, checkCount = 16) {
                   p.position = pNewPosition
                   other.position = otherNewPosition
 
-                  // This code will enable impulse-based collisions for all points. This does not currently work properly
-                  // Currently points can only collide with flat wall primitives with impulse-based collisions.
-
-                  // Coefficient of restitution
-                  // const e = 1
-                  
-                  // const newVelocities = getNewVelocities(p, other)
-                  // p.velocity = newVelocities.pVel.copy()
-                  // other.velocity = newVelocities.otherVel.copy()
+                  handleWallCollisions(deltaTime)
 
                   pointsHandled.push(p, other)
                 }
@@ -135,7 +132,7 @@ function handlePointCollisions(grid: Grid, checkCount = 16) {
   }
 }
 
-function handleWallCollisions() {
+function handleWallCollisions(deltaTime: number) {
   for(let i = 0; i < mainGrid.points.length; i++) {
     const p = mainGrid.points[i]
     if(p.isStatic) continue
@@ -143,7 +140,6 @@ function handleWallCollisions() {
     // Wall collisions
     for(let wallIndex = 0; wallIndex < mainGrid.walls.length; wallIndex++) {
       const w = mainGrid.walls[wallIndex]
-      const COR = 0.7
       if(checkCollisionWithWall(p, w)) {
         let newVelocity: Eclipse.Vector2
         let newPosition = p.position.copy()
@@ -162,7 +158,7 @@ function handleWallCollisions() {
             newVelocity = new Eclipse.Vector2(p.velocity.x * -COR, p.velocity.y)
             break
           case "right":
-            newPosition.x -= Math.abs(p.x - p.radius - w.position)
+            newPosition.x -= Math.abs(w.position - p.x - p.radius)
             newVelocity = new Eclipse.Vector2(p.velocity.x * -COR, p.velocity.y)
             break
         }
@@ -171,8 +167,12 @@ function handleWallCollisions() {
         // relative to the current position remains the same after 
         // the collision so that the final velocity can be accurately 
         // determined
+        p.lastVelocity = p.velocity
         p.velocity = previousVel 
         p.velocity = newVelocity
+        p.onWall = true
+      } else {
+        p.onWall = false
       }
     }
   }
@@ -185,49 +185,23 @@ function arrayContainsPoint(arr: Array<Point>, point: Point) {
   return false
 }
 
-function getNewVelocities(p: Point, other: Point, COR = 1): {pVel: Eclipse.Vector2, otherVel: Eclipse.Vector2} {
+function getNewVelocities(p: Point, other: Point, COR = 1){
   const collisionDist = Math.sqrt(((other.x - p.x) ** 2) + ((other.y - p.y) ** 2))
 
   // Unit normal vector
   const un = new Eclipse.Vector2((other.x - p.x) / collisionDist, (other.y - p.y) / collisionDist)
-  // const un = new Eclipse.Vector2(other.x - collisionPoint.x, other.y - collisionPoint.y).getNormalized()
   
   // Unit tangent vector
   const ut = new Eclipse.Vector2(-un.y, un.x)
+  const utAngle = ut.angleDegrees()
    
   const v1 = p.velocity
   const v2 = other.velocity
-  const totalMass = p.mass + other.mass
-  if(other.isStatic) {
-    const k = 2 * v1.dot(un) / totalMass
-    const v1Prime = new Eclipse.Vector2(
-      v1.x - k * p.mass * un.x - k * other.mass * un.x,
-      v1.y - k * p.mass * un.y - k * other.mass * un.y,
-    )
-    return {pVel: v1Prime.getMult(-1), otherVel: Eclipse.Vector2.ZERO}
-  } else if (p.isStatic){
-    return {pVel: Eclipse.Vector2.ZERO, otherVel: Eclipse.Vector2.ZERO}
-  } else {
-    // V1 projected (normal)
-    const v1n = un.dot(v1)
-    // V2 projected (normal)
-    const v2n = un.dot(v2)
-    // V1 projected (tangent)
-    const v1t = ut.dot(v1)
-    // V2 projected (tangent)
-    const v2t = ut.dot(v2)
-    
-    // 1d collision equations
-    const v1nPrime = (v1n * (p.mass - other.mass) + (2 * other.mass * v2n)) / totalMass
-    const v2nPrime = (v2n * (other.mass - p.mass) + (2 * p.mass * v1n)) / totalMass
-    
-    const vectorV1n = un.getMult(v1nPrime)
-    const vectorV1t = ut.getMult(v1t)
-    const vectorV2n = un.getMult(v2nPrime)
-    const vectorV2t = ut.getMult(v2t)
-    
-    return {pVel: vectorV1n.getAdd(vectorV1t), otherVel: vectorV2n.getAdd(vectorV2t)}
-  }
+
+  const pRelativeAngle = v1.angleDegrees() - utAngle
+  const otherRelativeAngle = v2.angleDegrees() - utAngle
+
+  return new Eclipse.Vector2(v1.mag() * (-COR * Math.cos(pRelativeAngle)), v1.mag() * (-COR * Math.sin(pRelativeAngle)))
 }
 
 function getCollisionPoint(p1: Point, p2: Point): Eclipse.Vector2 {

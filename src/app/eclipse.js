@@ -22,6 +22,7 @@ var Eclipse;
     Eclipse.NEGINF = Number.NEGATIVE_INFINITY;
     Eclipse.EPSILON = Number.EPSILON;
     function drawPoint(ctx, x, y, radius = 1, color = Color.BLACK) {
+        ctx.lineWidth = 0;
         if (typeof x === 'number' && typeof y === 'number' && !(radius instanceof Color)) {
             // Overload 0
             ctx.fillStyle = color.toString();
@@ -131,12 +132,38 @@ var Eclipse;
                 }
             }
         }
+        darken(amount) {
+            this.r -= amount;
+            this.g -= amount;
+            this.b -= amount;
+        }
+        getDarken(amount) {
+            return new Eclipse.Color(this.r - amount, this.g - amount, this.b - amount);
+        }
+        lighten(amount) {
+            this.r += amount;
+            this.g += amount;
+            this.b += amount;
+        }
+        getLighten(amount) {
+            return new Eclipse.Color(this.r + amount, this.g + amount, this.b + amount);
+        }
         /**
          * Converts the color to a CSS compatible string: rgb(r, g, b)
          * @returns {string}
          */
         toString() {
             return `rgb(${this.r}, ${this.g}, ${this.b})`;
+        }
+        toHex() {
+            // The ternary operators are ensuring that when values lower than 16 are entered, the result is still 2 characters long
+            let r = this.r.toString(16);
+            r = r.length <= 1 ? '0' + r : r;
+            let g = this.g.toString(16);
+            g = g.length <= 1 ? '0' + g : g;
+            let b = this.b.toString(16);
+            b = b.length <= 1 ? '0' + b : b;
+            return `#${r}${g}${b}`;
         }
     }
     Color.BLACK = new Color(0, 0, 0);
@@ -614,6 +641,11 @@ var Eclipse;
          */
         toJSONString() {
             return `{x:${this.x},y:${this.y}}`;
+        }
+        apply(cb) {
+            this.x = cb(this.x);
+            this.y = cb(this.y);
+            return this;
         }
         /**
          * Creates a vector from a value formatted '(x,y)', 'x,y' or an array with it's first two values numbers

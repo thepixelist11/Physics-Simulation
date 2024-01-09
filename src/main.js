@@ -49,12 +49,44 @@ const createWindow = () => {
         },
         {
           label: 'Change Acceleration Due To Gravity',
-          accelerator: 'CmdOrCtrl+G',
+          accelerator: 'CmdOrCtrl+R',
           click: () => {
             win.webContents.send('changeGrav', null)
           },
           id: 'changeGrav',
         },
+        {
+          label: 'Edit Wall',
+          accelerator: 'cmdOrCtrl+W',
+          click: () => {
+            win.webContents.send('editWall', null)
+          },
+          id: 'editWall'
+        },
+        {
+          label: 'Edit Selected Point',
+          accelerator: 'cmdOrCtrl+E',
+          click: () => {
+            win.webContents.send('editPoint', null)
+          },
+          id: 'editPoint'
+        },
+        {
+          label: 'Change Coefficient of Restitution',
+          accelerator: 'cmdOrCtrl+Q',
+          click: () => {
+            win.webContents.send('editCOR', null)
+          },
+          id: 'editCOR'
+        },
+        {
+          label: 'Change Camera Zoom',
+          accelerator: 'cmdOrCtrl+T',
+          click: () => {
+            win.webContents.send('editZoom', null)
+          },
+          id: 'editZoom'
+        }
       ],
     },
     {

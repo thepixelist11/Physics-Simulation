@@ -12,7 +12,8 @@ class Point {
   #identifier
   #appliedForces: Array<Eclipse.Vector2> = []
   #constantAccelerations: Array<Eclipse.Vector2> = [gravity]
-  #velocity: Eclipse.Vector2 = Eclipse.Vector2.ZERO
+  #lastVelocity: Eclipse.Vector2 = Eclipse.Vector2.ZERO
+  #onWall = false
 
   // Initial properties
   // Standard properties will be set to these on reset
@@ -38,9 +39,24 @@ class Point {
     this.#initialVelocity = initialVelocity
 
     this.velocity = this.#initialVelocity
+    this.lastVelocity = this.velocity
 
     this.#identifier = Point.idCounter++
   }
+  get lastVelocity() {
+    return this.#lastVelocity
+  }
+  set lastVelocity(newLastVelocity) {
+    this.#lastVelocity = newLastVelocity
+  }
+
+  get lastVelocityPxPerS() {
+    return this.#lastVelocity.getMult(pxPerM)
+  }
+  set lastVelocityPxPerS(newLastVelocity) {
+    this.#lastVelocity = newLastVelocity.getDiv(pxPerM)
+  }
+
   get position() {
     return this.#position
   }
@@ -166,8 +182,24 @@ class Point {
     for(let i = 0; i < this.#constantAccelerations.length; i++) {
       totalAcceleration = totalAcceleration.getAdd(this.#constantAccelerations[i])
     }
-    totalAcceleration.mult(0.5)
     return totalAcceleration
+  }
+  get onWall() {
+    return this.#onWall
+  }
+  set onWall(newVal) {
+    this.#onWall = newVal
+  }
+  get appliedForces() {
+    return this.#appliedForces
+  }
+  set appliedForces(newAppliedForces) {
+    this.#appliedForces = newAppliedForces
+  }
+  
+  getNormalForce(surfaceAngle: number) {
+    const angle = gravity.angleBetweenRadians(Eclipse.Vector2.fromRadianAngle(surfaceAngle))
+    return gravity.getMult(Math.cos(angle) * this.mass)
   }
 
   getRelativePosition(other: Point): Eclipse.Vector2 {
@@ -181,7 +213,7 @@ class Point {
       Eclipse.drawPoint(
         ctx, 
         this.position, 
-        this.radius + ConfigObject.uiConfig.selectedPointOutlineRadius, 
+        this.radius + ConfigObject.uiConfig.selectedPointOutlineRadius / mainCam.zoom, 
         ConfigObject.uiConfig.selectedPointOutlineColor
       )
     }
@@ -288,7 +320,8 @@ class Point {
     centreColor = Eclipse.Color.YELLOW, 
     xHoveredColor = Eclipse.Color.FORESTGREEN, 
     yHoveredColor = Eclipse.Color.MIDNIGHTBLUE,
-    centreHoveredColor = Eclipse.Color.GOLD
+    centreHoveredColor = Eclipse.Color.GOLD,
+    velocityColor = Eclipse.Color.MAGENTA
   ) {
     const xEnd = this.position.getAdd(Eclipse.Vector2.RIGHT.getMult(this.radius + arrowSize))
     // X Arrow Body
@@ -309,7 +342,7 @@ class Point {
         new Eclipse.Vector2(xEnd.x - arrowWidth * 2, this.y + arrowWidth * 2),
       ], 
       controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor, 
-      1,
+      1 / mainCam.zoom,
       true,
       controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor, 
     )
@@ -333,10 +366,21 @@ class Point {
         new Eclipse.Vector2(this.x + arrowWidth * 2, yEnd.y + arrowWidth * 2),
       ], 
       controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor, 
-      1,
+      1 / mainCam.zoom,
       true,
       controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor  
     )
+
+    // Velocity Arrow Body
+    Eclipse.drawLine(
+      ctx,
+      this.position, 
+      this.velocityPXPerS.getDiv(4).getAdd(this.position),
+      arrowWidth, 
+      velocityColor
+    )
+    // Velocity Arrow Head
+    Eclipse.drawPoint(ctx, this.velocityPXPerS.getDiv(4).getAdd(this.position), arrowWidth, velocityColor)
 
     // Centre
     Eclipse.drawPoint(
@@ -370,7 +414,6 @@ class Wall {
     this.side = side
     this.color = color
   }
-
   get position() {
     return this.#position
   }
@@ -396,18 +439,33 @@ class Wall {
     ctx.fillStyle = this.color.toString()
     switch(this.#side) {
       case "top":
-        ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, -canvas.height)
+        ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, -canvas.height + mainCam.y)
         break
       case "bottom":
-        ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, canvas.height)
+        ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, canvas.height + mainCam.y)
         break
       case "left":
-        ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, -canvas.width, canvas.height)
+        ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, -canvas.width + mainCam.x, canvas.height)
         break
       case "right":
-        ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, canvas.width, canvas.height)
+        ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, canvas.width + mainCam.x, canvas.height)
         break
     }
+  }
+
+  toJSON() {
+    return {
+      position: this.position,
+      side: this.side,
+      color: this.color.toString()
+    }
+  }
+
+  fromJSON(JSONString: string) {
+    const parsedJSON = JSON.parse(JSONString)
+    this.position = parsedJSON.position
+    this.side = parsedJSON.side
+    this.color = new Eclipse.Color(parsedJSON.color)
   }
 }
 

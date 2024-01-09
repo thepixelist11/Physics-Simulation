@@ -10,7 +10,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _Point_position, _Point_lastPosition, _Point_radius, _Point_color, _Point_mass, _Point_isStatic, _Point_identifier, _Point_appliedForces, _Point_constantAccelerations, _Point_velocity, _Point_initialPosition, _Point_initialMass, _Point_initialRadius, _Point_initialColor, _Point_initialIsStatic, _Point_initialVelocity, _Wall_position, _Wall_side, _Wall_color;
+var _Point_position, _Point_lastPosition, _Point_radius, _Point_color, _Point_mass, _Point_isStatic, _Point_identifier, _Point_appliedForces, _Point_constantAccelerations, _Point_lastVelocity, _Point_onWall, _Point_initialPosition, _Point_initialMass, _Point_initialRadius, _Point_initialColor, _Point_initialIsStatic, _Point_initialVelocity, _Wall_position, _Wall_side, _Wall_color;
 require('./eclipse');
 class Point {
     constructor(position, mass, radius = 5, color = Eclipse.Color.BLACK, isStatic = false, initialVelocity = Eclipse.Vector2.ZERO) {
@@ -24,7 +24,8 @@ class Point {
         _Point_identifier.set(this, void 0);
         _Point_appliedForces.set(this, []);
         _Point_constantAccelerations.set(this, [gravity]);
-        _Point_velocity.set(this, Eclipse.Vector2.ZERO
+        _Point_lastVelocity.set(this, Eclipse.Vector2.ZERO);
+        _Point_onWall.set(this, false
         // Initial properties
         // Standard properties will be set to these on reset
         );
@@ -49,7 +50,20 @@ class Point {
         __classPrivateFieldSet(this, _Point_initialIsStatic, __classPrivateFieldGet(this, _Point_isStatic, "f"), "f");
         __classPrivateFieldSet(this, _Point_initialVelocity, initialVelocity, "f");
         this.velocity = __classPrivateFieldGet(this, _Point_initialVelocity, "f");
+        this.lastVelocity = this.velocity;
         __classPrivateFieldSet(this, _Point_identifier, Point.idCounter++, "f");
+    }
+    get lastVelocity() {
+        return __classPrivateFieldGet(this, _Point_lastVelocity, "f");
+    }
+    set lastVelocity(newLastVelocity) {
+        __classPrivateFieldSet(this, _Point_lastVelocity, newLastVelocity, "f");
+    }
+    get lastVelocityPxPerS() {
+        return __classPrivateFieldGet(this, _Point_lastVelocity, "f").getMult(pxPerM);
+    }
+    set lastVelocityPxPerS(newLastVelocity) {
+        __classPrivateFieldSet(this, _Point_lastVelocity, newLastVelocity.getDiv(pxPerM), "f");
     }
     get position() {
         return __classPrivateFieldGet(this, _Point_position, "f");
@@ -184,8 +198,23 @@ class Point {
         for (let i = 0; i < __classPrivateFieldGet(this, _Point_constantAccelerations, "f").length; i++) {
             totalAcceleration = totalAcceleration.getAdd(__classPrivateFieldGet(this, _Point_constantAccelerations, "f")[i]);
         }
-        totalAcceleration.mult(0.5);
         return totalAcceleration;
+    }
+    get onWall() {
+        return __classPrivateFieldGet(this, _Point_onWall, "f");
+    }
+    set onWall(newVal) {
+        __classPrivateFieldSet(this, _Point_onWall, newVal, "f");
+    }
+    get appliedForces() {
+        return __classPrivateFieldGet(this, _Point_appliedForces, "f");
+    }
+    set appliedForces(newAppliedForces) {
+        __classPrivateFieldSet(this, _Point_appliedForces, newAppliedForces, "f");
+    }
+    getNormalForce(surfaceAngle) {
+        const angle = gravity.angleBetweenRadians(Eclipse.Vector2.fromRadianAngle(surfaceAngle));
+        return gravity.getMult(Math.cos(angle) * this.mass);
     }
     getRelativePosition(other) {
         return new Eclipse.Vector2(other.x - this.x, other.y - this.y);
@@ -195,7 +224,7 @@ class Point {
         if (ConfigObject.uiConfig.selectedPointOutlineColor &&
             this.identifier === ((_a = controller.selectedPoint) === null || _a === void 0 ? void 0 : _a.identifier) &&
             ConfigObject.uiConfig.selectedPointOutlineRadius) {
-            Eclipse.drawPoint(ctx, this.position, this.radius + ConfigObject.uiConfig.selectedPointOutlineRadius, ConfigObject.uiConfig.selectedPointOutlineColor);
+            Eclipse.drawPoint(ctx, this.position, this.radius + ConfigObject.uiConfig.selectedPointOutlineRadius / mainCam.zoom, ConfigObject.uiConfig.selectedPointOutlineColor);
         }
         Eclipse.drawPoint(ctx, this.position, this.radius, this.color);
     }
@@ -285,7 +314,7 @@ class Point {
         __classPrivateFieldSet(this, _Point_initialPosition, this.position, "f");
         __classPrivateFieldSet(this, _Point_initialRadius, this.radius, "f");
     }
-    drawMovementArrows(arrowSize, arrowWidth, xColor = Eclipse.Color.GREEN, yColor = Eclipse.Color.BLUE, centreColor = Eclipse.Color.YELLOW, xHoveredColor = Eclipse.Color.FORESTGREEN, yHoveredColor = Eclipse.Color.MIDNIGHTBLUE, centreHoveredColor = Eclipse.Color.GOLD) {
+    drawMovementArrows(arrowSize, arrowWidth, xColor = Eclipse.Color.GREEN, yColor = Eclipse.Color.BLUE, centreColor = Eclipse.Color.YELLOW, xHoveredColor = Eclipse.Color.FORESTGREEN, yHoveredColor = Eclipse.Color.MIDNIGHTBLUE, centreHoveredColor = Eclipse.Color.GOLD, velocityColor = Eclipse.Color.MAGENTA) {
         const xEnd = this.position.getAdd(Eclipse.Vector2.RIGHT.getMult(this.radius + arrowSize));
         // X Arrow Body
         Eclipse.drawLine(ctx, this.position, xEnd, arrowWidth, controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor);
@@ -294,7 +323,7 @@ class Point {
             xEnd,
             new Eclipse.Vector2(xEnd.x - arrowWidth * 2, this.y - arrowWidth * 2),
             new Eclipse.Vector2(xEnd.x - arrowWidth * 2, this.y + arrowWidth * 2),
-        ], controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor, 1, true, controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor);
+        ], controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor, 1 / mainCam.zoom, true, controller.selectionArrowHovered === 'x' ? xHoveredColor : xColor);
         const yEnd = this.position.getAdd(Eclipse.Vector2.UP.getMult(this.radius + arrowSize));
         // Y Arrow Body
         Eclipse.drawLine(ctx, this.position, yEnd, arrowWidth, controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor);
@@ -303,7 +332,11 @@ class Point {
             yEnd,
             new Eclipse.Vector2(this.x - arrowWidth * 2, yEnd.y + arrowWidth * 2),
             new Eclipse.Vector2(this.x + arrowWidth * 2, yEnd.y + arrowWidth * 2),
-        ], controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor, 1, true, controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor);
+        ], controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor, 1 / mainCam.zoom, true, controller.selectionArrowHovered === 'y' ? yHoveredColor : yColor);
+        // Velocity Arrow Body
+        Eclipse.drawLine(ctx, this.position, this.velocityPXPerS.getDiv(4).getAdd(this.position), arrowWidth, velocityColor);
+        // Velocity Arrow Head
+        Eclipse.drawPoint(ctx, this.velocityPXPerS.getDiv(4).getAdd(this.position), arrowWidth, velocityColor);
         // Centre
         Eclipse.drawPoint(ctx, this.position, arrowWidth * 1.5, controller.selectionArrowHovered === 'both' ? centreHoveredColor : centreColor);
     }
@@ -317,7 +350,7 @@ class Point {
         }, 1);
     }
 }
-_Point_position = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_isStatic = new WeakMap(), _Point_identifier = new WeakMap(), _Point_appliedForces = new WeakMap(), _Point_constantAccelerations = new WeakMap(), _Point_velocity = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap(), _Point_initialIsStatic = new WeakMap(), _Point_initialVelocity = new WeakMap();
+_Point_position = new WeakMap(), _Point_lastPosition = new WeakMap(), _Point_radius = new WeakMap(), _Point_color = new WeakMap(), _Point_mass = new WeakMap(), _Point_isStatic = new WeakMap(), _Point_identifier = new WeakMap(), _Point_appliedForces = new WeakMap(), _Point_constantAccelerations = new WeakMap(), _Point_lastVelocity = new WeakMap(), _Point_onWall = new WeakMap(), _Point_initialPosition = new WeakMap(), _Point_initialMass = new WeakMap(), _Point_initialRadius = new WeakMap(), _Point_initialColor = new WeakMap(), _Point_initialIsStatic = new WeakMap(), _Point_initialVelocity = new WeakMap();
 Point.idCounter = 0;
 class Wall {
     constructor(position, side, color) {
@@ -350,18 +383,31 @@ class Wall {
         ctx.fillStyle = this.color.toString();
         switch (__classPrivateFieldGet(this, _Wall_side, "f")) {
             case "top":
-                ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, -canvas.height);
+                ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, -canvas.height + mainCam.y);
                 break;
             case "bottom":
-                ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, canvas.height);
+                ctx.fillRect(0, (this.position * mainCam.zoom) - mainCam.y, canvas.width, canvas.height + mainCam.y);
                 break;
             case "left":
-                ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, -canvas.width, canvas.height);
+                ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, -canvas.width + mainCam.x, canvas.height);
                 break;
             case "right":
-                ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, canvas.width, canvas.height);
+                ctx.fillRect((this.position * mainCam.zoom) - mainCam.x, 0, canvas.width + mainCam.x, canvas.height);
                 break;
         }
+    }
+    toJSON() {
+        return {
+            position: this.position,
+            side: this.side,
+            color: this.color.toString()
+        };
+    }
+    fromJSON(JSONString) {
+        const parsedJSON = JSON.parse(JSONString);
+        this.position = parsedJSON.position;
+        this.side = parsedJSON.side;
+        this.color = new Eclipse.Color(parsedJSON.color);
     }
 }
 _Wall_position = new WeakMap(), _Wall_side = new WeakMap(), _Wall_color = new WeakMap();

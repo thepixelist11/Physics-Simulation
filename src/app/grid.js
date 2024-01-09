@@ -169,11 +169,14 @@ class Grid {
                 acc[key] = value;
                 return acc;
             }, {}),
-            gravity: JSON.stringify(gravity)
+            gravity: JSON.stringify(gravity),
+            COR: COR,
+            walls: this.walls.map(wall => wall.toJSON())
         };
     }
     fromJSON(jsonString) {
         this.clearAllPoints();
+        __classPrivateFieldSet(this, _Grid_walls, [], "f");
         const parsedJSON = JSON.parse(jsonString);
         this.cellSize = parseFloat(parsedJSON.cellSize);
         for (let i = 0; i < parsedJSON.points.length; i++) {
@@ -181,9 +184,15 @@ class Grid {
             p.fromJSON(JSON.stringify(parsedJSON.points[i]));
             this.addPoint(p);
         }
+        for (let i = 0; i < parsedJSON.walls.length; i++) {
+            const wall = new Wall(0, 'bottom', Eclipse.Color.BLACK);
+            wall.fromJSON(JSON.stringify(parsedJSON.walls[i]));
+            __classPrivateFieldGet(this, _Grid_walls, "f").push(wall);
+        }
         mainCam.x = parseFloat(parsedJSON.camX);
         mainCam.y = parseFloat(parsedJSON.camY);
         mainCam.zoom = parseFloat(parsedJSON.camZoom);
+        COR = parsedJSON.COR;
         this.updateCells();
         drawScene(this, ctx, mainCam, ConfigObject);
     }

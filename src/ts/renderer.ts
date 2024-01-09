@@ -49,58 +49,29 @@ ipcRenderer.on('lostFocus', (evt: Event, val: any) => {
   windowInFocus = false
 })
 
-ipcRenderer.on('changeGrav', (evt: Event, val: any) => {
-  ipcRenderer.send('disableMenuItem', 'changeGrav')
-
-  const menuHeight = 100
-
-  const menuBG = document.createElement('div')
-  menuBG.classList.add('menuBoxBack')
-  menuBG.style.width = `auto`
-  menuBG.style.height = `${menuHeight}px`
-  menuBG.style.top = '50%'
-  menuBG.style.left = '50%'
-  menuBG.style.transform = 'translate(-50%, -50%)'
-  document.body.appendChild(menuBG)
-
-  const title = document.createElement('p')
-  title.classList.add('menuBoxTitle')
-  title.innerHTML = 'Change Acceleration Due To Gravity'
-  menuBG.appendChild(title)
-
-  const inputDiv = document.createElement('div')
-  menuBG.appendChild(inputDiv)
-
-  const input = document.createElement('input')
-  input.type = 'number'
-  input.value = gravity.y.toString()
-  input.placeholder = gravity.y.toString()
-  input.classList.add('menuBoxInput')
-  input.title = ''
-  inputDiv.appendChild(input)
-
-  const confirm = document.createElement('button')
-  confirm.classList.add('menuBoxConfirm')
-  confirm.innerHTML = 'OK'
-  inputDiv.appendChild(confirm)
-
-  confirm.onclick = () => {
-  ipcRenderer.send('enableMenuItem', 'changeGrav')
-    gravity.y = parseFloat(input.value)
-    document.body.removeChild(menuBG)
-  }
-
-  // MenuBG
-  // ├───Title
-  // └───InputDiv
-  //     ├───Input
-  //     └───Confirm
-})
-
 window.addEventListener('focus', (evt: Event) => {
   windowInFocus = true
 })
 
+ipcRenderer.on('changeGrav', (evt: Event, val: any) => {
+  changeGrav()
+})
+
+ipcRenderer.on('editWall', (evt: Event, val: any) => {
+  editWall()
+})
+
+ipcRenderer.on('editPoint', (evt: Event, val: any) => {
+  editPoint()
+})
+
+ipcRenderer.on('editCOR', (evt: Event, val: any) => {
+  editCOR()
+})
+
+ipcRenderer.on('editZoom', (evt: Event, val: any) => {
+  editZoom()
+})
 // Initialize main camera
 let mainCam = new Camera(Eclipse.Vector2.ZERO, 1)
 
@@ -160,7 +131,6 @@ let ConfigObject: ConfigType = {
       enabled: true,
       position: new Eclipse.Vector2(5, 90),
       color: Eclipse.Color.BLACK,
-      cam: mainCam
     },
     cellSize: pxPerM,
     drawGridLines: true,
@@ -177,6 +147,12 @@ let ConfigObject: ConfigType = {
       yHoveredColor: new Eclipse.Color('#2E438C'),
       centreColor: new Eclipse.Color('#DBA62B'),
       centreHoveredColor: new Eclipse.Color('#8F6D1D'),
+    },
+    selectedPointInfo: {
+      position: new Eclipse.Vector2(5, 165),
+      enabled: true,
+      color: Eclipse.Color.BLACK,
+      lineHeight: 15
     }
   },
   generalConfig: {
@@ -191,9 +167,8 @@ let ConfigObject: ConfigType = {
   }
 }
 
-
 // Initializes main grid
-let mainGrid = new Grid([], 100, [new Wall(1000, 'bottom', Eclipse.Color.FORESTGREEN)])
+let mainGrid = new Grid([], 100, [new Wall(1000, 'bottom', new Eclipse.Color(40, 40, 40))])
 mainGrid.cellSize = ConfigObject.generalConfig.spacPartCellSize
 
 // Initializes main controller
@@ -225,6 +200,7 @@ type ConfigType = {
 }
 
 let showCursor = {uiConfigEnabled: ConfigObject.uiConfig.cursorDisplay?.enabled, canPlacePoint: controller.canPlacePoint}
+let cameraLock = false
 
 function resetPoints() {
   for (let i = 0; i < mainGrid.points.length; i++) {
@@ -241,7 +217,7 @@ let time = 0
 // Time in ms to pass per frame. Lower number reduces performance, but increases accuracy. 
 // When using basic Stormer-Verlet method, do not lower timestep below 0.01667 as it will cause inaccuracies. 
 // Only lower further when using velocity verlet.
-let timeStep = 1.667
+let timeStep = 16.67
 // The desired fps to run at. Does not affect the update timestep
 const FPS = 16.67
 
@@ -249,7 +225,6 @@ const FPS = 16.67
 function startPhysics() {
   disableMenuFunctionality()
   controller.canPlacePoint = false
-  controller.selectedPoint = null
   timeStep = Eclipse.clamp(timeStep, 0.01667, 16.67)
   time = 0
   loopPhysics = true
@@ -272,6 +247,10 @@ function startPhysics() {
       //   stopPhysics()
       // }
       // --
+    }
+    if(cameraLock && controller.selectedPoint) {
+      mainCam.x = controller.selectedPoint.x * mainCam.zoom - canvas.width / 2
+      mainCam.y = controller.selectedPoint.x * mainCam.zoom - canvas.width / 2
     }
     drawScene(mainGrid, ctx, mainCam, ConfigObject)
   }, FPS)
@@ -301,7 +280,7 @@ controller.mouse.onlmbdown = () => {
           let p = new Point(new Eclipse.Vector2(
           (controller.mouse.x + mainCam.x) / mainCam.zoom,
           (controller.mouse.y + mainCam.y) / mainCam.zoom,
-          ), 1, controller.pointPlacementRadius, controller.pointStaticPlacementColor, true)
+          ), controller.pointPlacementRadius, controller.pointPlacementRadius, controller.pointStaticPlacementColor, true)
         if(ConfigObject.generalConfig.allowStaticPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
           mainGrid.addPoint(p)
           drawScene(mainGrid, ctx, mainCam, ConfigObject)
@@ -311,7 +290,7 @@ controller.mouse.onlmbdown = () => {
         let p = new Point(new Eclipse.Vector2(
           (controller.mouse.x + mainCam.x) / mainCam.zoom,
           (controller.mouse.y + mainCam.y) / mainCam.zoom,
-          ), 1, controller.pointPlacementRadius, controller.pointDynamicPlacementColor, false)
+          ), controller.pointPlacementRadius, controller.pointPlacementRadius, controller.pointDynamicPlacementColor, false)
           if(ConfigObject.generalConfig.allowDynamicPointsOnPoints || (!mainGrid.pointOverlapping(p))) {
             mainGrid.addPoint(p)
             drawScene(mainGrid, ctx, mainCam, ConfigObject)
@@ -343,7 +322,14 @@ controller.mouse.onrmbdown = () => {
     for(let i = 0; i < cell.length; i++) {
       const p = cell[i]
       // Do not select the same point twice in a row
-      if(p.identifier === controller.selectedPoint?.identifier) continue
+      if(p.identifier === controller.selectedPoint?.identifier){
+        // Deselect if not dragging velocity
+        if(!controller.velocityDragged && controller.selectionArrowHovered !== 'both'){
+          controller.selectedPoint = null
+          drawScene(mainGrid, ctx, mainCam, ConfigObject)
+        }
+        continue
+      }
       const mouseDistFromP = 
         ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
         ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
@@ -351,6 +337,11 @@ controller.mouse.onrmbdown = () => {
         controller.selectedPoint = p
         drawScene(mainGrid, ctx, mainCam, ConfigObject)
         mouseInPoint = true
+        if(p.identifier === controller.selectedPoint?.identifier && controller.selectionArrowHovered === 'both') {
+          // Start velocity drag
+          controller.velocityDragged = true
+          controller.velocityDraggedStartPos = controller.getGlobalMousePosition()
+        }
         break
       } else {
         // Deselect
@@ -366,7 +357,14 @@ controller.mouse.onrmbdown = () => {
     for(let i = 0; i < mainGrid.points.length; i++) {
       const p = mainGrid.points[i]
       // Do not select the same point twice in a row
-      if(p.identifier === controller.selectedPoint?.identifier) continue
+      if(p.identifier === controller.selectedPoint?.identifier){
+        // Deselect if not dragging velocity
+        if(!controller.velocityDragged && controller.selectionArrowHovered !== 'both'){
+          controller.selectedPoint = null
+          drawScene(mainGrid, ctx, mainCam, ConfigObject)
+          continue
+        }
+      }
       const mouseDistFromP = 
         ((p.x - controller.getGlobalMousePosition().x) * (p.x - controller.getGlobalMousePosition().x)) +
         ((p.y - controller.getGlobalMousePosition().y) * (p.y - controller.getGlobalMousePosition().y))
@@ -374,6 +372,11 @@ controller.mouse.onrmbdown = () => {
         controller.selectedPoint = p
         drawScene(mainGrid, ctx, mainCam, ConfigObject)
         mouseInPoint = true
+        if(p.identifier === controller.selectedPoint?.identifier && controller.selectionArrowHovered === 'both') {
+          // Start velocity drag
+          controller.velocityDragged = true
+          controller.velocityDraggedStartPos = controller.getGlobalMousePosition()
+        }
         break
       } else {
         // Deselect
@@ -389,14 +392,26 @@ controller.mouse.onrmbdown = () => {
 }
 
 controller.mouse.onscroll = (evt: WheelEvent) => {
-  controller.pointPlacementRadius += -evt.deltaY / (controller.keyboard.shiftDown ? 10 : 100)
-  controller.pointPlacementRadius = Eclipse.clamp(controller.pointPlacementRadius, 1, 10000)
+  controller.pointPlacementRadius += -evt.deltaY / (controller.keyboard.shiftDown ? 10 : controller.keyboard.altDown ? 10000 : 100)
+  controller.pointPlacementRadius = Eclipse.clamp(controller.pointPlacementRadius, controller.keyboard.altDown ? 0.00001 : 0.1, 10000)
   drawScene(mainGrid, ctx, mainCam, ConfigObject)
+}
+
+controller.mouse.onrmbup = () => {
+  if(controller.velocityDragged && controller.velocityDraggedStartPos && controller.selectedPoint) {
+    controller.velocityDragged = false
+    controller.velocityDraggedStartPos = null
+    controller.selectedPoint.initialVelocityPxPerM = controller.selectedPoint.velocityPXPerS
+  }
 }
 
 controller.mouse.onmove = (evt: MouseEvent) => {
   drawScene(mainGrid, ctx, mainCam, ConfigObject)
   updateDraggedPointPosition()
+  // Update dragged velocity
+  if(controller.velocityDragged && controller.velocityDraggedStartPos && controller.selectedPoint) {
+    controller.selectedPoint.velocityPXPerS = controller.getGlobalMousePosition().getSub(controller.velocityDraggedStartPos)
+  }
 }
 
 function updateDraggedPointPosition() {
@@ -445,6 +460,15 @@ controller.keyboard.onkeydown = (code: Eclipse.Key) => {
       // Pause or unpause the simulation
       simulationPaused = !simulationPaused
     }
+  }
+  if(code === 'KeyL') {
+    cameraLock = !cameraLock
+    drawScene(mainGrid, ctx, mainCam, ConfigObject)
+  }
+  if(code === 'KeyT' && !controller.keyboard.ctrlDown) {
+    mainCam.x = ((controller.selectedPoint ?? mainGrid.points[0]).x * mainCam.zoom - canvas.width / 2)
+    mainCam.y = ((controller.selectedPoint ?? mainGrid.points[0]).y * mainCam.zoom - canvas.height / 2)
+    drawScene(mainGrid, ctx, mainCam, ConfigObject)
   }
 }
 

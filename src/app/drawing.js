@@ -24,6 +24,8 @@ function drawScene(grid, ctx, camera, ConfigObject, bgColor = Eclipse.Color.WHIT
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
     ctx.scale(camera.zoom, camera.zoom);
+    // For implementing zooming in the future
+    // ctx.transform(camera.zoom, 0, 0, camera.zoom, canvas.width / 2 - camera.x * camera.zoom, canvas.height / 2 - camera.y * camera.zoom);
     // Debug -
     if ((_a = ConfigObject.debugConfig.fillFilledGridCells) !== null && _a !== void 0 ? _a : false) {
         fillNonEmptyGridCells(ctx, grid, Eclipse.Color.SILVER);
@@ -70,14 +72,14 @@ function drawBackground(ctx, color) {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 function drawOverlay(ctx, options) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19;
     // Mouse Cursor
     if (options.cursorDisplay &&
         options.cursorDisplay.enabled &&
         controller.canPlacePoint &&
         controller.selectionArrowHovered === null &&
         !controller.selectionArrowDragged &&
-        ((_a = controller.mouse.hoveredElement()) !== null && _a !== void 0 ? _a : new Element()).id === 'mainCanvas') {
+        ((_a = controller.mouse.hoveredElement()) === null || _a === void 0 ? void 0 : _a.id) === 'mainCanvas') {
         switch (options.cursorDisplay.type) {
             case 'pointPlace':
                 ctx.globalAlpha = options.cursorDisplay.opacity;
@@ -186,6 +188,74 @@ function drawOverlay(ctx, options) {
         let text = (_15 = controller.selectedPoint) === null || _15 === void 0 ? void 0 : _15.identifier.toString();
         ctx.fillText(`Selected Point ID: ${text !== null && text !== void 0 ? text : 'None'}`, options.selectedIdentifier.position.x, options.selectedIdentifier.position.y);
     }
+    // FIXME: Add extra options for these. Currently using selected identifier settings
+    // Camera Locked?
+    if (options.selectedIdentifier && options.selectedIdentifier.enabled) {
+        ctx.font = (_16 = options.selectedIdentifier.fontStyle) !== null && _16 !== void 0 ? _16 : 'courier 100px';
+        ctx.fillStyle = options.selectedIdentifier.color.toString();
+        ctx.fillText(`Camera Locked To Point: ${cameraLock}`, options.selectedIdentifier.position.x, options.selectedIdentifier.position.y + 15);
+    }
+    // COR
+    if (options.selectedIdentifier && options.selectedIdentifier.enabled) {
+        ctx.font = (_17 = options.selectedIdentifier.fontStyle) !== null && _17 !== void 0 ? _17 : 'courier 100px';
+        ctx.fillStyle = options.selectedIdentifier.color.toString();
+        ctx.fillText(`Corefficient of Restitiution: ${COR}`, options.selectedIdentifier.position.x, options.selectedIdentifier.position.y + 30);
+    }
+    // Gravity
+    if (options.selectedIdentifier && options.selectedIdentifier.enabled) {
+        ctx.font = (_18 = options.selectedIdentifier.fontStyle) !== null && _18 !== void 0 ? _18 : 'courier 100px';
+        ctx.fillStyle = options.selectedIdentifier.color.toString();
+        ctx.fillText(`Gravity: ${gravity.y} m/s^2`, options.selectedIdentifier.position.x, options.selectedIdentifier.position.y + 45);
+    }
+    // Selected Point Info
+    if (options.selectedPointInfo && options.selectedPointInfo.enabled && controller.selectedPoint) {
+        ctx.font = (_19 = options.selectedPointInfo.fontStyle) !== null && _19 !== void 0 ? _19 : 'courier 100px';
+        ctx.fillStyle = options.selectedPointInfo.color.toString();
+        const p = controller.selectedPoint;
+        const text = `Position: ${p.position.apply(val => { return parseFloat(val.toFixed(4)); }).getDiv(pxPerM).toString()} m
+Last Position: ${p.lastPosition.apply(val => { return parseFloat(val.toFixed(4)); }).getDiv(pxPerM).toString()} m
+Velocity: ${p.velocity.apply(val => { return parseFloat(val.toFixed(4)); }).toString()} m/s
+LastVelocity: ${p.lastVelocity.apply(val => { return parseFloat(val.toFixed(4)); }).toString()} m/s
+Acceleration: ${p.acceleration.apply(val => { return parseFloat(val.toFixed(4)); }).toString()} m/s^2
+Radius: ${(p.radius / pxPerM).toFixed(4)} m
+Color: ${p.color.toString()}
+Mass: ${p.mass.toFixed(4)} kg
+Static: ${p.isStatic}
+On Wall: ${p.onWall}`;
+        const splitText = text.split('\n');
+        for (let i = 0; i < splitText.length; i++) {
+            ctx.fillText(splitText[i], options.selectedPointInfo.position.x, options.selectedPointInfo.position.y + (i * options.selectedPointInfo.lineHeight));
+        }
+    }
+    // Selected Point FBD
+    // if(options.FBD && options.FBD.enabled && controller.selectedPoint && loopPhysics) {
+    //   ctx.fillStyle = (options.FBD.color ?? Eclipse.Color.DARKGREY).toString()
+    //   const offset = options.FBD.offset ?? Eclipse.Vector2.ZERO
+    //   const width = options.FBD.width ?? 100
+    //   const height = options.FBD.height ?? 100
+    //   let position = Eclipse.Vector2.ZERO
+    //   switch(options.FBD.position) {
+    //     case "bottom-right":
+    //       position = new Eclipse.Vector2(window.innerWidth + offset.x - width, window.innerHeight + offset.y - height)
+    //       break
+    //     case "bottom-left":
+    //       position = new Eclipse.Vector2(offset.x, window.innerHeight + offset.y - height)
+    //       break
+    //     case "top-right":
+    //       position = new Eclipse.Vector2(window.innerWidth + offset.x - width, offset.y)
+    //       break
+    //     case "top-left":
+    //       position = new Eclipse.Vector2(offset.x, offset.y)
+    //       break
+    //   }
+    //   ctx.fillRect(position.x, position.y, width, height)
+    //   ctx.beginPath()
+    //   ctx.lineWidth = options.FBD.outlineWeight ?? 5
+    //   ctx.strokeStyle = (options.FBD.color ?? Eclipse.Color.DARKGREY).getDarken(30).toString()
+    //   ctx.rect(position.x, position.y, width, height)
+    //   ctx.stroke()
+    //   drawFBDArrows(position.getAdd(new Eclipse.Vector2(width / 2, height / 2)), options.FBD.arrowMaxMagnitude)
+    // }
 }
 function fillNonEmptyGridCells(ctx, grid, color) {
     for (const cell of grid.cells) {
@@ -193,4 +263,23 @@ function fillNonEmptyGridCells(ctx, grid, color) {
         ctx.fillStyle = color.toString();
         ctx.fillRect(pos.x * grid.cellSize, pos.y * grid.cellSize, grid.cellSize, grid.cellSize);
     }
+}
+function drawFBDArrows(position, magnitude) {
+    var _a, _b;
+    const FG = ((_b = (_a = controller.selectedPoint) === null || _a === void 0 ? void 0 : _a.mass) !== null && _b !== void 0 ? _b : 0) * gravity.mag();
+    const gravVector = gravity.getNormalized().getMult(magnitude);
+    const gravTextPos = position.getAdd(gravVector.getDiv(2)).getAdd(new Eclipse.Vector2(10, 0));
+    const colors = {
+        gravity: Eclipse.Color.BLUE
+    };
+    ctx.font = 'courier 200px';
+    ctx.fillStyle = colors.gravity.toString();
+    ctx.fillText(`Fg: ${FG}N`, gravTextPos.x, gravTextPos.y);
+    drawArrow(position, gravVector.getAdd(position), colors.gravity, 5); // Gravity
+}
+function drawArrow(start, end, color, width) {
+    // Body
+    Eclipse.drawLine(ctx, start, end, width, color);
+    // Head
+    Eclipse.drawPoint(ctx, end, width, color);
 }

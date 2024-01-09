@@ -39,6 +39,8 @@ namespace Eclipse {
   | 'grab' 
   | 'grabbing'
 
+  export type CornerPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
+
   // ----- MATH FUNCTIONS AND CLASSES
   export const PI = Math.PI
   export const TAU = PI * 2
@@ -81,6 +83,7 @@ namespace Eclipse {
     radius: number | Color = 1,
     color: Color = Color.BLACK
   ) {
+    ctx.lineWidth = 0
     if (typeof x === 'number' && typeof y === 'number' && !(radius instanceof Color)) {
       // Overload 0
       ctx.fillStyle = color.toString()
@@ -222,12 +225,43 @@ namespace Eclipse {
       }
     }
 
+    darken(amount: number) {
+      this.r -= amount
+      this.g -= amount
+      this.b -= amount
+    }
+
+    getDarken(amount: number) {
+      return new Eclipse.Color(this.r - amount, this.g - amount, this.b - amount)
+    }
+
+    lighten(amount: number) {
+      this.r += amount
+      this.g += amount
+      this.b += amount
+    }
+
+    getLighten(amount: number) {
+      return new Eclipse.Color(this.r + amount, this.g + amount, this.b + amount)
+    }
+
     /**
      * Converts the color to a CSS compatible string: rgb(r, g, b)
      * @returns {string}
      */
     toString(): string {
       return `rgb(${this.r}, ${this.g}, ${this.b})`
+    }
+
+    toHex(): string {
+      // The ternary operators are ensuring that when values lower than 16 are entered, the result is still 2 characters long
+      let r = this.r.toString(16)
+      r = r.length <= 1 ? '0' + r : r
+      let g = this.g.toString(16)
+      g = g.length <= 1 ? '0' + g : g
+      let b = this.b.toString(16)
+      b = b.length <= 1 ? '0' + b : b
+      return `#${r}${g}${b}`
     }
 
     static BLACK = new Color(0, 0, 0)
@@ -738,6 +772,12 @@ namespace Eclipse {
      */
     toJSONString(): string {
       return `{x:${this.x},y:${this.y}}`
+    }
+
+    apply(cb: (axis: number) => number) {
+      this.x = cb(this.x)
+      this.y = cb(this.y)
+      return this
     }
 
     static create(val: number[]): Vector2
