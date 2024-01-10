@@ -164,7 +164,7 @@ function editPoint() {
         const xVInput = document.createElement('input');
         xVInput.id = 'xVInput';
         xVInput.type = 'number';
-        xVInput.value = (p.velocity.x / pxPerM).toString();
+        xVInput.value = (p.velocity.x).toString();
         xVInput.classList.add('menuBoxInput');
         xVInput.style.display = 'inline-block';
         xVInput.placeholder = (p.velocity.x / pxPerM).toString();
@@ -179,7 +179,7 @@ function editPoint() {
         const yVInput = document.createElement('input');
         yVInput.id = 'yVInput';
         yVInput.type = 'number';
-        yVInput.value = (p.velocity.y / pxPerM).toString();
+        yVInput.value = (p.velocity.y).toString();
         yVInput.classList.add('menuBoxInput');
         yVInput.style.display = 'inline-block';
         yVInput.placeholder = (p.velocity.y / pxPerM).toString();
@@ -263,13 +263,12 @@ function editPoint() {
             p.y = parseFloat(yInput.value) * pxPerM;
             p.lastPosition.x -= lastX - p.x;
             p.lastPosition.y -= lastY - p.y;
-            p.velocity = new Eclipse.Vector2(parseFloat(xVInput.value), parseFloat(yVInput.value));
-            p.initialVelocity = new Eclipse.Vector2(parseFloat(xVInput.value) * pxPerM, parseFloat(yVInput.value) * pxPerM);
             p.radius = parseFloat(radiusInput.value) * pxPerM;
             p.mass = parseFloat(massInput.value);
             p.isStatic = isStaticInput.checked;
             p.color = new Eclipse.Color(colorInput.value);
             p.setNewInitialValues();
+            p.initialVelocity = new Eclipse.Vector2(parseFloat(xVInput.value), parseFloat(yVInput.value));
             document.body.removeChild(menuBG);
             drawScene(mainGrid, ctx, mainCam, ConfigObject);
         };

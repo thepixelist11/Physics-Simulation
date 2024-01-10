@@ -22,7 +22,6 @@ function loadSimulation(filePath) {
         const saveFile = fs.readFileSync(filePath).toString();
         mainGrid.fromJSON(saveFile);
         const parsedGravity = JSON.parse(JSON.parse(saveFile).gravity);
-        console.log(parsedGravity);
         gravity = new Eclipse.Vector2(parsedGravity.x, parsedGravity.y);
     }
     else {
