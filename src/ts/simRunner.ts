@@ -94,11 +94,11 @@ function toCSV(obj: {[key: string]: any}) {
       if(!sim[`p${i}`]) break
       lines.push(`P${i},`)
       for(let j = 0; j < sim.timeStamps.length; j++) {
-        const time = (sim.timeStamps[j] / 1000).toPrecision(4).toString()
-        const xVel = sim[`p${i}`].xVel[j].toPrecision(4).toString()
-        const yVel = sim[`p${i}`].yVel[j].toPrecision(4).toString()
-        const x = sim[`p${i}`].x[j].toPrecision(4).toString()
-        const y = sim[`p${i}`].y[j].toPrecision(4).toString()
+        const time = (sim.timeStamps[j] / 1000).toPrecision(3).toString()
+        const xVel = sim[`p${i}`].xVel[j].toPrecision(3).toString()
+        const yVel = sim[`p${i}`].yVel[j].toPrecision(3).toString()
+        const x = sim[`p${i}`].x[j].toPrecision(3).toString()
+        const y = sim[`p${i}`].y[j].toPrecision(3).toString()
         if(j === 0) {
           lines[lines.length - 1] = lines[lines.length - 1].concat(`${time},${xVel},${yVel},${x},${y}\r\n,`)
         } else {
@@ -110,15 +110,14 @@ function toCSV(obj: {[key: string]: any}) {
       csv[csv.length - 1] = csv[csv.length - 1].concat(lines[i])
     }
   }
-  return {csv, names}
+  
+  return csv.join('\r\n\r\n')
 }
 
-function runFullTest(path: string, timeToRun: number, ts = 16.67, dataCollectInterval = 10) {
-  runAllSims(path, timeToRun, ts, dataCollectInterval)
+function runFullTest(filePath: string, timeToRun: number, ts = 16.67, dataCollectInterval = 10) {
+  runAllSims(filePath, timeToRun, ts, dataCollectInterval)
     .then(res => {
-      const csvData = toCSV(res)
-      for(let i = 0; i < csvData.csv.length; i++) {
-        Eclipse.downloadTextFile(csvData.csv[i], `${csvData.names[i]}.csv`)
-      }
+      const csv = toCSV(res)
+      fs.writeFileSync(path.join(__dirname, `Data.csv`), csv)
     })
 }
