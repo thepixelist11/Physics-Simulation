@@ -168,7 +168,7 @@ let ConfigObject: ConfigType = {
 }
 
 // Initializes main grid
-let mainGrid = new Grid([], 100, [new Wall(1000, 'bottom', new Eclipse.Color(40, 40, 40))])
+let mainGrid = new Grid([], 100, [new Wall(1000, 'bottom', new Eclipse.Color(50, 190, 30))])
 mainGrid.cellSize = ConfigObject.generalConfig.spacPartCellSize
 
 // Initializes main controller
@@ -242,10 +242,10 @@ function startPhysics() {
         time += timeStep
       }
       // DEBUG --
-      // if(mainGrid.points[0].y >= 10000) {
-      //   console.log(`Time: ${time / 1000} s, Dist: ${mainGrid.points[0].y / pxPerM} m, Vel: ${mainGrid.points[0].velocity}`)
-      //   stopPhysics()
-      // }
+      if(mainGrid.points[0].y >= 10000) {
+        console.log(`Time: ${time / 1000} s, Dist: ${mainGrid.points[0].y / pxPerM} m, Vel: ${mainGrid.points[0].velocity}`)
+        stopPhysics()
+      }
       // --
     }
     if(cameraLock && controller.selectedPoint) {

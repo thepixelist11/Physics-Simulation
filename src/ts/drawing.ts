@@ -11,7 +11,6 @@ function drawPoints(points: Array<Point>, ctx: CanvasRenderingContext2D) {
 
 function drawPointArrows(
   points: Array<Point>, 
-  ctx: CanvasRenderingContext2D, 
   arrowSize: number, 
   arrowWidth: number, 
   xColor: Eclipse.Color, 
@@ -217,7 +216,6 @@ function drawOverlay(ctx: CanvasRenderingContext2D, options: Overlay) {
   ctx.scale(mainCam.zoom, mainCam.zoom)
   drawPointArrows(
     mainGrid.points, 
-    ctx, 
     (options.selectionArrows?.lengthAdded ?? 20) / mainCam.zoom, 
     (options.selectionArrows?.width ?? 2) / mainCam.zoom, 
     (options.selectionArrows?.xColor ?? Eclipse.Color.GREEN), 

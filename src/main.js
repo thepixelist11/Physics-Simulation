@@ -25,7 +25,7 @@ const createWindow = () => {
           },
           id: 'loadSim',
         },
-        {type: 'separator'},
+        { type: 'separator' },
         {
           label: 'Exit',
           accelerator: 'CmdOrCtrl+Q',
@@ -61,7 +61,7 @@ const createWindow = () => {
           click: () => {
             win.webContents.send('editWall', null)
           },
-          id: 'editWall'
+          id: 'editWall',
         },
         {
           label: 'Edit Selected Point',
@@ -69,7 +69,7 @@ const createWindow = () => {
           click: () => {
             win.webContents.send('editPoint', null)
           },
-          id: 'editPoint'
+          id: 'editPoint',
         },
         {
           label: 'Change Coefficient of Restitution',
@@ -77,7 +77,7 @@ const createWindow = () => {
           click: () => {
             win.webContents.send('editCOR', null)
           },
-          id: 'editCOR'
+          id: 'editCOR',
         },
         {
           label: 'Change Camera Zoom',
@@ -85,8 +85,8 @@ const createWindow = () => {
           click: () => {
             win.webContents.send('editZoom', null)
           },
-          id: 'editZoom'
-        }
+          id: 'editZoom',
+        },
       ],
     },
     {
@@ -97,15 +97,15 @@ const createWindow = () => {
           accelerator: 'CmdOrCtrl+Shift+I',
           click: () => {
             win.webContents.openDevTools({
-              mode: 'undocked'
+              mode: 'undocked',
             })
           },
           id: 'devTools',
         },
-      ]
-    }
+      ],
+    },
   ]
-  
+
   win = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -156,7 +156,7 @@ async function simSaveDialogue() {
   const result = await dialog.showOpenDialog({
     properties: ['openDirectory'],
   })
-  if(!result.canceled && result.filePaths.length > 0) {
+  if (!result.canceled && result.filePaths.length > 0) {
     const selectedDirPath = result.filePaths[0]
     return selectedDirPath
   }
@@ -166,9 +166,9 @@ async function simSaveDialogue() {
 async function simLoadDialogue() {
   const result = await dialog.showOpenDialog({
     properties: ['openFile'],
-    filters: [{name: 'SIMSAVE Files', extensions: '.simsave'}],
+    filters: [{ name: 'SIMSAVE Files', extensions: '.simsave' }],
   })
-  if(!result.canceled && result.filePaths.length > 0) {
+  if (!result.canceled && result.filePaths.length > 0) {
     const selectedFilePath = result.filePaths[0]
     return selectedFilePath
   }

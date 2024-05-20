@@ -68,7 +68,7 @@ async function runAllSims(dirPath: string, timeToRun: number, ts = 16.67, dataCo
     console.log(name)
     data[name] = await runSim(path.join(dirPath, dirList[i]), timeToRun, ts, dataCollectInterval)
   }
-  return data
+  return data 
 }
 
 // Data format

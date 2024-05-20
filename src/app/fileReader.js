@@ -1,6 +1,4 @@
 "use strict";
-// import * as fs from 'fs'
-// import * as path from 'path'
 const fs = require('fs');
 const path = require('path');
 function saveSimulation(dirPath, name = 'sim') {

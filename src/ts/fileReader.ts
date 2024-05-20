@@ -1,6 +1,3 @@
-// import * as fs from 'fs'
-// import * as path from 'path'
-
 const fs = require('fs')
 const path = require('path')
 
@@ -29,3 +26,4 @@ function loadSimulation(filePath: string) {
     throw new Error(`Save "${filePath}" does not exist`)
   }
 }
+
